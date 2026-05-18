@@ -1,0 +1,13 @@
+{
+    "python.defaultInterpreterPath": "C:/Users/pedrou khiro/urban-drip/backend/venv/Scripts/python.exe",
+    "python.analysis.extraPaths": [
+        "C:/Users/pedrou khiro/urban-drip/backend",
+        "C:/Users/pedrou khiro/urban-drip/backend/venv/Lib/site-packages"
+    ],
+    "python.analysis.autoSearchPaths": true,
+    "python.languageServer": "Pylance",
+    "python.analysis.diagnosticMode": "workspace"
+}
+
+
+

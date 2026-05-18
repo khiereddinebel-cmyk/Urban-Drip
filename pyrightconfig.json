@@ -1,0 +1,15 @@
+{
+    "include": [
+        "backend"
+    ],
+    "venvPath": "C:/Users/pedrou khiro/urban-drip/backend",
+    "venv": "venv",
+    "executionEnvironments": [
+        {
+            "root": "backend",
+            "pythonPath": "C:/Users/pedrou khiro/urban-drip/backend/venv/Scripts/python.exe"
+        }
+    ],
+    "typeCheckingMode": "basic"
+}
+

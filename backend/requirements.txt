@@ -1,0 +1,16 @@
+Django==5.1.2
+gunicorn
+psycopg2-binary
+dj-database-url
+whitenoise
+python-dotenv
+django-cors-headers
+djangorestframework
+pillow
+requests
+psycopg
+psycopg-binary
+gspread
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
