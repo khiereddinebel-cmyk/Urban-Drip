@@ -28,18 +28,24 @@ SECRET_KEY = os.getenv("SECRET_KEY", "fallback-dev-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "caboose.proxy.rlwy.net",
+    ".railway.app",
+    "localhost",
+    "127.0.0.1",
+]
 
 # Security headers for Railway and Vercel
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CSRF_TRUSTED_ORIGINS = [
+    "https://caboose.proxy.rlwy.net",
+    "https://*.railway.app",
     "https://urbandripdz.com",
-    "https://www.urbandripdz.com",
-    "https://admin.urbandripdz.com",
-    "https://urban-drip.up.railway.app",
+    "https://www.urbandripdz.com"
 ]
 
-
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 # Application definition
 
 INSTALLED_APPS = [
