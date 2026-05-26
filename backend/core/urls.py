@@ -1,4 +1,4 @@
-from api.admin import admin_site
+from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -7,12 +7,12 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 
 def root_view(request):
-    """Redirect root to the custom admin panel."""
+    """Redirect root to the admin panel."""
     return redirect('/admin/')
 
 urlpatterns = [
     path('', root_view, name='root'),
-    path('admin/', admin_site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
 ]
 
