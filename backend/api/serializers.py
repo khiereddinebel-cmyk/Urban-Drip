@@ -28,15 +28,20 @@ class BrandSerializer(serializers.ModelSerializer):
         return obj.logo_image.url
 
     def get_cover_image(self, obj):
+        if not obj.cover_image:
+            return None
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.cover_image.url)
+        return obj.cover_image.url
+
+    def get_banner(self, obj):
         if not obj.banner_image:
             return None
         request = self.context.get('request')
         if request:
             return request.build_absolute_uri(obj.banner_image.url)
         return obj.banner_image.url
-
-    def get_banner(self, obj):
-        return self.get_cover_image(obj)
 
 class CategorySerializer(serializers.ModelSerializer):
     banner = serializers.SerializerMethodField()
