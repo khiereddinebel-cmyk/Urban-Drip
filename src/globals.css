@@ -128,3 +128,10 @@ ul {
 .animate-fade-in {
   animation: fadeIn var(--transition-smooth) forwards;
 }
+
+/* Hide sub-navigation menu bar on mobile devices only */
+@media (max-width: 767px) {
+  .sub-nav-bar {
+    display: none !important;
+  }
+}

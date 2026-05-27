@@ -210,7 +210,7 @@ export default function Header() {
                         </header>
 
                         {/* Sub-Navigation Bar - Updated for all items visibility */}
-                        <nav style={{
+                        <nav className="sub-nav-bar" style={{
                             backgroundColor: 'var(--bg)',
                             borderBottom: '1px solid var(--border-color)',
                             padding: '12px 24px',
