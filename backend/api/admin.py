@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Brand, Category, Product, ProductSize, Banner, Order, OrderItem, Wilaya, Baladiya
+from .models import Brand, Category, Product, ProductSize, CarouselImage, Banner, Order, OrderItem, Wilaya, Baladiya
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
@@ -151,6 +151,25 @@ class BannerAdmin(admin.ModelAdmin):
     list_display = ('title', 'page', 'is_active')
     list_editable = ('is_active',)
     list_filter = ('page', 'is_active')
+
+@admin.register(CarouselImage)
+class CarouselImageAdmin(admin.ModelAdmin):
+    list_display = ('image_preview', 'title', 'subtitle', 'display_order', 'active')
+    list_editable = ('display_order', 'active')
+    readonly_fields = ('image_preview_detail',)
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="height: 40px; width: 60px; object-fit: contain; border-radius: 4px;" />', obj.image.url)
+        return "No Image"
+    image_preview.short_description = "Image"
+
+    def image_preview_detail(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-height: 200px; max-width: 400px; object-fit: contain;" />', obj.image.url)
+        return "No image uploaded"
+    image_preview_detail.short_description = "Current Image Preview"
+
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
