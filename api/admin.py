@@ -14,7 +14,7 @@ class ProductImageInline(admin.TabularInline):
     readonly_fields = ('image_preview',)
 
     def image_preview(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 80px; width: auto; border-radius: 4px;" />', obj.image.url)
         return "No Image"
     image_preview.short_description = "Preview"
@@ -28,25 +28,25 @@ class BrandAdmin(admin.ModelAdmin):
     readonly_fields = ('logo_preview_detail', 'banner_preview_detail')
 
     def logo_preview(self, obj):
-        if obj.logo_image:
+        if obj and obj.logo_image:
             return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.logo_image.url)
         return "-"
     logo_preview.short_description = "Logo"
 
     def banner_preview(self, obj):
-        if obj.banner_image:
+        if obj and obj.banner_image:
             return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.banner_image.url)
         return "-"
     banner_preview.short_description = "Banner"
 
     def logo_preview_detail(self, obj):
-        if obj.logo_image:
+        if obj and obj.logo_image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.logo_image.url)
         return "No Image"
     logo_preview_detail.short_description = "Logo Preview"
 
     def banner_preview_detail(self, obj):
-        if obj.banner_image:
+        if obj and obj.banner_image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.banner_image.url)
         return "No Image"
     banner_preview_detail.short_description = "Banner Preview"
@@ -60,25 +60,25 @@ class CategoryAdmin(admin.ModelAdmin):
     readonly_fields = ('image_preview_detail', 'banner_preview_detail')
 
     def image_preview(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.image.url)
         return "-"
     image_preview.short_description = "Image"
 
     def banner_preview(self, obj):
-        if obj.banner_image:
+        if obj and obj.banner_image:
             return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.banner_image.url)
         return "-"
     banner_preview.short_description = "Banner"
 
     def image_preview_detail(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.image.url)
         return "No Image"
     image_preview_detail.short_description = "Image Preview"
 
     def banner_preview_detail(self, obj):
-        if obj.banner_image:
+        if obj and obj.banner_image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.banner_image.url)
         return "No Image"
     banner_preview_detail.short_description = "Banner Preview"
@@ -111,12 +111,14 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
     def image_preview(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.image.url)
         return "No Cover Image"
     image_preview.short_description = "Cover Preview"
 
     def stock_badge(self, obj):
+        if not obj:
+            return "-"
         if obj.stock <= 0:
             return format_html('<span style="color: #e74c3c; font-weight: bold; background: #fadbd8; padding: 4px 8px; border-radius: 4px;">OUT OF STOCK</span>')
         elif obj.stock <= obj.low_stock_threshold:
@@ -131,13 +133,13 @@ class HeroSliderAdmin(admin.ModelAdmin):
     readonly_fields = ('slide_preview_detail',)
 
     def slide_preview(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.image.url)
         return "-"
     slide_preview.short_description = "Slide Preview"
 
     def slide_preview_detail(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.image.url)
         return "No Image"
     slide_preview_detail.short_description = "Preview"
@@ -149,13 +151,13 @@ class HomepageBannerAdmin(admin.ModelAdmin):
     readonly_fields = ('banner_preview_detail',)
 
     def banner_preview(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.image.url)
         return "-"
     banner_preview.short_description = "Preview"
 
     def banner_preview_detail(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.image.url)
         return "No Image"
     banner_preview_detail.short_description = "Preview"
@@ -180,13 +182,13 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     )
 
     def logo_preview(self, obj):
-        if obj.logo:
+        if obj and obj.logo:
             return format_html('<img src="{}" style="max-height: 80px; width: auto; border-radius: 4px;" />', obj.logo.url)
         return "No Logo Uploaded"
     logo_preview.short_description = "Logo Preview"
 
     def favicon_preview(self, obj):
-        if obj.favicon:
+        if obj and obj.favicon:
             return format_html('<img src="{}" style="max-height: 32px; width: auto;" />', obj.favicon.url)
         return "No Favicon Uploaded"
     favicon_preview.short_description = "Favicon Preview"
@@ -217,13 +219,13 @@ class CarouselImageAdmin(admin.ModelAdmin):
     readonly_fields = ('carousel_preview_detail',)
 
     def carousel_preview(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.image.url)
         return "-"
     carousel_preview.short_description = "Preview"
 
     def carousel_preview_detail(self, obj):
-        if obj.image:
+        if obj and obj.image:
             return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.image.url)
         return "No Image"
     carousel_preview_detail.short_description = "Preview"
@@ -239,5 +241,3 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('status', 'created_at')
     inlines = [OrderItemInline]
     readonly_fields = ('order_number', 'created_at')
-
-# NOTE: Wilaya and Baladiya models are kept in database but NOT registered in admin sidebar
