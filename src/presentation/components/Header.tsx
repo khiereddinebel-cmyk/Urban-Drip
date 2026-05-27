@@ -146,7 +146,7 @@ export default function Header() {
                                 alignItems: 'center'
                             }}>
                                 <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                                    <div style={{ position: 'relative', width: '120px', height: '120px' }}>
+                                    <div style={{ position: 'relative', width: '72px', height: '72px' }}>
                                         <Image
                                             src="/logo.png"
                                             alt="Urban Drip Logo"
