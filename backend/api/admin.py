@@ -4,16 +4,16 @@ from .models import Brand, Category, Product, ProductSize, Banner, Order, OrderI
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    list_display = ('name', 'title', 'active', 'display_order', 'is_active')
+    list_display = ('logo_preview_list', 'name', 'title', 'active', 'display_order', 'is_active')
     list_editable = ('active', 'display_order')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'title')
     
-    readonly_fields = ('logo_preview', 'banner_preview', 'cover_preview')
+    readonly_fields = ('logo_preview', 'banner_preview', 'cover_preview', 'created_at')
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'slug', 'title', 'subtitle', 'description', 'active', 'display_order')
+            'fields': ('name', 'slug', 'title', 'subtitle', 'description', 'active', 'display_order', 'created_at')
         }),
         ('BRAND LOGO', {
             'description': 'Small logo beside title on brand collection page (usually transparent PNG/WebP)',
@@ -33,6 +33,12 @@ class BrandAdmin(admin.ModelAdmin):
         }),
     )
 
+    def logo_preview_list(self, obj):
+        if obj.logo_image:
+            return format_html('<img src="{}" style="height: 35px; width: 35px; object-fit: contain; border-radius: 4px;" />', obj.logo_image.url)
+        return "No Logo"
+    logo_preview_list.short_description = "Logo"
+
     def logo_preview(self, obj):
         if obj.logo_image:
             return format_html('<img src="{}" style="max-height: 80px; max-width: 200px; object-fit: contain;" />', obj.logo_image.url)
@@ -51,9 +57,10 @@ class BrandAdmin(admin.ModelAdmin):
         return "No cover uploaded"
     cover_preview.short_description = "Current Cover Preview"
 
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'title', 'active', 'display_order', 'is_active')
+    list_display = ('logo_preview_list', 'name', 'title', 'active', 'display_order', 'is_active')
     list_editable = ('active', 'display_order')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'title')
@@ -82,6 +89,12 @@ class CategoryAdmin(admin.ModelAdmin):
         }),
     )
 
+    def logo_preview_list(self, obj):
+        if obj.logo_image:
+            return format_html('<img src="{}" style="height: 35px; width: 35px; object-fit: contain; border-radius: 4px;" />', obj.logo_image.url)
+        return "No Logo"
+    logo_preview_list.short_description = "Logo"
+
     def logo_preview(self, obj):
         if obj.logo_image:
             return format_html('<img src="{}" style="max-height: 80px; max-width: 200px; object-fit: contain;" />', obj.logo_image.url)
@@ -106,12 +119,32 @@ class ProductSizeInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'brand', 'category', 'price', 'stock', 'is_latest_drop', 'is_most_viewed', 'is_active')
-    list_editable = ('price', 'stock', 'is_latest_drop', 'is_most_viewed', 'is_active')
-    list_filter = ('brand', 'category', 'is_latest_drop', 'is_most_viewed', 'is_active')
+    list_display = ('image_preview', 'name', 'brand', 'category', 'price', 'stock', 'stock_indicator', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
+    list_editable = ('price', 'stock', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
+    list_filter = ('brand', 'category', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')
     inlines = [ProductSizeInline]
+    readonly_fields = ('created_at',)
+    ordering = ('-created_at',)
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="height: 40px; width: 40px; object-fit: contain; border-radius: 4px;" />', obj.image.url)
+        return "No Image"
+    image_preview.short_description = "Image"
+
+    def stock_indicator(self, obj):
+        if obj.stock < 5:
+            color = '#e74c3c' # red
+        elif obj.stock < 10:
+            color = '#e67e22' # orange
+        else:
+            color = '#2ecc71' # green
+        return format_html('<strong style="color: {};">● {}</strong>', color, obj.stock)
+    stock_indicator.short_description = 'Stock Alert'
+    stock_indicator.admin_order_field = 'stock'
+
 
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
@@ -125,9 +158,13 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_number', 'customer_name', 'status', 'total_price', 'created_at')
-    list_filter = ('status', 'created_at')
+    list_display = ('order_number', 'customer_name', 'status', 'payment_status', 'total_price', 'created_at')
+    list_editable = ('status', 'payment_status')
+    list_filter = ('status', 'payment_status', 'created_at')
+    search_fields = ('order_number', 'id', 'customer_email', 'customer_phone')
     inlines = [OrderItemInline]
+    readonly_fields = ('created_at', 'order_number')
+
 
 # Wilaya and Baladiya models kept in database but hidden from admin sidebar
 # admin.site.register(Wilaya)
