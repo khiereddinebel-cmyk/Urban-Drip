@@ -16,6 +16,8 @@ ALLOWED_HOSTS = [
     "urbandripdz.com",
     "www.urbandripdz.com",
     "admin.urbandripdz.com",
+    "localhost",
+    "127.0.0.1",
 ]
 
 # Railway and Vercel Security
