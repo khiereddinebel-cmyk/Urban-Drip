@@ -20,10 +20,16 @@ export default function Home({ featured = [] }: HomeProps) {
         const fetchData = async () => {
             const dataSource = new DjangoProductDataSource();
             try {
-                // Fetch Home Banners
-                const banners = await dataSource.getBanners('home');
-                if (banners.length > 0) {
-                    setStoreImages(banners.map(b => b.image));
+                // Fetch Carousel Images
+                const carousel = await dataSource.getCarouselImages();
+                if (carousel.length > 0) {
+                    setStoreImages(carousel.map(c => c.image));
+                } else {
+                    // Fallback to banners if no carousel image is configured
+                    const banners = await dataSource.getBanners('home');
+                    if (banners.length > 0) {
+                        setStoreImages(banners.map(b => b.image));
+                    }
                 }
 
                 // Fetch All Brands

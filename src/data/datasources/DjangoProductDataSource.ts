@@ -161,4 +161,19 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
             return [];
         }
     }
+
+    async getCarouselImages(): Promise<any[]> {
+        try {
+            const data = await this.fetchApi('/carousel/');
+            const images = data.results || data;
+            return images.map((img: any) => ({
+                id: img.id,
+                title: img.title || '',
+                image: this.mapImage(img.image),
+                link: img.button_link || ''
+            }));
+        } catch (error) {
+            return [];
+        }
+    }
 }

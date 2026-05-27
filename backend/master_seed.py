@@ -120,7 +120,7 @@ def seed_everything():
     for i, filename in enumerate(carousel_files):
         img = get_image_file([filename])
         if img:
-            CarouselImage.objects.create(title=f"Store View {i+1}", image=img, order=i)
+            CarouselImage.objects.create(title=f"Store View {i+1}", image=img, display_order=i)
 
     # 4. Products (Scanning public/images/Products/)
     product_base = os.path.join(IMAGE_ROOT, "Products")

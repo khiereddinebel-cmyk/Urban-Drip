@@ -106,7 +106,7 @@ def setup_initial_data():
     ]
 
     for img_info in carousel_data:
-        carousel, created = CarouselImage.objects.get_or_create(title=img_info['title'], defaults={'order': img_info['order']})
+        carousel, created = CarouselImage.objects.get_or_create(title=img_info['title'], defaults={'display_order': img_info['order']})
         save_image_to_field(carousel, 'image', img_info['image'])
         print(f"{'Created' if created else 'Updated'} Carousel: {carousel.title}")
 
