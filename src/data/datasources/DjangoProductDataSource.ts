@@ -42,7 +42,11 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
                 category: item.category_name || 'N/A',
                 isExclusive: item.is_active, // mapping is_active to exclusive for now if needed, or just false
                 viewCount: 0,
-                sizes: [], // Sizes removed in simplified model
+                sizes: (item.sizes || []).map((sz: any) => ({
+                    size: sz.size_eu,
+                    eu: sz.size_eu,
+                    cm: sz.size_cm
+                })),
                 colors: [], // Colors removed in simplified model
                 images: item.image ? [this.mapImage(item.image)] : [],
                 createdAt: item.created_at,

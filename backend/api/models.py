@@ -99,6 +99,20 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"Image for {self.product.name} ({self.id})"
 
+class ProductSize(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="sizes")
+    size_eu = models.CharField(max_length=10, verbose_name="Size (EU)")
+    size_cm = models.DecimalField(max_digits=4, decimal_places=1, verbose_name="Measurement (CM)")
+    stock = models.IntegerField(default=0, verbose_name="Stock")
+
+    class Meta:
+        verbose_name = "Product Size"
+        verbose_name_plural = "Product Sizes"
+        ordering = ['size_eu']
+
+    def __str__(self):
+        return f"EU {self.size_eu} ({self.size_cm} cm)"
+
 class HeroSlider(models.Model):
     title = models.CharField(max_length=200)
     subtitle = models.TextField(blank=True, null=True)

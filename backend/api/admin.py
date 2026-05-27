@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Brand, Category, Product, Banner, Order, OrderItem, Wilaya, Baladiya
+from .models import Brand, Category, Product, ProductSize, Banner, Order, OrderItem, Wilaya, Baladiya
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
@@ -100,6 +100,10 @@ class CategoryAdmin(admin.ModelAdmin):
         return "No cover uploaded"
     cover_preview.short_description = "Current Cover Preview"
 
+class ProductSizeInline(admin.TabularInline):
+    model = ProductSize
+    extra = 1
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'brand', 'category', 'price', 'stock', 'is_latest_drop', 'is_most_viewed', 'is_active')
@@ -107,6 +111,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('brand', 'category', 'is_latest_drop', 'is_most_viewed', 'is_active')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')
+    inlines = [ProductSizeInline]
 
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
