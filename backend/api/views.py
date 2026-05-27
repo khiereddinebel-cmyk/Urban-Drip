@@ -13,11 +13,11 @@ from .serializers import (
 )
 
 class BrandViewSet(viewsets.ModelViewSet):
-    queryset = Brand.objects.filter(active=True).order_by('display_order')
+    queryset = Brand.objects.filter(active=True).order_by('display_order', 'name')
     serializer_class = BrandSerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.filter(active=True).order_by('display_order')
+    queryset = Category.objects.filter(active=True).order_by('display_order', 'name')
     serializer_class = CategorySerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -29,6 +29,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         brand = self.request.query_params.get('brand')
         category = self.request.query_params.get('category')
         featured = self.request.query_params.get('featured')
+        latest_drops = self.request.query_params.get('latest_drops')
+        most_viewed = self.request.query_params.get('most_viewed')
         
         if brand:
             queryset = queryset.filter(brand__slug=brand)
@@ -37,6 +39,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         if featured is not None:
             is_featured = featured.lower() in ['true', '1', 'yes']
             queryset = queryset.filter(featured=is_featured)
+        if latest_drops and latest_drops.lower() == 'true':
+            queryset = queryset.filter(is_latest_drop=True)
+        if most_viewed and most_viewed.lower() == 'true':
+            queryset = queryset.filter(is_most_viewed=True)
             
         return queryset
 

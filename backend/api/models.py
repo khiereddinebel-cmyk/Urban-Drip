@@ -5,16 +5,27 @@ from django.utils.text import slugify
 class Brand(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
-    logo_image = models.ImageField(upload_to="brands/", null=True, blank=True)
-    banner_image = models.ImageField(upload_to="brands/covers/", null=True, blank=True)
+    title = models.CharField(max_length=200, blank=True, null=True)
+    subtitle = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    logo_image = models.ImageField(upload_to="brands/logos/", null=True, blank=True)
+    banner_image = models.ImageField(upload_to="brands/banners/", null=True, blank=True)
+    cover_image = models.ImageField(upload_to="brands/covers/", null=True, blank=True)
     active = models.BooleanField(default=True)
     display_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Legacy fields kept for backward compatibility
+    logo = models.ImageField(upload_to="brands/", null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        # Sync legacy fields for compatibility
+        if self.logo_image and not self.logo:
+            self.logo = self.logo_image
+        self.is_active = self.active
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -23,11 +34,18 @@ class Brand(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
-    image = models.ImageField(upload_to="categories/", null=True, blank=True)
-    banner_image = models.ImageField(upload_to="categories/covers/", null=True, blank=True)
+    title = models.CharField(max_length=200, blank=True, null=True)
+    subtitle = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    logo_image = models.ImageField(upload_to="categories/logos/", null=True, blank=True)
+    banner_image = models.ImageField(upload_to="categories/banners/", null=True, blank=True)
+    cover_image = models.ImageField(upload_to="categories/covers/", null=True, blank=True)
     active = models.BooleanField(default=True)
     display_order = models.IntegerField(default=0)
+
+    # Legacy fields kept for backward compatibility
+    image = models.ImageField(upload_to="categories/", null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -35,6 +53,10 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        # Sync legacy fields for compatibility
+        if self.cover_image and not self.image:
+            self.image = self.cover_image
+        self.is_active = self.active
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -49,6 +71,8 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products", null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products", null=True, blank=True)
     stock = models.IntegerField(default=0)
+    is_latest_drop = models.BooleanField(default=False)
+    is_most_viewed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     low_stock_threshold = models.IntegerField(default=5)
@@ -64,6 +88,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")

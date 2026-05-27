@@ -6,91 +6,42 @@ import ProductCard from '../components/ProductCard';
 import { Product } from '../../domain/entities/Product';
 import Image from 'next/image';
 import Link from 'next/link';
+import { DjangoProductDataSource } from '../../data/datasources/DjangoProductDataSource';
 
 interface HomeProps {
     featured?: Product[];
 }
 
 export default function Home({ featured = [] }: HomeProps) {
-    const [storeImages, setStoreImages] = useState<string[]>([
-        '/images/store-carousel-custom.png?v=1',
-        '/images/urban-drip-logo-custom.png?v=2',
-        '/store-interior.png'
-    ]);
-    const [dynamicBrands, setDynamicBrands] = useState<any[]>([]);
-    const [latestDrops, setLatestDrops] = useState<Product[]>([]);
-    const [mostViewed, setMostViewed] = useState<Product[]>([]);
+    const [storeImages, setStoreImages] = useState<string[]>([]);
+    const [displayBrands, setDisplayBrands] = useState<any[]>([]);
     
     useEffect(() => {
         const fetchData = async () => {
+            const dataSource = new DjangoProductDataSource();
             try {
-                // Fetch Carousel Images
-                const carouselRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/carousel/`);
-                if (carouselRes.ok) {
-                    const carouselData = await carouselRes.json();
-                    const remoteImages = (carouselData.results || carouselData).map((img: any) => {
-                        const url = img.image;
-                        if (!url) return '';
-                        if (url.startsWith('http')) return url;
-                        return `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}${url.startsWith('/') ? '' : '/'}${url}`;
-                    });
-                    if (remoteImages.length > 0) setStoreImages(remoteImages);
+                // Fetch Home Banners
+                const banners = await dataSource.getBanners('home');
+                if (banners.length > 0) {
+                    setStoreImages(banners.map(b => b.image));
                 }
 
-                // Fetch Brands
-                const brandsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/brands/`);
-                if (brandsRes.ok) {
-                    const brandsData = await brandsRes.json();
-                    const mapImage = (url: string | null) => {
-                        if (!url) return null;
-                        if (url.startsWith('http')) return url;
-                        return `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}${url.startsWith('/') ? '' : '/'}${url}`;
-                    };
-
-                    const fetchedBrands = (brandsData.results || brandsData).map((b: any) => ({
-                        name: b.name,
-                        image: mapImage(b.banner_image) || mapImage(b.logo_image) || '/images/placeholder.jpg',
-                        link: `/brand/${b.slug}`
-                    }));
-                    setDynamicBrands(fetchedBrands);
-                }
-
-                // Fetch Homepage Sections (Latest Drops, Most Viewed)
-                const sectionsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/homepage-sections/`);
-                if (sectionsRes.ok) {
-                    const sectionsData = await sectionsRes.json();
-                    const sectionsList = sectionsData.results || sectionsData;
-                    if (Array.isArray(sectionsList)) {
-                        const latestSec = sectionsList.find(s => s.slug === 'latest_drops');
-                        const viewedSec = sectionsList.find(s => s.slug === 'most_viewed');
-                        
-                        if (latestSec && latestSec.products && latestSec.products.length > 0) {
-                            setLatestDrops(latestSec.products);
-                        } else {
-                            setLatestDrops(featured);
-                        }
-
-                        if (viewedSec && viewedSec.products && viewedSec.products.length > 0) {
-                            setMostViewed(viewedSec.products);
-                        } else {
-                            setMostViewed([...featured].reverse());
-                        }
-                    } else {
-                        setLatestDrops(featured);
-                        setMostViewed([...featured].reverse());
-                    }
-                } else {
-                    setLatestDrops(featured);
-                    setMostViewed([...featured].reverse());
-                }
+                // Fetch All Brands
+                const brands = await dataSource.getAllBrands();
+                setDisplayBrands(brands.map(b => ({
+                    name: b.data.name,
+                    image: b.data.cover || b.data.logo || '/images/placeholder.jpg',
+                    link: `/brand/${b.id}`
+                })));
             } catch (error) {
-                console.error('Failed to fetch home/sections data:', error);
-                setLatestDrops(featured);
-                setMostViewed([...featured].reverse());
+                console.error('Failed to fetch home data:', error);
             }
         };
         fetchData();
-    }, [featured]);
+    }, []);
+
+    const latestDrops = featured;
+    const mostViewed = [...featured].reverse();
 
     const latestRef = useRef<HTMLDivElement>(null);
     const viewedRef = useRef<HTMLDivElement>(null);
@@ -114,55 +65,16 @@ export default function Home({ featured = [] }: HomeProps) {
 
     const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
         if (ref.current) {
-            const scrollAmount = 400; // updated width + gap
+            const scrollAmount = 400; 
             ref.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
         }
     };
-    const originalBrands = [
-        { name: 'New Balance', image: '/images/new-balance.png?v=1', link: '/brand/new-balance', slug: 'new-balance' },
-        { name: 'Onitsuka Tiger', image: '/images/onitsuka-tiger.png?v=1', link: '/brand/onitsuka-tiger', slug: 'onitsuka-tiger' },
-        { name: 'Asics', image: '/images/asics-v2.png', link: '/brand/asics', slug: 'asics' },
-        { name: 'Puma', image: '/images/puma-v2.png', link: '/brand/puma', slug: 'puma' },
-        { name: 'UGG', image: '/images/ugg.png?v=1', link: '/brand/ugg', slug: 'ugg' },
-        { name: 'Nike', image: '/images/nike.png?v=1', link: '/brand/nike', slug: 'nike' },
-        { name: 'Jordan', image: '/images/jordan.png?v=1', link: '/brand/jordan', slug: 'jordan' },
-        { name: 'Adidas', image: '/images/adidas.png?v=1', link: '/brand/adidas', slug: 'adidas' },
-    ];
-
-    // Merge original brands with dynamic ones from backend
-    const [displayBrands, setDisplayBrands] = useState<any[]>(originalBrands);
-    
-    useEffect(() => {
-        if (dynamicBrands.length > 0) {
-            // Merge: prioritize dynamic data but keep original order
-            const merged = originalBrands.map(ob => {
-                const dynamic = dynamicBrands.find(db => (db.name || '').toLowerCase().includes(ob.slug.toLowerCase()));
-                if (dynamic) {
-                    return { 
-                        ...ob, 
-                        name: dynamic.name || ob.name,
-                        image: dynamic.image && !dynamic.image.includes('placeholder') ? dynamic.image : ob.image 
-                    };
-                }
-                return ob;
-            });
-            
-            // Add any NEW brands from backend that aren't in original list
-            const newBrands = dynamicBrands.filter(db => 
-                !originalBrands.some(ob => db.link.includes(ob.slug))
-            );
-            
-            setDisplayBrands([...merged, ...newBrands]);
-        }
-    }, [dynamicBrands]);
 
     return (
         <main className="min-h-screen bg-[var(--bg)] font-sans text-[var(--text)]">
 
-            {/* 1. Hero Banner Component Restored */}
             <HeroSection />
 
-            {/* 2. Trust Badges Section */}
             <section className="w-full bg-[var(--bg)] pt-16 pb-16 md:pt-24 md:pb-24 border-b border-[var(--border-color)]">
                 <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                     <div className="flex flex-row items-center justify-between w-full overflow-x-auto whitespace-nowrap gap-6 md:gap-12 scrollbar-hide">
@@ -186,7 +98,6 @@ export default function Home({ featured = [] }: HomeProps) {
                 </div>
             </section>
 
-            {/* 3. Latest Drops Section */}
             <section className="max-w-[1400px] mx-auto mt-[120px] lg:mt-[250px] mb-20 lg:mb-32 px-4 md:px-8">
                 <h2 className="mb-[60px] lg:mb-[80px] px-2 text-center md:text-left">
                     <span 
@@ -214,7 +125,6 @@ export default function Home({ featured = [] }: HomeProps) {
                     )}
                 </div>
 
-                {/* Pager and View All Button */}
                 <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
                     <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
                         <button onClick={() => scroll(latestRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
@@ -227,7 +137,6 @@ export default function Home({ featured = [] }: HomeProps) {
                 </div>
             </section>
 
-            {/* 4. Most Viewed Products Section */}
             <section className="max-w-[1400px] mx-auto pt-[120px] lg:pt-[200px] pb-20 lg:pb-32 px-4 md:px-8">
                 <h2 
                     className="text-[36px] md:text-[48px] lg:text-[56px] mb-[60px] lg:mb-[80px] px-2 uppercase tracking-wide text-center md:text-left"
@@ -251,7 +160,6 @@ export default function Home({ featured = [] }: HomeProps) {
                     )}
                 </div>
 
-                {/* Pager and View All Button */}
                 <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
                     <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
                         <button onClick={() => scroll(viewedRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
@@ -264,7 +172,6 @@ export default function Home({ featured = [] }: HomeProps) {
                 </div>
             </section>
 
-            {/* 5. Brands Image Grid Section */}
             <section className="max-w-7xl mx-auto px-4 pt-[120px] lg:pt-[200px] pb-20 lg:pb-32">
                 <h2
                     className="text-[36px] md:text-[48px] lg:text-[56px] mb-[100px] lg:mb-[140px] px-2 uppercase tracking-wide text-center"
@@ -277,9 +184,6 @@ export default function Home({ featured = [] }: HomeProps) {
                     {displayBrands.map((brand, idx) => (
                         <Link key={idx} href={brand.link} className="flex flex-col items-center w-full group">
                             <div className="w-[85%] md:w-[85%] lg:w-[80%] aspect-square bg-[var(--surface)] relative overflow-hidden mb-5 flex items-center justify-center rounded-sm shadow-sm ring-1 ring-[var(--border-color)]">
-                                <span className="absolute text-gray-400 font-bold text-sm z-0">
-                                    {brand.name}
-                                </span>
                                 <Image
                                     src={brand.image}
                                     alt={brand.name}
@@ -298,61 +202,63 @@ export default function Home({ featured = [] }: HomeProps) {
                             </div>
                         </Link>
                     ))}
+                    {displayBrands.length === 0 && (
+                        <div className="col-span-full text-center text-gray-400">No brands found.</div>
+                    )}
                 </div>
             </section>
 
-            {/* 6. Physical Store Interactive Carousel */}
-            <section className="w-full relative mt-[80px] md:mt-[150px] lg:mt-[250px] mb-[80px] md:mb-[150px] lg:mb-[200px]">
-                <div className="relative w-full overflow-hidden h-[70vh] md:h-[95vh] lg:h-[100vh] bg-gray-100">
-                    {storeImages.map((src, idx) => (
-                        <Image
-                            key={idx}
-                            src={src}
-                            alt={`Urban Drip Store View ${idx + 1}`}
-                            fill
-                            unoptimized
-                            className={`object-cover transition-opacity duration-1000 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'
-                                }`}
-                        />
-                    ))}
-                </div>
-
-                {/* Custom Carousel Controls */}
-                <div className="flex items-center justify-center mt-8">
-                    <div className="flex items-center gap-6">
-                        <button onClick={handlePrevSlide} className="text-gray-600 hover:text-black transition-colors p-2 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-
-                        <div className="flex gap-4 items-center px-2">
-                            {storeImages.map((_, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => setCurrentSlide(idx)}
-                                    className={`w-[10px] h-[10px] rounded-full transition-all ${idx === currentSlide ? 'bg-black' : 'bg-transparent border border-gray-500'}`}
-                                    aria-label={`Go to slide ${idx + 1}`}
-                                />
-                            ))}
-                        </div>
-
-                        <button onClick={handleNextSlide} className="text-gray-600 hover:text-black transition-colors p-2 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </button>
-
-                        <div className="w-[1px] h-8 bg-gray-200 ml-4 mr-2"></div>
-
-                        <button onClick={togglePlay} className="text-gray-600 hover:text-black transition-colors p-2 flex items-center justify-center">
-                            {isPlaying ? (
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-                            ) : (
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            )}
-                        </button>
+            {storeImages.length > 0 && (
+                <section className="w-full relative mt-[80px] md:mt-[150px] lg:mt-[250px] mb-[80px] md:mb-[150px] lg:mb-[200px]">
+                    <div className="relative w-full overflow-hidden h-[70vh] md:h-[95vh] lg:h-[100vh] bg-gray-100">
+                        {storeImages.map((src, idx) => (
+                            <Image
+                                key={idx}
+                                src={src}
+                                alt={`Banner ${idx + 1}`}
+                                fill
+                                unoptimized
+                                className={`object-cover transition-opacity duration-1000 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                            />
+                        ))}
                     </div>
-                </div>
-            </section>
 
-            {/* 7. Location Section (Appended above global footer layout) */}
+                    <div className="flex items-center justify-center mt-8">
+                        <div className="flex items-center gap-6">
+                            <button onClick={handlePrevSlide} className="text-gray-600 hover:text-black transition-colors p-2 flex items-center justify-center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+
+                            <div className="flex gap-4 items-center px-2">
+                                {storeImages.map((_, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setCurrentSlide(idx)}
+                                        className={`w-[10px] h-[10px] rounded-full transition-all ${idx === currentSlide ? 'bg-black' : 'bg-transparent border border-gray-500'}`}
+                                        aria-label={`Go to slide ${idx + 1}`}
+                                    />
+                                ))}
+                            </div>
+
+                            <button onClick={handleNextSlide} className="text-gray-600 hover:text-black transition-colors p-2 flex items-center justify-center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+
+                            <div className="w-[1px] h-8 bg-gray-200 ml-4 mr-2"></div>
+
+                            <button onClick={togglePlay} className="text-gray-600 hover:text-black transition-colors p-2 flex items-center justify-center">
+                                {isPlaying ? (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                ) : (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            )}
+
             <section className="max-w-[1400px] mx-auto py-16 px-4 md:px-8 mt-24 lg:mt-32 text-center mb-16">
                 <p className="text-[14px] uppercase tracking-widest mb-2" style={{ fontWeight: 300, color: '#000' }}>vous êtes les bienvenus chez nous</p>
                 <h2

@@ -1,11 +1,13 @@
 import { ProductModel } from '../models/ProductModel';
 import { ProductRemoteDataSource } from './ProductRemoteDataSource';
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api`;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+const BASE_URL = `${API_BASE_URL}/api`;
 
 export class DjangoProductDataSource implements ProductRemoteDataSource {
     private async fetchApi(endpoint: string, options: RequestInit = {}) {
         const response = await fetch(`${BASE_URL}${endpoint}`, {
+            cache: 'no-store',
             ...options,
             headers: {
                 'Content-Type': 'application/json',
@@ -24,16 +26,9 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
         if (!url) return '';
         if (url.startsWith('http')) return url;
         
-        // Handle paths that might be missing the leading slash or /media/
-        let cleanUrl = url.startsWith('/') ? url : `/${url}`;
-        
-        // If it's a media file but doesn't have /media/ prefix, add it
-        // This is common when Django returns paths relative to MEDIA_ROOT
-        if (!cleanUrl.startsWith('/media/')) {
-            cleanUrl = `/media${cleanUrl}`;
-        }
-        
-        return `http://127.0.0.1:8000${cleanUrl}`;
+        // Ensure path starts with /
+        const cleanPath = url.startsWith('/') ? url : `/${url}`;
+        return `${API_BASE_URL}${cleanPath}`;
     }
 
     private mapDjangoToModel(item: any): { id: string; data: ProductModel } {
@@ -43,35 +38,34 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
                 name: item.name,
                 description: item.description,
                 price: parseFloat(item.price),
-                brand: item.brand_name,
-                category: item.category_name,
-                isExclusive: item.is_exclusive,
-                viewCount: item.view_count || 0,
-                sizes: (item.sizes || []).map((s: any) => ({
-                    size: s.size,
-                    eu: s.eu,
-                    cm: s.cm
-                })),
-                colors: item.colors || [],
-                images: item.images.map((img: any) => this.mapImage(img.image)),
+                brand: item.brand_name || 'N/A',
+                category: item.category_name || 'N/A',
+                isExclusive: item.is_active, // mapping is_active to exclusive for now if needed, or just false
+                viewCount: 0,
+                sizes: [], // Sizes removed in simplified model
+                colors: [], // Colors removed in simplified model
+                images: item.image ? [this.mapImage(item.image)] : [],
                 createdAt: item.created_at,
             }
         };
     }
 
     async getLastDropProducts(limit: number): Promise<{ id: string; data: ProductModel }[]> {
-        const data = await this.fetchApi(`/products/?exclusive=true&limit=${limit}`);
-        return data.results ? data.results.map(this.mapDjangoToModel.bind(this)) : data.map(this.mapDjangoToModel.bind(this));
+        const data = await this.fetchApi(`/products/?latest_drops=true`);
+        const products = data.results || data;
+        return products.slice(0, limit).map(this.mapDjangoToModel.bind(this));
     }
 
     async getMostViewedProducts(limit: number): Promise<{ id: string; data: ProductModel }[]> {
-        const data = await this.fetchApi(`/products/?most_viewed=true&limit=${limit}`);
-        return data.results ? data.results.map(this.mapDjangoToModel.bind(this)) : data.map(this.mapDjangoToModel.bind(this));
+        const data = await this.fetchApi(`/products/?most_viewed=true`);
+        const products = data.results || data;
+        return products.slice(0, limit).map(this.mapDjangoToModel.bind(this));
     }
 
-    async getProductsByBrand(brandId: string): Promise<{ id: string; data: ProductModel }[]> {
-        const data = await this.fetchApi(`/products/?brand=${brandId}`);
-        return data.results ? data.results.map(this.mapDjangoToModel.bind(this)) : data.map(this.mapDjangoToModel.bind(this));
+    async getProductsByBrand(brandSlug: string): Promise<{ id: string; data: ProductModel }[]> {
+        const data = await this.fetchApi(`/products/?brand=${brandSlug}`);
+        const products = data.results || data;
+        return products.map(this.mapDjangoToModel.bind(this));
     }
 
     async getProductById(id: string): Promise<{ id: string; data: ProductModel } | null> {
@@ -84,27 +78,30 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
     }
 
     async incrementViewCount(productId: string): Promise<void> {
-        await this.fetchApi(`/products/${productId}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({ view_count_increment: 1 }),
-        });
+        // Not implemented in simplified models
     }
 
-    async getProductsByCategory(category: string): Promise<{ id: string; data: ProductModel }[]> {
-        const data = await this.fetchApi(`/products/?category=${category}`);
-        return data.results ? data.results.map(this.mapDjangoToModel.bind(this)) : data.map(this.mapDjangoToModel.bind(this));
+    async getProductsByCategory(categorySlug: string): Promise<{ id: string; data: ProductModel }[]> {
+        const data = await this.fetchApi(`/products/?category=${categorySlug}`);
+        const products = data.results || data;
+        return products.map(this.mapDjangoToModel.bind(this));
     }
 
     async getBrandBySlug(slug: string): Promise<any> {
         try {
-            const data = await this.fetchApi(`/brands/?slug=${slug}`);
-            const brand = data.results ? data.results[0] : (Array.isArray(data) ? data[0] : data);
+            const data = await this.fetchApi(`/brands/`);
+            const brands = data.results || data;
+            const brand = brands.find((b: any) => b.slug === slug);
             if (!brand) return null;
             return {
                 id: brand.slug,
                 name: brand.name,
-                logo: this.mapImage(brand.logo),
-                banner: this.mapImage(brand.banner)
+                logo: this.mapImage(brand.logo_image || brand.logo),
+                banner: this.mapImage(brand.banner_image),
+                cover: this.mapImage(brand.cover_image),
+                title: brand.title || brand.name,
+                subtitle: brand.subtitle || '',
+                description: brand.description || ''
             };
         } catch (error) {
             return null;
@@ -113,14 +110,19 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
 
     async getCategoryBySlug(slug: string): Promise<any> {
         try {
-            const data = await this.fetchApi(`/categories/?slug=${slug}`);
-            const category = data.results ? data.results[0] : (Array.isArray(data) ? data[0] : data);
+            const data = await this.fetchApi(`/categories/`);
+            const categories = data.results || data;
+            const category = categories.find((c: any) => c.slug === slug);
             if (!category) return null;
             return {
                 id: category.slug,
                 name: category.name,
-                image: this.mapImage(category.image),
-                banner: this.mapImage(category.banner)
+                logo: this.mapImage(category.logo_image),
+                banner: this.mapImage(category.banner_image || category.image),
+                cover: this.mapImage(category.cover_image),
+                title: category.title || category.name,
+                subtitle: category.subtitle || '',
+                description: category.description || ''
             };
         } catch (error) {
             return null;
@@ -134,10 +136,25 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
             id: b.slug,
             data: {
                 name: b.name,
-                logo: this.mapImage(b.logo),
-                coverImage: this.mapImage(b.cover_image),
-                banner: this.mapImage(b.banner),
+                logo: this.mapImage(b.logo_image || b.logo),
+                cover: this.mapImage(b.cover_image),
             }
         }));
+    }
+
+    async getBanners(page: string): Promise<any[]> {
+        try {
+            const data = await this.fetchApi(`/banners/?page=${page}`);
+            const banners = data.results || data;
+            return banners.map((b: any) => ({
+                id: b.id,
+                title: b.title,
+                image: this.mapImage(b.image),
+                link: b.link,
+                page: b.page
+            }));
+        } catch (error) {
+            return [];
+        }
     }
 }

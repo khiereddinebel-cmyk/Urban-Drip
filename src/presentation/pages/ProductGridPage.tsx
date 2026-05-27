@@ -11,14 +11,16 @@ interface ProductGridPageProps {
     category?: string;
     bannerImage?: string;
     logoImage?: string;
+    description?: string;
     showHero?: boolean;
     products: Product[];
 }
 
-export default function ProductGridPage({ title, brand, category, bannerImage, logoImage, showHero, products }: ProductGridPageProps) {
+export default function ProductGridPage({ title, brand, category, bannerImage, logoImage, description, showHero, products }: ProductGridPageProps) {
     const [openFilter, setOpenFilter] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState('Featured');
     const [availability, setAvailability] = useState<string[]>([]);
+
 
     // Handle sorting logic
     const displayedProducts = useMemo(() => {
@@ -43,9 +45,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
         setOpenFilter(openFilter === filterName ? null : filterName);
     };
 
-    const sectionTitle = brand 
-        ? brand.toUpperCase() 
-        : (title.toLowerCase().includes('viewed') ? 'Most Viewed Products' : title);
+    const sectionTitle = title || (brand ? brand.toUpperCase() : '');
 
     return (
         <div style={{ paddingBottom: '100px', backgroundColor: 'var(--bg)' }}>
@@ -70,9 +70,15 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
 
             <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 40px' }}>
                 {/* Section Title & Logo */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '40px', marginBottom: '50px' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '24px', 
+                    marginTop: '50px', 
+                    marginBottom: description ? '20px' : '65px' 
+                }}>
                     {logoImage && (
-                        <div style={{ position: 'relative', width: '60px', height: '60px' }}>
+                        <div style={{ position: 'relative', width: '80px', height: '80px' }}>
                             <Image
                                 src={logoImage}
                                 alt={`${title} Logo`}
@@ -84,15 +90,33 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
                     )}
                     <h1 style={{
                         fontFamily: 'var(--font-sans)',
-                        fontSize: '48px',
-                        fontWeight: 800,
+                        fontSize: '38px',
+                        fontWeight: 300,
                         color: 'var(--text)',
                         margin: 0,
-                        letterSpacing: '-1px'
+                        letterSpacing: '5px',
+                        textTransform: 'uppercase'
                     }}>
                         {sectionTitle}
                     </h1>
                 </div>
+
+                {description && (
+                    <p style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '14px',
+                        fontWeight: 300,
+                        color: '#666',
+                        lineHeight: '1.7',
+                        letterSpacing: '1px',
+                        marginBottom: '65px',
+                        maxWidth: '800px',
+                        textTransform: 'none'
+                    }}>
+                        {description}
+                    </p>
+                )}
+
 
                 {/* Filter & Sort Bar */}
                 <div style={{ 

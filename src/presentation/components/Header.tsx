@@ -24,8 +24,6 @@ export default function Header() {
     const [searchTerm, setSearchTerm] = useState('');
     const [brands, setBrands] = useState<NavItem[]>([]);
     const [categories, setCategories] = useState<NavItem[]>([]);
-    const [logoUrl, setLogoUrl] = useState('/logo.png');
-    const [showLogoText, setShowLogoText] = useState(false);
     const pathname = usePathname();
     const { cartCount } = useCart();
 
@@ -33,7 +31,7 @@ export default function Header() {
         const fetchNavData = async () => {
             try {
                 // Fetch Brands
-                const brandsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/brands/`);
+                const brandsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/brands/`, { cache: 'no-store' });
                 if (!brandsRes.ok) throw new Error('Brands fetch failed');
                 const brandsData = await brandsRes.json();
                 const fetchedBrands = (brandsData.results || brandsData).map((b: any) => ({
@@ -43,7 +41,7 @@ export default function Header() {
                 setBrands(fetchedBrands);
 
                 // Fetch Categories
-                const catsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/categories/`);
+                const catsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/categories/`, { cache: 'no-store' });
                 if (!catsRes.ok) throw new Error('Categories fetch failed');
                 const catsData = await catsRes.json();
                 const fetchedCategories = (catsData.results || catsData).map((c: any) => ({
@@ -51,20 +49,8 @@ export default function Header() {
                     path: `/category/${c.slug}`
                 }));
                 setCategories(fetchedCategories);
-
-                // Fetch Site Settings
-                const settingsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/site-settings/`);
-                if (settingsRes.ok) {
-                    const settingsData = await settingsRes.json();
-                    if (settingsData) {
-                        if (settingsData.logo) {
-                            setLogoUrl(settingsData.logo);
-                        }
-                        setShowLogoText(settingsData.show_logo_text ?? false);
-                    }
-                }
             } catch (error) {
-                console.error('Failed to fetch navigation/settings data:', error);
+                console.error('Failed to fetch navigation data:', error);
             }
         };
         fetchNavData();
@@ -154,34 +140,20 @@ export default function Header() {
 
                             {/* Center: Logo */}
                             <div style={{
+                                flex: 1,
                                 display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
                                 justifyContent: 'center',
+                                alignItems: 'center'
                             }}>
-                                <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                                    <div style={{ position: 'relative', width: '72px', height: '72px' }}>
+                                <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                                    <div style={{ position: 'relative', width: '120px', height: '120px' }}>
                                         <Image
-                                            src={logoUrl}
+                                            src="/logo.png"
                                             alt="Urban Drip Logo"
                                             fill
                                             style={{ objectFit: 'contain' }}
                                         />
                                     </div>
-                                    {showLogoText && (
-                                        <span style={{
-                                            fontFamily: 'var(--font-serif)',
-                                            fontSize: '32px',
-                                            fontWeight: 900,
-                                            margin: 0,
-                                            letterSpacing: '2px',
-                                            lineHeight: 1,
-                                            color: 'var(--black)',
-                                            textTransform: 'uppercase'
-                                        }}>
-                                            URBAN DRIP
-                                        </span>
-                                    )}
                                 </Link>
                             </div>
 

@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["python311"]
+
+[phases.install]
+cmds = ["python -m venv /opt/venv && /opt/venv/bin/pip install -r requirements.txt"]
+
+[phases.build]
+cmds = ["/opt/venv/bin/python manage.py collectstatic --no-input"]
+
+[start]
+cmd = "/opt/venv/bin/python manage.py migrate --noinput && /opt/venv/bin/python seed_cms.py && /opt/venv/bin/gunicorn core.wsgi --log-file -"
