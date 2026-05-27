@@ -24,6 +24,8 @@ export default function Header() {
     const [searchTerm, setSearchTerm] = useState('');
     const [brands, setBrands] = useState<NavItem[]>([]);
     const [categories, setCategories] = useState<NavItem[]>([]);
+    const [logoUrl, setLogoUrl] = useState('/logo.png');
+    const [showLogoText, setShowLogoText] = useState(false);
     const pathname = usePathname();
     const { cartCount } = useCart();
 
@@ -49,8 +51,20 @@ export default function Header() {
                     path: `/category/${c.slug}`
                 }));
                 setCategories(fetchedCategories);
+
+                // Fetch Site Settings
+                const settingsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/site-settings/`);
+                if (settingsRes.ok) {
+                    const settingsData = await settingsRes.json();
+                    if (settingsData) {
+                        if (settingsData.logo) {
+                            setLogoUrl(settingsData.logo);
+                        }
+                        setShowLogoText(settingsData.show_logo_text ?? false);
+                    }
+                }
             } catch (error) {
-                console.error('Failed to fetch navigation data:', error);
+                console.error('Failed to fetch navigation/settings data:', error);
             }
         };
         fetchNavData();
@@ -148,24 +162,26 @@ export default function Header() {
                                 <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
                                     <div style={{ position: 'relative', width: '72px', height: '72px' }}>
                                         <Image
-                                            src="/logo.png"
+                                            src={logoUrl}
                                             alt="Urban Drip Logo"
                                             fill
                                             style={{ objectFit: 'contain' }}
                                         />
                                     </div>
-                                    <span style={{
-                                        fontFamily: 'var(--font-serif)',
-                                        fontSize: '32px',
-                                        fontWeight: 900,
-                                        margin: 0,
-                                        letterSpacing: '2px',
-                                        lineHeight: 1,
-                                        color: 'var(--black)',
-                                        textTransform: 'uppercase'
-                                    }}>
-                                        URBAN DRIP
-                                    </span>
+                                    {showLogoText && (
+                                        <span style={{
+                                            fontFamily: 'var(--font-serif)',
+                                            fontSize: '32px',
+                                            fontWeight: 900,
+                                            margin: 0,
+                                            letterSpacing: '2px',
+                                            lineHeight: 1,
+                                            color: 'var(--black)',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            URBAN DRIP
+                                        </span>
+                                    )}
                                 </Link>
                             </div>
 

@@ -18,48 +18,79 @@ export default function Home({ featured = [] }: HomeProps) {
         '/store-interior.png'
     ]);
     const [dynamicBrands, setDynamicBrands] = useState<any[]>([]);
+    const [latestDrops, setLatestDrops] = useState<Product[]>([]);
+    const [mostViewed, setMostViewed] = useState<Product[]>([]);
     
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // Fetch Carousel Images
-                const carouselRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/carousel-images/`);
-                if (!carouselRes.ok) throw new Error('Carousel fetch failed');
-                const carouselData = await carouselRes.json();
-                const remoteImages = (carouselData.results || carouselData).map((img: any) => {
-                    const url = img.image;
-                    if (!url) return '';
-                    if (url.startsWith('http')) return url;
-                    return `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}${url.startsWith('/') ? '' : '/'}${url}`;
-                });
-                if (remoteImages.length > 0) setStoreImages(remoteImages);
+                const carouselRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/carousel/`);
+                if (carouselRes.ok) {
+                    const carouselData = await carouselRes.json();
+                    const remoteImages = (carouselData.results || carouselData).map((img: any) => {
+                        const url = img.image;
+                        if (!url) return '';
+                        if (url.startsWith('http')) return url;
+                        return `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}${url.startsWith('/') ? '' : '/'}${url}`;
+                    });
+                    if (remoteImages.length > 0) setStoreImages(remoteImages);
+                }
 
                 // Fetch Brands
                 const brandsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/brands/`);
-                if (!brandsRes.ok) throw new Error('Brands fetch failed');
-                const brandsData = await brandsRes.json();
-                const mapImage = (url: string | null) => {
-                    if (!url) return null;
-                    if (url.startsWith('http')) return url;
-                    return `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}${url.startsWith('/') ? '' : '/'}${url}`;
-                };
+                if (brandsRes.ok) {
+                    const brandsData = await brandsRes.json();
+                    const mapImage = (url: string | null) => {
+                        if (!url) return null;
+                        if (url.startsWith('http')) return url;
+                        return `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}${url.startsWith('/') ? '' : '/'}${url}`;
+                    };
 
-                const fetchedBrands = (brandsData.results || brandsData).map((b: any) => ({
-                    name: b.name,
-                    image: mapImage(b.cover_image) || mapImage(b.logo) || '/images/placeholder.jpg',
-                    link: `/brand/${b.slug}`
-                }));
-                setDynamicBrands(fetchedBrands);
+                    const fetchedBrands = (brandsData.results || brandsData).map((b: any) => ({
+                        name: b.name,
+                        image: mapImage(b.banner_image) || mapImage(b.logo_image) || '/images/placeholder.jpg',
+                        link: `/brand/${b.slug}`
+                    }));
+                    setDynamicBrands(fetchedBrands);
+                }
+
+                // Fetch Homepage Sections (Latest Drops, Most Viewed)
+                const sectionsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/homepage-sections/`);
+                if (sectionsRes.ok) {
+                    const sectionsData = await sectionsRes.json();
+                    const sectionsList = sectionsData.results || sectionsData;
+                    if (Array.isArray(sectionsList)) {
+                        const latestSec = sectionsList.find(s => s.slug === 'latest_drops');
+                        const viewedSec = sectionsList.find(s => s.slug === 'most_viewed');
+                        
+                        if (latestSec && latestSec.products && latestSec.products.length > 0) {
+                            setLatestDrops(latestSec.products);
+                        } else {
+                            setLatestDrops(featured);
+                        }
+
+                        if (viewedSec && viewedSec.products && viewedSec.products.length > 0) {
+                            setMostViewed(viewedSec.products);
+                        } else {
+                            setMostViewed([...featured].reverse());
+                        }
+                    } else {
+                        setLatestDrops(featured);
+                        setMostViewed([...featured].reverse());
+                    }
+                } else {
+                    setLatestDrops(featured);
+                    setMostViewed([...featured].reverse());
+                }
             } catch (error) {
-                console.error('Failed to fetch home data:', error);
+                console.error('Failed to fetch home/sections data:', error);
+                setLatestDrops(featured);
+                setMostViewed([...featured].reverse());
             }
         };
         fetchData();
-    }, []);
-
-    // Safe fallback to pass products directly
-    const latestDrops = featured;
-    const mostViewed = [...featured].reverse();
+    }, [featured]);
 
     const latestRef = useRef<HTMLDivElement>(null);
     const viewedRef = useRef<HTMLDivElement>(null);
