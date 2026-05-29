@@ -1,6 +1,7 @@
 'use client';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { wilayas } from '../../shared/utils/wilayaData';
+import { communesByWilaya } from '../../shared/utils/communeData';
 
 interface CODFormProps {
     productId: string;
@@ -15,8 +16,6 @@ export default function CODForm({ productId, productName, productPrice, selected
     const [customerPhone, setCustomerPhone] = useState('');
     const [selectedWilayaId, setSelectedWilayaId] = useState<number>(wilayas[15].id); // Default to Alger
     const [commune, setCommune] = useState('');
-    const [apiCommunes, setApiCommunes] = useState<any[]>([]);
-    const [loadingCommunes, setLoadingCommunes] = useState(false);
     const [deliveryType, setDeliveryType] = useState<'home' | 'office'>('home');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSummary, setShowSummary] = useState(true);
@@ -25,25 +24,9 @@ export default function CODForm({ productId, productName, productPrice, selected
         wilayas.find(w => w.id === selectedWilayaId) || wilayas[0]
     , [selectedWilayaId]);
 
-    // Fetch communes from API when wilaya changes
-    useEffect(() => {
-        const fetchCommunes = async () => {
-            setLoadingCommunes(true);
-            try {
-                const wilayaCode = selectedWilayaId.toString().padStart(2, '0');
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/baladiyas/?wilaya_code=${wilayaCode}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setApiCommunes(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch communes:", error);
-            } finally {
-                setLoadingCommunes(false);
-            }
-        };
-        fetchCommunes();
-    }, [selectedWilayaId]);
+    const communes = useMemo(() => 
+        communesByWilaya[selectedWilayaId] || []
+    , [selectedWilayaId]);
 
     const deliveryFee = deliveryType === 'home' ? activeWilaya.homeFee : activeWilaya.officeFee;
     const totalPrice = (productPrice * quantity) + deliveryFee;
@@ -150,14 +133,13 @@ export default function CODForm({ productId, productName, productPrice, selected
                 <select
                     value={commune}
                     onChange={(e) => setCommune(e.target.value)}
-                    disabled={loadingCommunes}
                     style={{ padding: '15px', border: '1.5px solid #eee', borderRadius: '8px', fontSize: '15px', outline: 'none', backgroundColor: '#fcfcfc' }}
                 >
-                    <option value="">{loadingCommunes ? 'Chargement...' : 'Commune / البلدية'}</option>
-                    {apiCommunes.map((c: any) => (
-                        <option key={c.id} value={c.name}>{c.name} - {c.name_ar}</option>
+                    <option value="">Commune / البلدية</option>
+                    {communes.map((c) => (
+                        <option key={c.name} value={c.name}>{c.name} - {c.nameAr}</option>
                     ))}
-                    {!loadingCommunes && apiCommunes.length === 0 && <option value="Autre">Autre / أخرى</option>}
+                    {communes.length === 0 && <option value="Autre">Autre / أخرى</option>}
                 </select>
             </div>
 

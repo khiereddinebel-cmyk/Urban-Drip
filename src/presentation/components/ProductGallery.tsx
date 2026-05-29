@@ -9,8 +9,6 @@ interface ProductGalleryProps {
 
 export default function ProductGallery({ images = [] }: ProductGalleryProps) {
     const [activeImage, setActiveImage] = useState(0);
-    const [isZoomed, setIsZoomed] = useState(false);
-    const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [fsZoomed, setFsZoomed] = useState(false);
     const [fsPan, setFsPan] = useState({ x: 0, y: 0 });
@@ -39,15 +37,6 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
             prevImage();
         }
         touchStart.current = null;
-    };
-
-    // Desktop magnifier move
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!mainImageRef.current) return;
-        const { left, top, width, height } = mainImageRef.current.getBoundingClientRect();
-        const x = ((e.clientX - left) / width) * 100;
-        const y = ((e.clientY - top) / height) * 100;
-        setZoomPos({ x, y });
     };
 
     // Drag-to-pan in fullscreen zoomed mode
@@ -95,7 +84,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     {galleryImages.map((img, idx) => (
                         <button
                             key={idx}
-                            onClick={() => { setActiveImage(idx); setIsZoomed(false); }}
+                            onClick={() => { setActiveImage(idx); }}
                             className={`relative w-[65px] h-[65px] md:w-[85px] md:h-[85px] rounded-lg overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 border-2 ${
                                 activeImage === idx ? 'border-black scale-[0.98]' : 'border-gray-200 hover:border-gray-400'
                             }`}
@@ -115,33 +104,24 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
             {/* Main Image Container */}
             <div
                 ref={mainImageRef}
-                className="relative w-full aspect-square bg-[#f6f6f6] rounded-xl overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last border border-gray-150 group"
-                style={{
-                    cursor: isZoomed ? 'zoom-out' : 'zoom-in',
-                }}
-                onMouseMove={handleMouseMove}
-                onMouseEnter={() => setIsZoomed(true)}
-                onMouseLeave={() => {
-                    setIsZoomed(false);
-                    setZoomPos({ x: 50, y: 50 });
-                }}
+                className="relative w-full aspect-square bg-[#f6f6f6] rounded-xl overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last border border-gray-150 group cursor-pointer"
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onClick={() => {
                     setIsFullscreen(true);
                 }}
             >
-                {/* Navigation Arrows (Desktop overlay: visible on group hover) */}
+                {/* Navigation Arrows (Desktop overlay: hoverable, mobile always visible) */}
                 <button
                     onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                    className="absolute left-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    className="absolute left-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200"
                     aria-label="Previous image"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
                 </button>
                 <button
                     onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                    className="absolute right-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    className="absolute right-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200"
                     aria-label="Next image"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
@@ -161,14 +141,8 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     </svg>
                 </button>
 
-                {/* Active Image with smooth zoom translation */}
-                <div 
-                    className="relative w-full h-full p-4 transition-transform duration-100 ease-out"
-                    style={{
-                        transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
-                        transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
-                    }}
-                >
+                {/* Active Image (No hover zoom) */}
+                <div className="relative w-full h-full p-4">
                     <Image
                         src={galleryImages[activeImage]}
                         alt="Product Image"
@@ -180,7 +154,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                 </div>
             </div>
 
-            {/* Fullscreen Responsive Modal */}
+            {/* Fullscreen Responsive Lightbox Modal */}
             {isFullscreen && (
                 <div className="fixed inset-0 bg-black/95 z-[99999] flex items-center justify-center touch-none">
                     {/* Header Controls */}
