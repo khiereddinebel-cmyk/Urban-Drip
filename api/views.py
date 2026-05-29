@@ -99,6 +99,43 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
 
+    def initialize_request(self, request, *args, **kwargs):
+        self.request_method = request.method
+        return super().initialize_request(request, *args, **kwargs)
+
+    def get_permissions(self):
+        from rest_framework.permissions import AllowAny
+        if self.action == 'create':
+            return [AllowAny()]
+        from rest_framework.permissions import IsAdminUser
+        return [IsAdminUser()]
+
+    def get_authenticators(self):
+        method = getattr(self, 'request_method', None)
+        if method == 'POST':
+            # Bypass session authentication and CSRF checks for public order submission
+            return []
+        from rest_framework.authentication import TokenAuthentication
+        return [TokenAuthentication()]
+
+    def create(self, request, *args, **kwargs):
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Incoming checkout request. Payload: {request.data}")
+        
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            logger.error(f"Checkout validation failed: {serializer.errors}")
+            return Response(serializer.errors, status=400)
+            
+        try:
+            response = super().create(request, *args, **kwargs)
+            logger.info(f"Checkout successful. Order details: {response.data}")
+            return response
+        except Exception as e:
+            logger.exception(f"Checkout exception occurred during order saving: {e}")
+            return Response({"detail": "Internal server error during order creation."}, status=500)
+
 class WilayaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Wilaya.objects.all().order_by('code')
     serializer_class = WilayaSerializer

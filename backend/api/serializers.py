@@ -128,13 +128,50 @@ class CarouselImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    
     class Meta:
         model = OrderItem
-        fields = '__all__'
+        fields = ('id', 'product', 'product_name', 'quantity', 'price', 'size')
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True)
     
     class Meta:
         model = Order
         fields = '__all__'
+
+    def validate(self, attrs):
+        items_data = attrs.get('items', [])
+        if not items_data:
+            raise serializers.ValidationError({"items": "Order must contain at least one item."})
+            
+        for idx, item in enumerate(items_data):
+            product = item.get('product')
+            quantity = item.get('quantity', 1)
+            
+            if not product:
+                raise serializers.ValidationError({"items": f"Invalid product at index {idx}."})
+            if not product.is_active:
+                raise serializers.ValidationError({"items": f"Product '{product.name}' is no longer active."})
+            if quantity <= 0:
+                raise serializers.ValidationError({"items": f"Invalid quantity for '{product.name}'."})
+                
+        return attrs
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')
+        order = Order.objects.create(**validated_data)
+        for item_data in items_data:
+            OrderItem.objects.create(order=order, **item_data)
+            
+        # Trigger notifications safely post-save
+        try:
+            from .services.notifications import send_order_notifications
+            send_order_notifications(order)
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error calling send_order_notifications in OrderSerializer: {e}")
+            
+        return order
