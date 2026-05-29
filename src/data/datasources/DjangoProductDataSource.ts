@@ -56,10 +56,16 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
                     cm: sz.cm || sz.size_cm || ''
                 })),
                 colors: item.colors || [],
-                images: [
-                    ...(item.image ? [this.mapImage(item.image)] : []),
-                    ...(item.images || []).map((img: any) => this.mapImage(img.image))
-                ],
+                images: Array.from(
+                    new Set([
+                        ...(item.image ? [this.mapImage(item.image)] : []),
+                        ...(item.main_image ? [this.mapImage(item.main_image)] : []),
+                        ...(item.images || []).map((img: any) => {
+                            if (typeof img === 'string') return this.mapImage(img);
+                            return this.mapImage(img.image || img);
+                        })
+                    ])
+                ),
                 createdAt: item.created_at,
             }
         };

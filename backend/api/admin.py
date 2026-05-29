@@ -1,6 +1,7 @@
 from django.contrib import admin
+from django import forms
 from django.utils.html import format_html
-from .models import Brand, Category, Product, ProductSize, CarouselImage, Banner, Order, OrderItem, Wilaya, Baladiya
+from .models import Brand, Category, Product, ProductImage, ProductSize, CarouselImage, Banner, Order, OrderItem, Wilaya, Baladiya
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
@@ -113,20 +114,63 @@ class CategoryAdmin(admin.ModelAdmin):
         return "No cover uploaded"
     cover_preview.short_description = "Current Cover Preview"
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class ProductAdminForm(forms.ModelForm):
+    image = forms.ImageField(
+        widget=MultipleFileInput(attrs={'multiple': True}),
+        required=False,
+        label="Image / Gallery Upload",
+        help_text="Upload one or multiple images at the same time. The first image will be set as the main cover image, and the rest will be added to the product gallery."
+    )
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ('image', 'image_preview', 'alt_text', 'display_order')
+    readonly_fields = ('image_preview',)
+
+    def image_preview(self, obj):
+        if obj and obj.image:
+            return format_html('<img src="{}" style="max-height: 80px; width: auto; border-radius: 4px;" />', obj.image.url)
+        return "No Image"
+    image_preview.short_description = "Preview"
+
 class ProductSizeInline(admin.TabularInline):
     model = ProductSize
     extra = 1
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = ('image_preview', 'name', 'brand', 'category', 'price', 'stock', 'stock_indicator', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
     list_editable = ('price', 'stock', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
     list_filter = ('brand', 'category', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')
-    inlines = [ProductSizeInline]
+    inlines = [ProductImageInline, ProductSizeInline]
     readonly_fields = ('created_at',)
     ordering = ('-created_at',)
+
+    def save_model(self, request, obj, form, change):
+        files = request.FILES.getlist('image')
+        if files:
+            obj.image = files[0]
+        super().save_model(request, obj, form, change)
+        
+        # Save subsequent files to gallery
+        if len(files) > 1:
+            for i, file in enumerate(files[1:], start=1):
+                ProductImage.objects.create(
+                    product=obj,
+                    image=file,
+                    display_order=i
+                )
 
     def image_preview(self, obj):
         if obj.image:

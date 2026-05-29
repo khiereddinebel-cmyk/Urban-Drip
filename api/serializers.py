@@ -71,12 +71,32 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     brand_name = serializers.CharField(source='brand.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
-    images = ProductImageSerializer(many=True, read_only=True)
+    main_image = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
     sizes = ProductSizeSerializer(many=True, read_only=True, source='variants')
     
     class Meta:
         model = Product
         fields = '__all__'
+
+    def get_main_image(self, obj):
+        if not obj.image:
+            return None
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
+
+    def get_images(self, obj):
+        request = self.context.get('request')
+        urls = []
+        for img in obj.images.all().order_by('display_order', 'id'):
+            if img.image:
+                url = img.image.url
+                if request:
+                    url = request.build_absolute_uri(url)
+                urls.append(url)
+        return urls
 
 class HeroSliderSerializer(serializers.ModelSerializer):
     class Meta:

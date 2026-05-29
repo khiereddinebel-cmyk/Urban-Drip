@@ -1,10 +1,26 @@
 from django.contrib import admin
+from django import forms
 from django.utils.html import format_html
 from .models import (
     Brand, Category, Product, ProductImage, ProductSize, HeroSlider,
     HomepageBanner, Banner, SiteSettings, HomepageSection,
     CarouselImage, Order, OrderItem
 )
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class ProductAdminForm(forms.ModelForm):
+    image = forms.ImageField(
+        widget=MultipleFileInput(attrs={'multiple': True}),
+        required=False,
+        label="Image / Gallery Upload",
+        help_text="Upload one or multiple images at the same time. The first image will be set as the main cover image, and the rest will be added to the product gallery."
+    )
+
+    class Meta:
+        model = Product
+        fields = '__all__'
 
 # Inline for Product Gallery images
 class ProductImageInline(admin.TabularInline):
@@ -91,6 +107,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = ('name', 'brand', 'category', 'price', 'stock_badge', 'total_sales', 'total_views', 'featured', 'is_active')
     list_editable = ('price', 'featured', 'is_active')
     list_filter = ('brand', 'category', 'featured', 'is_active')
@@ -98,6 +115,22 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline, ProductSizeInline]
     readonly_fields = ('total_sales', 'total_views', 'image_preview')
+
+    def save_model(self, request, obj, form, change):
+        files = request.FILES.getlist('image')
+        if files:
+            obj.image = files[0]
+        super().save_model(request, obj, form, change)
+        
+        # Save subsequent files to gallery
+        if len(files) > 1:
+            for i, file in enumerate(files[1:], start=1):
+                ProductImage.objects.create(
+                    product=obj,
+                    image=file,
+                    display_order=i
+                )
+
     fieldsets = (
         ('General Details', {
             'fields': ('name', 'slug', 'description', 'price', 'is_active')
