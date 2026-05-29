@@ -1,0 +1,295 @@
+{% extends "admin/base_site.html" %}
+{% block extrahead %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    :root {
+        --primary: #27ae60;
+        --secondary: #2980b9;
+        --accent: #f39c12;
+        --dark: #2c3e50;
+        --light: #ecf0f1;
+        --white: #ffffff;
+        --border: #dee2e6;
+    }
+    
+    .dashboard-container {
+        font-family: 'Segoe UI', Roboto, sans-serif;
+        padding: 20px;
+        background: #f4f7f6;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: var(--white);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        text-align: center;
+        transition: transform 0.2s;
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        display: block;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+    
+    .stat-value.revenue { color: var(--primary); }
+    .stat-value.profit { color: var(--secondary); }
+    
+    .main-charts {
+        display: grid;
+        grid-template-columns: 2fr 1.2fr;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .chart-container, .table-container {
+        background: var(--white);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: var(--dark);
+        border-bottom: 2px solid var(--light);
+        padding-bottom: 10px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th {
+        text-align: left;
+        padding: 12px;
+        color: #7f8c8d;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--light);
+    }
+    
+    td {
+        padding: 12px;
+        border-bottom: 1px solid var(--light);
+        font-size: 0.9rem;
+    }
+
+    .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    .badge-success { background: rgba(39, 174, 96, 0.1); color: var(--primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="margin: 0; font-size: 1.75rem; color: #2c3e50;">Business Intelligence Report</h1>
+        <div style="color: #7f8c8d; font-size: 0.9rem;">Last 30 Days trend</div>
+    </div>
+
+    <!-- 1. Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total Revenue</span>
+            <p class="stat-value revenue">{{ sales_overview.stats.total_revenue|default:0|floatformat:0 }} <small>DA</small></p>
+            <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 5px;">All recorded orders</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Total Profit</span>
+            <p class="stat-value profit">{{ sales_overview.stats.total_profit|default:0|floatformat:0 }} <small>DA</small></p>
+            <div style="font-size: 0.8rem; color: #27ae60; margin-top: 5px;">Average margin check</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Today's Revenue</span>
+            <p class="stat-value">{{ sales_overview.today.revenue|default:0|floatformat:0 }} <small>DA</small></p>
+            <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 5px;">{{ sales_overview.today.orders|default:0 }} orders today</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Total Orders</span>
+            <p class="stat-value">{{ sales_overview.stats.total_orders|default:0 }}</p>
+            <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 5px;">Converted customers</div>
+        </div>
+    </div>
+
+    <!-- 2. Charts Section -->
+    <div class="main-charts">
+        <div class="chart-container">
+            <h2>Revenue vs Profit Trend</h2>
+            <canvas id="salesTrendChart" height="120"></canvas>
+        </div>
+        
+        <div class="table-container">
+            <h2>Top Product Performers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th style="text-align: center;">Sold</th>
+                        <th style="text-align: right;">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in sales_overview.top_products %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: bold;">{{ p.product__name }}</div>
+                            <div style="font-size: 0.75rem; color: #999;">{{ p.product__brand__name }}</div>
+                        </td>
+                        <td style="text-align: center;">{{ p.sold_quantity }}</td>
+                        <td style="text-align: right; font-weight: 500;">{{ p.revenue|floatformat:0 }} DA</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" style="text-align: center; padding: 40px; color: #999;">No orders yet</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 3. Lower Details -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div class="table-container">
+            <h2>Monthly Sales Performance</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th style="text-align: center;">Orders</th>
+                        <th style="text-align: right;">Revenue</th>
+                        <th style="text-align: right;">Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in monthly_reports %}
+                    <tr>
+                        <td style="font-weight: 500;">{{ m.month|date:"F Y" }}</td>
+                        <td style="text-align: center;">{{ m.orders_count }}</td>
+                        <td style="text-align: right;">{{ m.revenue|floatformat:0 }} DA</td>
+                        <td style="text-align: right; color: var(--primary); font-weight: bold;">{{ m.profit|floatformat:0 }} DA</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="table-container">
+            <h2>Customer Value Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th style="text-align: center;">Purchases</th>
+                        <th style="text-align: right;">Total Spent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in customer_stats %}
+                    <tr>
+                        <td>{{ c.customer_name }}</td>
+                        <td style="text-align: center;">{{ c.orders_count }}</td>
+                        <td style="text-align: right; font-weight: bold; color: var(--secondary);">{{ c.total_spent|floatformat:0 }} DA</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('salesTrendChart').getContext('2d');
+    
+    // Process Django context data for Chart.js
+    const labels = [
+        {% for d in daily_reports %}"{{ d.date|date:'M d' }}",{% endfor %}
+    ];
+    
+    const revenueData = [
+        {% for d in daily_reports %}{{ d.revenue|default:0 }},{% endfor %}
+    ];
+    
+    const profitData = [
+        {% for d in daily_reports %}{{ d.profit|default:0 }},{% endfor %}
+    ];
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Revenue',
+                data: revenueData,
+                borderColor: '#27ae60',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }, {
+                label: 'Profit',
+                data: profitData,
+                borderColor: '#2980b9',
+                backgroundColor: 'rgba(41, 128, 185, 0.05)',
+                borderWidth: 3,
+                borderDash: [5, 5],
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 6 } }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#ecf0f1' },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString() + ' DA';
+                        }
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

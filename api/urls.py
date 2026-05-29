@@ -4,7 +4,7 @@ from .views import (
     BrandViewSet, CategoryViewSet, ProductViewSet, ProductImageViewSet,
     HeroSliderViewSet, HomepageBannerViewSet, BannerViewSet,
     SiteSettingsViewSet, HomepageSectionViewSet, CarouselImageViewSet,
-    OrderViewSet
+    OrderViewSet, WilayaViewSet, BaladiyaViewSet
 )
 
 router = DefaultRouter()
@@ -19,6 +19,8 @@ router.register(r'site-settings', SiteSettingsViewSet, basename='site-settings')
 router.register(r'homepage-sections', HomepageSectionViewSet)
 router.register(r'carousel', CarouselImageViewSet)
 router.register(r'orders', OrderViewSet)
+router.register(r'wilayas', WilayaViewSet)
+router.register(r'baladiyas', BaladiyaViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from .models import (
     Brand, Category, Product, ProductImage, HeroSlider,
     HomepageBanner, Banner, SiteSettings, HomepageSection,
-    CarouselImage, Order
+    CarouselImage, Order, Wilaya, Baladiya
 )
 from .serializers import (
     BrandSerializer, CategorySerializer, ProductSerializer, ProductImageSerializer,
     HeroSliderSerializer, HomepageBannerSerializer, BannerSerializer,
     SiteSettingsSerializer, HomepageSectionSerializer, CarouselImageSerializer,
-    OrderSerializer
+    OrderSerializer, WilayaSerializer, BaladiyaSerializer
 )
 
 class BrandViewSet(viewsets.ModelViewSet):
@@ -98,3 +98,20 @@ class CarouselImageViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
+
+class WilayaViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Wilaya.objects.all().order_by('code')
+    serializer_class = WilayaSerializer
+    permission_classes = []
+
+class BaladiyaViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Baladiya.objects.all().order_by('name')
+    serializer_class = BaladiyaSerializer
+    permission_classes = []
+
+    def get_queryset(self):
+        queryset = Baladiya.objects.all().order_by('name')
+        wilaya_code = self.request.query_params.get('wilaya_code')
+        if wilaya_code:
+            queryset = queryset.filter(wilaya__code=wilaya_code)
+        return queryset

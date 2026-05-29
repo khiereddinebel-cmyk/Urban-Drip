@@ -1,14 +1,29 @@
 from rest_framework import serializers
 from .models import (
-    Brand, Category, Product, ProductImage, HeroSlider,
+    Brand, Category, Product, ProductImage, ProductSize, HeroSlider,
     HomepageBanner, Banner, SiteSettings, HomepageSection,
-    CarouselImage, Order, OrderItem
+    CarouselImage, Order, OrderItem, Wilaya, Baladiya
 )
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ('id', 'image', 'alt_text', 'display_order')
+
+class ProductSizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSize
+        fields = ('id', 'size', 'cm')
+
+class WilayaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wilaya
+        fields = '__all__'
+
+class BaladiyaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Baladiya
+        fields = '__all__'
 
 class BrandSerializer(serializers.ModelSerializer):
     logo = serializers.SerializerMethodField()
@@ -57,6 +72,7 @@ class ProductSerializer(serializers.ModelSerializer):
     brand_name = serializers.CharField(source='brand.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    sizes = ProductSizeSerializer(many=True, read_only=True, source='variants')
     
     class Meta:
         model = Product
@@ -95,13 +111,22 @@ class CarouselImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    
     class Meta:
         model = OrderItem
-        fields = '__all__'
+        fields = ('id', 'product', 'product_name', 'quantity', 'price', 'size')
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True)
     
     class Meta:
         model = Order
         fields = '__all__'
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')
+        order = Order.objects.create(**validated_data)
+        for item_data in items_data:
+            OrderItem.objects.create(order=order, **item_data)
+        return order

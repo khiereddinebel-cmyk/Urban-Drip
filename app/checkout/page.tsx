@@ -33,7 +33,7 @@ export default function CheckoutPage() {
             setLoadingCommunes(true);
             try {
                 const wilayaCode = selectedWilayaId.toString().padStart(2, '0');
-                const response = await fetch(`http://127.0.0.1:8000/api/baladiyas/?wilaya_code=${wilayaCode}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/baladiyas/?wilaya_code=${wilayaCode}`);
                 if (response.ok) {
                     const data = await response.json();
                     setApiCommunes(data);
@@ -72,6 +72,11 @@ export default function CheckoutPage() {
                 customer_phone: customerPhone,
                 customer_email: 'customer@urbandrip.com',
                 shipping_address: `${activeWilaya.name} (${activeWilaya.nameAr}), ${commune} - ${deliveryType === 'home' ? 'Domicile' : 'Bureau/StopDesk'}`,
+                wilaya: activeWilaya.name,
+                baladiya: commune,
+                delivery_fee: deliveryFee,
+                delivery_type: deliveryType,
+                total_price: finalTotal,
                 payment_status: 'Unpaid',
                 items: cart.map(item => ({
                     product: parseInt(item.id),
@@ -81,7 +86,7 @@ export default function CheckoutPage() {
                 }))
             };
 
-            const response = await fetch('http://127.0.0.1:8000/api/orders/', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/orders/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData),
@@ -162,8 +167,13 @@ export default function CheckoutPage() {
                                 <select 
                                     value={selectedWilayaId}
                                     onChange={(e) => {
-                                        setSelectedWilayaId(Number(e.target.value));
+                                        const nextId = Number(e.target.value);
+                                        setSelectedWilayaId(nextId);
                                         setCommune('');
+                                        const nextWilaya = wilayas.find(w => w.id === nextId);
+                                        if (nextWilaya && nextWilaya.officeFee === 0) {
+                                            setDeliveryType('home');
+                                        }
                                     }}
                                     className="w-full bg-gray-50 border-2 border-transparent focus:border-black focus:outline-none px-6 py-4 font-bold transition-all cursor-pointer"
                                 >
@@ -181,7 +191,7 @@ export default function CheckoutPage() {
                                 >
                                     <option value="">{loadingCommunes ? 'Chargement...' : 'Sélectionner / إختر'}</option>
                                     {apiCommunes.map((c: any) => (
-                                        <option key={c.id} value={c.name}>{c.name}</option>
+                                        <option key={c.id} value={c.name}>{c.name} - {c.name_ar}</option>
                                     ))}
                                     {!loadingCommunes && apiCommunes.length === 0 && <option value="Autre">Autre / أخرى</option>}
                                 </select>
@@ -201,13 +211,25 @@ export default function CheckoutPage() {
                                 <span className="mt-4 font-black text-lg text-green-600">{activeWilaya.homeFee.toLocaleString()} DA</span>
                             </label>
 
-                            <label className={`flex flex-col p-6 cursor-pointer border-2 transition-all rounded-xl ${deliveryType === 'office' ? 'border-green-500 bg-green-50' : 'border-gray-100 bg-gray-50'}`}>
+                            <label className={`flex flex-col p-6 border-2 transition-all rounded-xl ${
+                                activeWilaya.officeFee === 0 
+                                    ? 'opacity-40 cursor-not-allowed border-gray-100 bg-gray-100' 
+                                    : (deliveryType === 'office' ? 'border-green-500 bg-green-50 cursor-pointer' : 'border-gray-100 bg-gray-50 cursor-pointer')
+                            }`}>
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="font-black uppercase tracking-widest text-sm">Bureau / المكتب</span>
-                                    <input type="radio" checked={deliveryType === 'office'} onChange={() => setDeliveryType('office')} className="accent-green-500" />
+                                    <input 
+                                        type="radio" 
+                                        disabled={activeWilaya.officeFee === 0}
+                                        checked={deliveryType === 'office' && activeWilaya.officeFee > 0} 
+                                        onChange={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
+                                        className="accent-green-500" 
+                                    />
                                 </div>
                                 <span className="text-xs font-bold text-gray-500 uppercase">توصيل شركة التوصيل</span>
-                                <span className="mt-4 font-black text-lg text-green-600">{activeWilaya.officeFee.toLocaleString()} DA</span>
+                                <span className="mt-4 font-black text-lg text-green-600">
+                                    {activeWilaya.officeFee === 0 ? 'Non disponible / غير متوفر' : `${activeWilaya.officeFee.toLocaleString()} DA`}
+                                </span>
                             </label>
                         </div>
                     </section>
