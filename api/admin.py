@@ -10,8 +10,19 @@ from .models import (
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
+class MultipleImageField(forms.ImageField):
+    def clean(self, data, initial=None):
+        if isinstance(data, (list, tuple)):
+            if not data:
+                return super().clean(None, initial)
+            # Validate each image file individually to make sure all are valid images
+            cleaned_data = [super(MultipleImageField, self).clean(d, initial) for d in data]
+            # Return the first one (for the model's single image field)
+            return cleaned_data[0]
+        return super().clean(data, initial)
+
 class ProductAdminForm(forms.ModelForm):
-    image = forms.ImageField(
+    image = MultipleImageField(
         widget=MultipleFileInput(attrs={'multiple': True}),
         required=False,
         label="Image / Gallery Upload",
