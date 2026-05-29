@@ -10,7 +10,7 @@ interface ProductGalleryProps {
 export default function ProductGallery({ images = [] }: ProductGalleryProps) {
     const [activeImage, setActiveImage] = useState(0);
     const [isZoomed, setIsZoomed] = useState(false);
-    const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+    const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [fsZoomed, setFsZoomed] = useState(false);
     const [fsPan, setFsPan] = useState({ x: 0, y: 0 });
@@ -43,10 +43,10 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
 
     // Desktop magnifier move
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isZoomed || !mainImageRef.current) return;
+        if (!mainImageRef.current) return;
         const { left, top, width, height } = mainImageRef.current.getBoundingClientRect();
-        const x = ((e.pageX - left - window.scrollX) / width) * 100;
-        const y = ((e.pageY - top - window.scrollY) / height) * 100;
+        const x = ((e.clientX - left) / width) * 100;
+        const y = ((e.clientY - top) / height) * 100;
         setZoomPos({ x, y });
     };
 
@@ -82,104 +82,78 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
     }, []);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+        <div className="flex flex-col md:flex-row gap-5 w-full">
+            {/* Thumbnails list */}
+            {galleryImages.length > 1 && (
+                <div 
+                    className="flex flex-row md:flex-col gap-3 w-full md:w-[85px] overflow-x-auto md:overflow-y-auto pb-2 md:pb-0 order-last md:order-first max-h-[500px] shrink-0"
+                    style={{
+                        scrollbarWidth: 'thin',
+                        msOverflowStyle: 'none',
+                    }}
+                >
+                    {galleryImages.map((img, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => { setActiveImage(idx); setIsZoomed(false); }}
+                            className={`relative w-[65px] h-[65px] md:w-[85px] md:h-[85px] rounded-lg overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 border-2 ${
+                                activeImage === idx ? 'border-black scale-[0.98]' : 'border-gray-200 hover:border-gray-400'
+                            }`}
+                        >
+                            <Image 
+                                src={img} 
+                                alt={`Thumbnail ${idx + 1}`} 
+                                fill 
+                                className="object-cover p-1" 
+                                unoptimized
+                            />
+                        </button>
+                    ))}
+                </div>
+            )}
+
             {/* Main Image Container */}
             <div
                 ref={mainImageRef}
+                className="relative w-full aspect-square bg-[#f6f6f6] rounded-xl overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last border border-gray-150 group"
                 style={{
-                    position: 'relative',
-                    width: '100%',
-                    aspectRatio: '1 / 1',
-                    backgroundColor: '#f6f6f6',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
                     cursor: isZoomed ? 'zoom-out' : 'zoom-in',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    touchAction: 'pan-y'
                 }}
                 onMouseMove={handleMouseMove}
-                onMouseLeave={() => setIsZoomed(false)}
+                onMouseEnter={() => setIsZoomed(true)}
+                onMouseLeave={() => {
+                    setIsZoomed(false);
+                    setZoomPos({ x: 50, y: 50 });
+                }}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onClick={() => {
-                    // Check if mobile (width < 768)
-                    if (window.innerWidth < 768) {
-                        setIsFullscreen(true);
-                    } else {
-                        setIsZoomed(!isZoomed);
-                    }
+                    setIsFullscreen(true);
                 }}
             >
-                {/* Navigation Arrows (Desktop overlay / Mobile hidden) */}
+                {/* Navigation Arrows (Desktop overlay: visible on group hover) */}
                 <button
                     onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                    style={{
-                        position: 'absolute',
-                        left: '15px',
-                        zIndex: 10,
-                        background: 'rgba(255,255,255,0.85)',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '40px',
-                        height: '40px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
-                        transition: 'opacity 0.2s'
-                    }}
-                    className="hover:opacity-80"
+                    className="absolute left-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    aria-label="Previous image"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
                 </button>
                 <button
                     onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                    style={{
-                        position: 'absolute',
-                        right: '15px',
-                        zIndex: 10,
-                        background: 'rgba(255,255,255,0.85)',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '40px',
-                        height: '40px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
-                        transition: 'opacity 0.2s'
-                    }}
-                    className="hover:opacity-80"
+                    className="absolute right-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    aria-label="Next image"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
                 </button>
 
-                {/* Expand / Fullscreen Button (Bottom-Left) */}
+                {/* Expand / Fullscreen Button (Bottom-Right) */}
                 <button
                     onClick={(e) => { e.stopPropagation(); setIsFullscreen(true); }}
-                    style={{
-                        position: 'absolute',
-                        left: '20px',
-                        bottom: '20px',
-                        zIndex: 10,
-                        background: 'rgba(255,255,255,0.9)',
-                        border: 'none',
-                        borderRadius: '8px',
-                        width: '40px',
-                        height: '40px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
+                    className="absolute right-4 bottom-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-lg w-10 h-10 cursor-pointer flex items-center justify-center shadow-md transition-colors duration-200"
                     aria-label="Fullscreen zoom"
                 >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 3 21 3 21 9"></polyline>
                         <polyline points="9 21 3 21 3 15"></polyline>
                         <line x1="21" y1="3" x2="14" y2="10"></line>
@@ -187,79 +161,38 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     </svg>
                 </button>
 
-                <Image
-                    src={galleryImages[activeImage]}
-                    alt="Product Image"
-                    fill
-                    style={{ objectFit: 'contain', padding: '15px' }}
-                    priority
-                />
-
-                {/* Desktop Magnifier Zoom Overlay */}
-                {isZoomed && (
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        backgroundImage: `url(${galleryImages[activeImage]})`,
-                        backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`,
-                        backgroundSize: '220%',
-                        backgroundRepeat: 'no-repeat',
-                        pointerEvents: 'none',
-                        zIndex: 20
-                    }} />
-                )}
-            </div>
-
-            {/* Thumbnails list */}
-            {galleryImages.length > 1 && (
-                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '8px' }} className="custom-scrollbar">
-                    {galleryImages.map((img, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => { setActiveImage(idx); setIsZoomed(false); }}
-                            style={{
-                                position: 'relative',
-                                minWidth: '70px',
-                                height: '70px',
-                                borderRadius: '8px',
-                                border: activeImage === idx ? '2.5px solid #222' : '1px solid #ddd',
-                                overflow: 'hidden',
-                                flexShrink: 0,
-                                padding: 0,
-                                cursor: 'pointer',
-                                transition: 'all 0.15s'
-                            }}
-                        >
-                            <Image src={img} alt="Thumbnail Image" fill style={{ objectFit: 'cover' }} />
-                        </button>
-                    ))}
+                {/* Active Image with smooth zoom translation */}
+                <div 
+                    className="relative w-full h-full p-4 transition-transform duration-100 ease-out"
+                    style={{
+                        transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
+                        transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
+                    }}
+                >
+                    <Image
+                        src={galleryImages[activeImage]}
+                        alt="Product Image"
+                        fill
+                        className="object-contain p-2"
+                        priority
+                        unoptimized
+                    />
                 </div>
-            )}
+            </div>
 
             {/* Fullscreen Responsive Modal */}
             {isFullscreen && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.95)',
-                    zIndex: 99999,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    touchAction: 'none'
-                }}>
+                <div className="fixed inset-0 bg-black/95 z-[99999] flex items-center justify-center touch-none">
                     {/* Header Controls */}
-                    <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 100000, display: 'flex', gap: '20px' }}>
-                        {/* Zoom Indicator/Toggle */}
+                    <div className="absolute top-5 right-5 z-[100000] flex gap-5">
+                        {/* Zoom Toggle */}
                         <button 
                             onClick={() => {
                                 setFsZoomed(!fsZoomed);
                                 setFsPan({ x: 0, y: 0 });
                             }}
-                            style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
+                            className="bg-transparent border-none text-white cursor-pointer hover:opacity-80 transition-opacity"
+                            aria-label="Toggle zoom"
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="11" cy="11" r="8"></circle>
@@ -274,7 +207,8 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                                 setIsFullscreen(false);
                                 setFsZoomed(false);
                             }}
-                            style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
+                            className="bg-transparent border-none text-white cursor-pointer hover:opacity-80 transition-opacity"
+                            aria-label="Close details"
                         >
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -286,7 +220,8 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     {/* Left arrow */}
                     <button
                         onClick={prevImage}
-                        style={{ position: 'absolute', left: '20px', zIndex: 100000, color: 'white', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '50px', height: '50px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        className="absolute left-5 z-[100000] text-white bg-white/10 hover:bg-white/20 border-none rounded-full w-12 h-12 cursor-pointer flex items-center justify-center transition-colors"
+                        aria-label="Previous"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M15 18l-6-6 6-6" /></svg>
                     </button>
@@ -294,21 +229,16 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     {/* Right arrow */}
                     <button
                         onClick={nextImage}
-                        style={{ position: 'absolute', right: '20px', zIndex: 100000, color: 'white', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '50px', height: '50px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        className="absolute right-5 z-[100000] text-white bg-white/10 hover:bg-white/20 border-none rounded-full w-12 h-12 cursor-pointer flex items-center justify-center transition-colors"
+                        aria-label="Next"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
                     </button>
 
                     {/* Image viewport */}
                     <div 
+                        className="relative w-[90%] h-[90%] flex items-center justify-center overflow-hidden"
                         style={{ 
-                            position: 'relative', 
-                            width: '90%', 
-                            height: '90%', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            overflow: 'hidden',
                             cursor: fsZoomed ? 'grab' : 'zoom-in'
                         }}
                         onMouseDown={handleFsMouseDown}
@@ -324,26 +254,17 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                             }
                         }}
                     >
-                        <div style={{
-                            position: 'relative',
-                            width: '100%',
-                            height: '100%',
-                            transform: `translate(${fsPan.x}px, ${fsPan.y}px) scale(${fsZoomed ? 2.5 : 1})`,
-                            transition: isDragging.current ? 'none' : 'transform 0.25s ease-out',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
+                        <div 
+                            className="relative w-full h-full flex items-center justify-center"
+                            style={{
+                                transform: `translate(${fsPan.x}px, ${fsPan.y}px) scale(${fsZoomed ? 2.5 : 1})`,
+                                transition: isDragging.current ? 'none' : 'transform 0.25s ease-out',
+                            }}
+                        >
                             <img
                                 src={galleryImages[activeImage]}
                                 alt="Zoomed Product View"
-                                style={{
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
-                                    objectFit: 'contain',
-                                    userSelect: 'none',
-                                    pointerEvents: 'none'
-                                }}
+                                className="max-w-full max-h-full object-contain select-none pointer-events-none"
                             />
                         </div>
                     </div>

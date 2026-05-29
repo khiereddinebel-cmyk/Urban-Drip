@@ -24,10 +24,29 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
 
     private mapImage(url: string | null): string {
         if (!url) return '';
-        if (url.startsWith('http')) return url;
+        
+        let path = url;
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            try {
+                const parsed = new URL(url);
+                if (
+                    parsed.hostname === 'localhost' || 
+                    parsed.hostname === '127.0.0.1' || 
+                    parsed.hostname === '0.0.0.0' || 
+                    parsed.pathname.startsWith('/media/') ||
+                    parsed.hostname.includes('railway')
+                ) {
+                    path = parsed.pathname;
+                } else {
+                    return url; // Keep external hosts (e.g., Unsplash, Firebase)
+                }
+            } catch (e) {
+                // fallback
+            }
+        }
         
         // Handle paths that might be missing the leading slash or /media/
-        let cleanUrl = url.startsWith('/') ? url : `/${url}`;
+        let cleanUrl = path.startsWith('/') ? path : `/${path}`;
         
         // If it's a media file but doesn't have /media/ prefix, add it
         // This is common when Django returns paths relative to MEDIA_ROOT
