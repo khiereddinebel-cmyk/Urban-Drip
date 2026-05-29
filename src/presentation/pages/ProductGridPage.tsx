@@ -50,7 +50,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
     return (
         <div style={{ paddingBottom: '100px', backgroundColor: 'var(--bg)' }}>
             {showHero && bannerImage && (
-                <div style={{
+                <div className="grid-hero-banner" style={{
                     position: 'relative',
                     width: '100%',
                     height: '600px',
@@ -68,9 +68,9 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
                 </div>
             )}
 
-            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 40px' }}>
+            <div className="grid-page-container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 40px' }}>
                 {/* Section Title & Logo */}
-                <div style={{ 
+                <div className="grid-title-wrapper" style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: '24px', 
@@ -88,7 +88,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
                             />
                         </div>
                     )}
-                    <h1 style={{
+                    <h1 className="grid-title" style={{
                         fontFamily: 'var(--font-sans)',
                         fontSize: '38px',
                         fontWeight: 300,
@@ -119,7 +119,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
 
 
                 {/* Filter & Sort Bar */}
-                <div style={{ 
+                <div className="filter-sort-bar" style={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
@@ -131,7 +131,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
                     position: 'relative',
                     zIndex: 50
                 }}>
-                    <div style={{ display: 'flex', gap: '25px', alignItems: 'center' }}>
+                    <div className="filter-group" style={{ display: 'flex', gap: '25px', alignItems: 'center' }}>
                         <span style={{ fontWeight: 700 }}>Filter:</span>
                         
                         {/* Availability Dropdown */}
@@ -197,7 +197,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
+                    <div className="sort-group" style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
                         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                             <span style={{ fontWeight: 700 }}>Sort by:</span>
                             <div style={{ position: 'relative' }}>
@@ -236,7 +236,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
 
                 {displayedProducts.length > 0 ? (
                     <>
-                        <div style={{
+                        <div className="product-grid" style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                             gap: '100px 50px',

@@ -66,6 +66,11 @@ export default function CODForm({ productId, productName, productPrice, selected
                 customer_phone: customerPhone,
                 customer_email: 'customer@urbandrip.com',
                 shipping_address: `${activeWilaya.name} (${activeWilaya.nameAr}), ${commune} - ${deliveryType === 'home' ? 'Domicile' : 'Bureau/StopDesk'}`,
+                wilaya: activeWilaya.name,
+                baladiya: commune,
+                delivery_fee: deliveryFee,
+                delivery_type: deliveryType,
+                total_price: totalPrice,
                 payment_status: 'Unpaid',
                 items: [
                     {
@@ -110,7 +115,7 @@ export default function CODForm({ productId, productName, productPrice, selected
             boxShadow: '0 10px 40px rgba(39, 174, 96, 0.08)'
         }}>
             {/* Inputs Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
+            <div className="cod-form-inputs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
                 <input
                     type="text"
                     placeholder="Nom Complet / الإسم الكامل"
@@ -128,8 +133,13 @@ export default function CODForm({ productId, productName, productPrice, selected
                 <select
                     value={selectedWilayaId}
                     onChange={(e) => {
-                        setSelectedWilayaId(Number(e.target.value));
+                        const nextId = Number(e.target.value);
+                        setSelectedWilayaId(nextId);
                         setCommune(''); // Reset commune when wilaya changes
+                        const nextWilaya = wilayas.find(w => w.id === nextId);
+                        if (nextWilaya && nextWilaya.officeFee === 0) {
+                            setDeliveryType('home');
+                        }
                     }}
                     style={{ padding: '15px', border: '1.5px solid #eee', borderRadius: '8px', fontSize: '15px', outline: 'none', backgroundColor: '#fcfcfc' }}
                 >
@@ -145,7 +155,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                 >
                     <option value="">{loadingCommunes ? 'Chargement...' : 'Commune / البلدية'}</option>
                     {apiCommunes.map((c: any) => (
-                        <option key={c.id} value={c.name}>{c.name}</option>
+                        <option key={c.id} value={c.name}>{c.name} - {c.name_ar}</option>
                     ))}
                     {!loadingCommunes && apiCommunes.length === 0 && <option value="Autre">Autre / أخرى</option>}
                 </select>
@@ -194,9 +204,23 @@ export default function CODForm({ productId, productName, productPrice, selected
                                     <input type="radio" checked={deliveryType === 'home'} onChange={() => setDeliveryType('home')} style={{ accentColor: '#27ae60' }} />
                                     التوصيل للمنزل (Home)
                                 </label>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: deliveryType === 'office' ? 700 : 400 }}>
-                                    <input type="radio" checked={deliveryType === 'office'} onChange={() => setDeliveryType('office')} style={{ accentColor: '#27ae60' }} />
-                                    توصيل للمكتب (Office)
+                                <label style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '8px', 
+                                    fontSize: '13px', 
+                                    cursor: activeWilaya.officeFee === 0 ? 'not-allowed' : 'pointer', 
+                                    fontWeight: deliveryType === 'office' ? 700 : 400,
+                                    opacity: activeWilaya.officeFee === 0 ? 0.4 : 1
+                                }}>
+                                    <input 
+                                        type="radio" 
+                                        disabled={activeWilaya.officeFee === 0}
+                                        checked={deliveryType === 'office' && activeWilaya.officeFee > 0} 
+                                        onChange={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
+                                        style={{ accentColor: '#27ae60' }} 
+                                    />
+                                    توصيل للمكتب (Office) {activeWilaya.officeFee === 0 && '(Non disponible)'}
                                 </label>
                             </div>
                         </div>

@@ -48,7 +48,7 @@ export const wilayas: Wilaya[] = [
   { id: 39, name: "El Oued", nameAr: "الوادي", homeFee: 950, officeFee: 600 },
   { id: 40, name: "Khenchela", nameAr: "خنشلة", homeFee: 800, officeFee: 450 },
   { id: 41, name: "Souk Ahras", nameAr: "سوق أهراس", homeFee: 800, officeFee: 450 },
-  { id: 42, name: "Tipaza", nameAr: "تيبازة", homeFee: 400, officeFee: 300 }, // Based on Alger proximity or user hint
+  { id: 42, name: "Tipaza", nameAr: "تيبازة", homeFee: 500, officeFee: 350 }, // Based on Alger proximity or user hint
   { id: 43, name: "Mila", nameAr: "ميلة", homeFee: 800, officeFee: 450 },
   { id: 44, name: "Ain Defla", nameAr: "عين الدفلى", homeFee: 750, officeFee: 450 },
   { id: 45, name: "Naama", nameAr: "النعامة", homeFee: 1100, officeFee: 600 },
@@ -60,9 +60,9 @@ export const wilayas: Wilaya[] = [
   { id: 51, name: "Oueled Djellal", nameAr: "أولاد جلال", homeFee: 950, officeFee: 600 },
   { id: 52, name: "Beni Abbes", nameAr: "بني عباس", homeFee: 1200, officeFee: 900 },
   { id: 53, name: "In Salah", nameAr: "عين صالح", homeFee: 1600, officeFee: 1120 },
-  { id: 54, name: "In Guezzam", nameAr: "عين قزام", homeFee: 1600, officeFee: 1120 },
+  { id: 54, name: "In Guezzam", nameAr: "عين قزام", homeFee: 1600, officeFee: 0 },
   { id: 55, name: "Touggourt", nameAr: "توقرت", homeFee: 950, officeFee: 600 },
   { id: 56, name: "Djanet", nameAr: "جانت", homeFee: 1600, officeFee: 1120 },
-  { id: 57, name: "El Meghiaer", nameAr: "المغير", homeFee: 950, officeFee: 600 },
+  { id: 57, name: "El Meghiaer", nameAr: "المغير", homeFee: 950, officeFee: 0 },
   { id: 58, name: "El Menia", nameAr: "المنيعة", homeFee: 1000, officeFee: 670 }
 ];

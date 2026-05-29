@@ -26,9 +26,17 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
         if (!url) return '';
         if (url.startsWith('http')) return url;
         
-        // Ensure path starts with /
-        const cleanPath = url.startsWith('/') ? url : `/${url}`;
-        return `${API_BASE_URL}${cleanPath}`;
+        // Handle paths that might be missing the leading slash or /media/
+        let cleanUrl = url.startsWith('/') ? url : `/${url}`;
+        
+        // If it's a media file but doesn't have /media/ prefix, add it
+        // This is common when Django returns paths relative to MEDIA_ROOT
+        if (!cleanUrl.startsWith('/media/')) {
+            cleanUrl = `/media${cleanUrl}`;
+        }
+        
+        const base = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+        return `${base}${cleanUrl}`;
     }
 
     private mapDjangoToModel(item: any): { id: string; data: ProductModel } {
@@ -43,12 +51,15 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
                 isExclusive: item.is_active, // mapping is_active to exclusive for now if needed, or just false
                 viewCount: 0,
                 sizes: (item.sizes || []).map((sz: any) => ({
-                    size: sz.size_eu,
-                    eu: sz.size_eu,
-                    cm: sz.size_cm
+                    size: sz.size || sz.size_eu || '',
+                    eu: sz.eu || sz.size_eu || '',
+                    cm: sz.cm || sz.size_cm || ''
                 })),
-                colors: [], // Colors removed in simplified model
-                images: item.image ? [this.mapImage(item.image)] : [],
+                colors: item.colors || [],
+                images: [
+                    ...(item.image ? [this.mapImage(item.image)] : []),
+                    ...(item.images || []).map((img: any) => this.mapImage(img.image))
+                ],
                 createdAt: item.created_at,
             }
         };

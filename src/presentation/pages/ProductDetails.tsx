@@ -43,7 +43,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                 <Link href="/" style={{ color: '#888' }}>Home</Link> / <Link href={`/category/${(product.category || '').toLowerCase()}`} style={{ color: '#888' }}>{product.category}</Link> / {product.name}
             </div>
 
-            <div style={{
+            <div className="product-details-container" style={{
                 display: 'grid',
                 gridTemplateColumns: '1.2fr 1fr',
                 gap: '80px',
@@ -61,7 +61,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                         <h2 style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text)', opacity: 0.6, marginBottom: '10px' }}>
                             {product.brand}
                         </h2>
-                        <h1 style={{ fontSize: '32px', fontWeight: 400, fontFamily: 'var(--font-sans)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px', color: '#222' }}>
+                        <h1 className="product-details-title" style={{ fontSize: '32px', fontWeight: 400, fontFamily: 'var(--font-sans)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px', color: '#222' }}>
                             {product.name}
                         </h1>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '20px', fontWeight: 500, color: '#333' }}>
@@ -164,7 +164,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
 
             {/* Bottom: Tabs */}
             <div style={{ borderTop: '1px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', padding: '20px 0' }}>
+                <div className="product-details-tabs" style={{ display: 'flex', justifyContent: 'center', gap: '40px', padding: '20px 0' }}>
                     {['DESCRIPTION', 'INFORMATIONS COMPLÉMENTAIRES', 'EXPÉDITION ET LIVRAISON', 'ECHANGE'].map(tab => (
                         <button
                             key={tab}
