@@ -126,18 +126,45 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         import logging
+        from rest_framework import serializers
         logger = logging.getLogger(__name__)
         logger.info(f"Incoming checkout request. Payload: {request.data}")
         
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             logger.error(f"Checkout validation failed: {serializer.errors}")
-            return Response(serializer.errors, status=400)
+            error_msgs = []
+            for field, errors in serializer.errors.items():
+                if isinstance(errors, list):
+                    error_msgs.append(f"{field}: {' '.join([str(e) for e in errors])}")
+                else:
+                    error_msgs.append(f"{field}: {errors}")
+            error_reason = "; ".join(error_msgs)
+            return Response({"success": False, "error": error_reason}, status=400)
             
         try:
-            response = super().create(request, *args, **kwargs)
-            logger.info(f"Checkout successful. Order details: {response.data}")
-            return response
+            order = serializer.save()
+            response_serializer = self.get_serializer(order)
+            data = response_serializer.data
+            data["success"] = True
+            logger.info(f"Checkout successful. Order details: {data}")
+            return Response(data, status=201)
+        except serializers.ValidationError as e:
+            error_detail = e.detail
+            if isinstance(error_detail, dict):
+                error_msgs = []
+                for field, errors in error_detail.items():
+                    if isinstance(errors, list):
+                        error_msgs.append(f"{field}: {' '.join([str(e) for e in errors])}")
+                    else:
+                        error_msgs.append(f"{field}: {errors}")
+                error_reason = "; ".join(error_msgs)
+            elif isinstance(error_detail, list):
+                error_reason = " ".join([str(x) for x in error_detail])
+            else:
+                error_reason = str(error_detail)
+            logger.error(f"Checkout validation failed during save: {error_reason}")
+            return Response({"success": False, "error": error_reason}, status=400)
         except Exception as e:
             logger.exception(f"Checkout exception occurred during order saving: {e}")
-            return Response({"detail": "Internal server error during order creation."}, status=500)
+            return Response({"success": False, "error": str(e)}, status=500)

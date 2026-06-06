@@ -142,6 +142,12 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, attrs):
+        # Step 2: Validate required fields are present and not empty
+        required_fields = ['customer_name', 'customer_phone', 'shipping_address', 'wilaya', 'baladiya', 'delivery_type']
+        for field in required_fields:
+            if not attrs.get(field):
+                raise serializers.ValidationError({field: f"Le champ {field} est requis. / Field {field} is required."})
+
         items_data = attrs.get('items', [])
         if not items_data:
             raise serializers.ValidationError({"items": "Order must contain at least one item."})
@@ -160,10 +166,30 @@ class OrderSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        items_data = validated_data.pop('items')
-        order = Order.objects.create(**validated_data)
-        for item_data in items_data:
-            OrderItem.objects.create(order=order, **item_data)
+        from django.db import transaction
+        from .models import Product
+
+        # Step 8: Use transactions to reduce stock and prevent overselling
+        with transaction.atomic():
+            items_data = validated_data.pop('items')
+            order = Order.objects.create(**validated_data)
+            
+            for item_data in items_data:
+                product = item_data['product']
+                quantity = item_data['quantity']
+                
+                # Lock product row to prevent race conditions
+                prod_lock = Product.objects.select_for_update().get(pk=product.pk)
+                
+                if prod_lock.stock < quantity:
+                    raise serializers.ValidationError(
+                        f"Stock insuffisant pour '{product.name}' (Demandé: {quantity}, Disponible: {prod_lock.stock})."
+                    )
+                    
+                prod_lock.stock -= quantity
+                prod_lock.save()
+                
+                OrderItem.objects.create(order=order, **item_data)
             
         # Trigger notifications safely post-save
         try:

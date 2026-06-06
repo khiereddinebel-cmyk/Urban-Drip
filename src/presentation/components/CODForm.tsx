@@ -71,17 +71,26 @@ export default function CODForm({ productId, productName, productPrice, selected
                 body: JSON.stringify(orderData),
             });
 
-            if (!response.ok) throw new Error('Order submission failed');
+            const result = await response.json().catch(() => null);
 
-            const result = await response.json();
-            alert(`Commande confirmée ! / تم تأكيد الطلب\n#${result.order_number}`);
-            
-            setCustomerName('');
-            setCustomerPhone('');
-            setCommune('');
-        } catch (error) {
+            if (!response.ok || (result && result.success === false)) {
+                const errMsg = (result && result.error) || 'Une erreur est survenue. Veuillez réessayer.';
+                alert(`Erreur: ${errMsg}`);
+                return;
+            }
+
+            if (result && result.order_number) {
+                alert(`Commande confirmée ! / تم تأكيد الطلب\n#${result.order_number}`);
+                
+                setCustomerName('');
+                setCustomerPhone('');
+                setCommune('');
+            } else {
+                throw new Error('La réponse du serveur ne contient pas de numéro de commande / Server response missing order number');
+            }
+        } catch (error: any) {
             console.error('Order error:', error);
-            alert('Une erreur est survenue. Veuillez réessayer.');
+            alert(`Une erreur est survenue: ${error.message || error}`);
         } finally {
             setIsSubmitting(false);
         }
