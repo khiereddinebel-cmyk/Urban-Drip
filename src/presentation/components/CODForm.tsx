@@ -140,7 +140,9 @@ export default function CODForm({ productId, productName, productPrice, selected
             borderRadius: '8px',
             padding: '20px',
             backgroundColor: '#fff',
-            marginTop: '30px',
+            margin: '30px auto 0 auto',
+            maxWidth: '450px',
+            width: '92%',
             fontFamily: 'inherit',
         }}>
             {/* Inputs Grid */}

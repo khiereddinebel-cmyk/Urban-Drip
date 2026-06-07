@@ -83,7 +83,7 @@ export default function Home({ featured = [] }: HomeProps) {
 
 
             <section className="max-w-7xl mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8">
-                <h2 className="mb-[40px] px-2 text-left">
+                <h2 className="mb-[40px] px-2 text-center">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
                         style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
@@ -94,7 +94,7 @@ export default function Home({ featured = [] }: HomeProps) {
 
                 <div
                     ref={latestRef}
-                    className="flex overflow-x-auto gap-4 pb-4 snap-x scrollbar-hide"
+                    className="flex overflow-x-auto justify-start md:justify-center gap-4 pb-4 snap-x scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {latestDrops.map((product) => (
@@ -120,7 +120,7 @@ export default function Home({ featured = [] }: HomeProps) {
             </section>
 
             <section className="max-w-7xl mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]">
-                <h2 className="mb-[40px] px-2 text-left">
+                <h2 className="mb-[40px] px-2 text-center">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
                         style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
@@ -131,7 +131,7 @@ export default function Home({ featured = [] }: HomeProps) {
 
                 <div
                     ref={viewedRef}
-                    className="flex overflow-x-auto gap-4 pb-4 snap-x scrollbar-hide"
+                    className="flex overflow-x-auto justify-start md:justify-center gap-4 pb-4 snap-x scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {mostViewed.map((product) => (
@@ -157,7 +157,7 @@ export default function Home({ featured = [] }: HomeProps) {
             </section>
 
             <section className="max-w-7xl mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]">
-                <h2 className="mb-[40px] px-2 text-left">
+                <h2 className="mb-[40px] px-2 text-center">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
                         style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
@@ -166,9 +166,9 @@ export default function Home({ featured = [] }: HomeProps) {
                     </span>
                 </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 lg:gap-16">
+                <div className="flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-16">
                     {displayBrands.map((brand, idx) => (
-                        <Link key={idx} href={brand.link} className="flex flex-col items-center w-full group">
+                        <Link key={idx} href={brand.link} className="flex flex-col items-center w-[calc(50%-16px)] md:w-[200px] lg:w-[220px] group">
                             <div className="w-[80%] sm:w-[75%] md:w-[70%] lg:w-[65%] aspect-square bg-white relative overflow-hidden mb-4 flex items-center justify-center rounded-sm border border-gray-200">
                                 <Image
                                     src={brand.image}
