@@ -254,13 +254,13 @@ export default function Home({ featured = [] }: HomeProps) {
                 </p>
 
                 <a
-                    href="https://maps.app.goo.gl/jnapEgQsn9irgpPf6?g_st=atm"
+                    href="https://maps.app.goo.gl/4MmnFFoKQrALWiPM7?g_st=ic"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full max-w-4xl mx-auto h-[250px] md:h-[350px] relative pointer-events-auto overflow-hidden rounded-sm shadow-md border border-gray-200"
                 >
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3198.71884399222!2d2.6936!3d36.6425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x128fa6eb4df57bbb%3A0xc3cdfb90b1ecdd5!2sBou%20Ismail%2C%20Tipaza%20Province%2C%20Algeria!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3198.71884399222!2d2.6935296!3d36.651008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x128f9d0062a803e3%3A0x982db2fd36775a0f!2sUrban%20drip!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
                         width="100%"
                         height="100%"
                         style={{ border: 0 }}
