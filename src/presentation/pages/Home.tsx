@@ -254,7 +254,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 </p>
 
                 <a
-                    href="https://maps.app.goo.gl/4MmnFFoKQrALWiPM7?g_st=ic"
+                    href="https://maps.app.goo.gl/r8ScsUSM26KA13v26?g_st=atm"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full max-w-4xl mx-auto h-[250px] md:h-[350px] relative pointer-events-auto overflow-hidden rounded-sm shadow-md border border-gray-200"
