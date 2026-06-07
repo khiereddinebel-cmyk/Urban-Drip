@@ -114,7 +114,7 @@ export default function HeroSection() {
 
                         {/* Main Title */}
                         <h1 style={{
-                            fontFamily: 'var(--font-sans)',
+                            fontFamily: 'var(--font-serif)',
                             fontWeight: 900,
                             textTransform: 'uppercase',
                             letterSpacing: '0.15em',
@@ -238,7 +238,7 @@ export default function HeroSection() {
 
                     {/* Main Title */}
                     <h1 style={{
-                        fontFamily: 'var(--font-sans)',
+                        fontFamily: 'var(--font-serif)',
                         fontWeight: 900,
                         textTransform: 'uppercase',
                         letterSpacing: '0.15em',
