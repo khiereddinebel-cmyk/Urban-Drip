@@ -91,19 +91,39 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                 {/* Navigation Arrows */}
                 <button
                     onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 text-black border-none cursor-pointer flex items-center justify-center hover:opacity-75 transition-opacity"
-                    style={{ background: 'transparent', padding: '12px' }}
+                    className="absolute z-10 border-none cursor-pointer flex items-center justify-center hover:opacity-90 transition-opacity"
+                    style={{ 
+                        left: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.45)', 
+                        width: '32px', 
+                        height: '52px',
+                        borderRadius: '4px',
+                        color: '#fff',
+                        padding: 0
+                    }}
                     aria-label="Previous image"
                 >
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M15 18l-6-6 6-6" /></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
                 </button>
                 <button
                     onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 text-black border-none cursor-pointer flex items-center justify-center hover:opacity-75 transition-opacity"
-                    style={{ background: 'transparent', padding: '12px' }}
+                    className="absolute z-10 border-none cursor-pointer flex items-center justify-center hover:opacity-90 transition-opacity"
+                    style={{ 
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.45)', 
+                        width: '32px', 
+                        height: '52px',
+                        borderRadius: '4px',
+                        color: '#fff',
+                        padding: 0
+                    }}
                     aria-label="Next image"
                 >
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
                 </button>
 
                 {/* Dot pagination indicators */}
@@ -112,7 +132,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                         <span
                             key={idx}
                             className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                                activeImage === idx ? 'bg-white scale-125' : 'bg-white/50'
+                                activeImage === idx ? 'bg-gray-800 scale-125' : 'bg-gray-300'
                             }`}
                         />
                     ))}
