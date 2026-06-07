@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { getProductImageUrl } from '../../shared/utils/imageUtils';
 
 interface ProductGalleryProps {
     images: string[];
@@ -18,8 +17,8 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
     const isDragging = useRef(false);
     const dragStart = useRef({ x: 0, y: 0 });
 
-    // Ensure all image URLs are fully qualified
-    const galleryImages = (images.length > 0 ? images : ['']).map(img => getProductImageUrl(img));
+    // Fallback if images array is empty or undefined
+    const galleryImages = images.length > 0 ? images : ['/images/placeholder.jpg'];
 
     const nextImage = () => setActiveImage((prev) => (prev + 1) % galleryImages.length);
     const prevImage = () => setActiveImage((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
@@ -72,81 +71,13 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
     }, []);
 
     return (
-        <div className="flex flex-col gap-4 w-full">
-            {/* Main Image Container */}
-            <div
-                ref={mainImageRef}
-                className="relative w-full aspect-square bg-white border border-gray-100 overflow-hidden flex items-center justify-center touch-pan-y group cursor-pointer"
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
-                onClick={() => {
-                    setIsFullscreen(true);
-                }}
-            >
-                {/* Image Counter (Top-Left) */}
-                {galleryImages.length > 1 && (
-                    <div className="absolute top-4 left-4 z-10 bg-black/5 px-3 py-1 text-[11px] font-sans font-bold tracking-[1.5px] text-black uppercase">
-                        {activeImage + 1} / {galleryImages.length}
-                    </div>
-                )}
-
-                {/* Navigation Arrows (Left/Right - Clearly visible) */}
-                {galleryImages.length > 1 && (
-                    <>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                            className="absolute left-4 z-10 bg-white/80 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-sm transition-all active:scale-95"
-                            aria-label="Image précédente"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <path d="M15 18l-6-6 6-6" />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                            className="absolute right-4 z-10 bg-white/80 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-sm transition-all active:scale-95"
-                            aria-label="Image suivante"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" />
-                            </svg>
-                        </button>
-                    </>
-                )}
-
-                {/* Expand / Fullscreen Button (Bottom-Right) */}
-                <button
-                    onClick={(e) => { e.stopPropagation(); setIsFullscreen(true); }}
-                    className="absolute right-4 bottom-4 z-10 bg-white/80 hover:bg-white text-black border-none rounded-sm w-9 h-9 cursor-pointer flex items-center justify-center shadow-sm transition-all active:scale-95"
-                    aria-label="Agrandir l'image"
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <polyline points="9 21 3 21 3 15"></polyline>
-                        <line x1="21" y1="3" x2="14" y2="10"></line>
-                        <line x1="3" y1="21" x2="10" y2="14"></line>
-                    </svg>
-                </button>
-
-                {/* Active Image */}
-                <div className="relative w-full h-full p-4 flex items-center justify-center">
-                    <Image
-                        src={galleryImages[activeImage]}
-                        alt="Product Image"
-                        fill
-                        className="object-contain p-2"
-                        priority
-                        unoptimized
-                    />
-                </div>
-            </div>
-
-            {/* Thumbnail list (Repositioned BELOW the main image) */}
+        <div className="flex flex-col md:flex-row gap-5 w-full">
+            {/* Thumbnails list */}
             {galleryImages.length > 1 && (
                 <div 
-                    className="flex flex-row gap-3 w-full overflow-x-auto justify-center py-2"
+                    className="flex flex-row md:flex-col gap-3 w-full md:w-[85px] overflow-x-auto md:overflow-y-auto pb-2 md:pb-0 order-last md:order-first max-h-[500px] shrink-0"
                     style={{
-                        scrollbarWidth: 'none',
+                        scrollbarWidth: 'thin',
                         msOverflowStyle: 'none',
                     }}
                 >
@@ -154,8 +85,8 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                         <button
                             key={idx}
                             onClick={() => { setActiveImage(idx); }}
-                            className={`relative w-16 h-16 md:w-20 md:h-20 overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 border ${
-                                activeImage === idx ? 'border-black opacity-100' : 'border-gray-200 opacity-60 hover:opacity-100 hover:border-gray-300'
+                            className={`relative w-[65px] h-[65px] md:w-[85px] md:h-[85px] rounded-lg overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 border-2 ${
+                                activeImage === idx ? 'border-black scale-[0.98]' : 'border-gray-200 hover:border-gray-400'
                             }`}
                         >
                             <Image 
@@ -170,6 +101,59 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                 </div>
             )}
 
+            {/* Main Image Container */}
+            <div
+                ref={mainImageRef}
+                className="relative w-full aspect-square bg-[#f6f6f6] rounded-xl overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last border border-gray-150 group cursor-pointer"
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onClick={() => {
+                    setIsFullscreen(true);
+                }}
+            >
+                {/* Navigation Arrows (Desktop overlay: hoverable, mobile always visible) */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                    className="absolute left-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200"
+                    aria-label="Previous image"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
+                </button>
+                <button
+                    onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                    className="absolute right-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200"
+                    aria-label="Next image"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
+                </button>
+
+                {/* Expand / Fullscreen Button (Bottom-Right) */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); setIsFullscreen(true); }}
+                    className="absolute right-4 bottom-4 z-10 bg-white/90 hover:bg-white text-black border-none rounded-lg w-10 h-10 cursor-pointer flex items-center justify-center shadow-md transition-colors duration-200"
+                    aria-label="Fullscreen zoom"
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <polyline points="9 21 3 21 3 15"></polyline>
+                        <line x1="21" y1="3" x2="14" y2="10"></line>
+                        <line x1="3" y1="21" x2="10" y2="14"></line>
+                    </svg>
+                </button>
+
+                {/* Active Image (No hover zoom) */}
+                <div className="relative w-full h-full p-4">
+                    <Image
+                        src={galleryImages[activeImage]}
+                        alt="Product Image"
+                        fill
+                        className="object-contain p-2"
+                        priority
+                        unoptimized
+                    />
+                </div>
+            </div>
+
             {/* Fullscreen Responsive Lightbox Modal */}
             {isFullscreen && (
                 <div className="fixed inset-0 bg-black/95 z-[99999] flex items-center justify-center touch-none">
@@ -182,7 +166,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                                 setFsPan({ x: 0, y: 0 });
                             }}
                             className="bg-transparent border-none text-white cursor-pointer hover:opacity-80 transition-opacity"
-                            aria-label="Activer le zoom"
+                            aria-label="Toggle zoom"
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="11" cy="11" r="8"></circle>
@@ -198,7 +182,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                                 setFsZoomed(false);
                             }}
                             className="bg-transparent border-none text-white cursor-pointer hover:opacity-80 transition-opacity"
-                            aria-label="Fermer le plein écran"
+                            aria-label="Close details"
                         >
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -211,7 +195,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     <button
                         onClick={prevImage}
                         className="absolute left-5 z-[100000] text-white bg-white/10 hover:bg-white/20 border-none rounded-full w-12 h-12 cursor-pointer flex items-center justify-center transition-colors"
-                        aria-label="Précédent"
+                        aria-label="Previous"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M15 18l-6-6 6-6" /></svg>
                     </button>
@@ -220,7 +204,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     <button
                         onClick={nextImage}
                         className="absolute right-5 z-[100000] text-white bg-white/10 hover:bg-white/20 border-none rounded-full w-12 h-12 cursor-pointer flex items-center justify-center transition-colors"
-                        aria-label="Suivant"
+                        aria-label="Next"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
                     </button>
@@ -253,7 +237,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                         >
                             <img
                                 src={galleryImages[activeImage]}
-                                alt="Product View Fullscreen"
+                                alt="Zoomed Product View"
                                 className="max-w-full max-h-full object-contain select-none pointer-events-none"
                             />
                         </div>
