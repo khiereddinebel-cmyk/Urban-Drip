@@ -94,13 +94,11 @@ export default function Home({ featured = [] }: HomeProps) {
 
                 <div
                     ref={latestRef}
-                    className="flex overflow-x-auto justify-start md:justify-center gap-4 pb-4 snap-x scrollbar-hide"
+                    className="flex overflow-x-auto justify-start md:justify-center gap-8 md:gap-10 pb-4 snap-x scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {latestDrops.map((product) => (
-                        <div key={`latest-${product.id}`} className="snap-start">
-                            <ProductCard product={product} />
-                        </div>
+                        <ProductCard key={`latest-${product.id}`} product={product} />
                     ))}
                 </div>
                 {latestDrops.length === 0 && (
@@ -131,13 +129,11 @@ export default function Home({ featured = [] }: HomeProps) {
 
                 <div
                     ref={viewedRef}
-                    className="flex overflow-x-auto justify-start md:justify-center gap-4 pb-4 snap-x scrollbar-hide"
+                    className="flex overflow-x-auto justify-start md:justify-center gap-8 md:gap-10 pb-4 snap-x scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {mostViewed.map((product) => (
-                        <div key={`viewed-${product.id}`} className="snap-start">
-                            <ProductCard product={product} pricePrefix="From " />
-                        </div>
+                        <ProductCard key={`viewed-${product.id}`} product={product} pricePrefix="From " />
                     ))}
                 </div>
                 {mostViewed.length === 0 && (

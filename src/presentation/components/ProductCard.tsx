@@ -13,10 +13,12 @@ interface ProductCardProps {
 export default function ProductCard({ product, pricePrefix = "", className = "" }: ProductCardProps) {
   const imageUrl = getProductImageUrl(product.images?.[0]);
 
+  const widthClass = className.includes('w-') ? '' : 'w-[200px] md:w-[240px]';
+
   return (
     <Link 
       href={`/product/${product.id}`} 
-      className={`group block flex-shrink-0 px-3 ${className || 'w-[200px] md:w-[240px]'}`}
+      className={`group block flex-shrink-0 px-3 snap-start ${widthClass} ${className}`}
     >
       <div className="relative aspect-square w-full bg-white flex items-center justify-center mb-4 overflow-hidden border border-gray-50 rounded-sm">
         <Image
