@@ -82,10 +82,7 @@ export default function Home({ featured = [] }: HomeProps) {
             <HeroSection />
 
 
-            <section 
-                className="max-w-7xl mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8"
-                style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}
-            >
+            <section className="max-w-7xl mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8">
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -122,10 +119,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 </div>
             </section>
 
-            <section 
-                className="max-w-7xl mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]"
-                style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', borderTop: '1px solid var(--border-color)' }}
-            >
+            <section className="max-w-7xl mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]">
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -162,10 +156,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 </div>
             </section>
 
-            <section 
-                className="max-w-7xl mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]"
-                style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', borderTop: '1px solid var(--border-color)' }}
-            >
+            <section className="max-w-7xl mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]">
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -254,10 +245,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 </section>
             )}
 
-            <section 
-                className="max-w-[1400px] mx-auto py-16 px-4 md:px-8 mt-24 lg:mt-32 text-center mb-16"
-                style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}
-            >
+            <section className="max-w-[1400px] mx-auto py-16 px-4 md:px-8 mt-24 lg:mt-32 text-center mb-16">
                 <p className="text-[14px] uppercase tracking-widest mb-2" style={{ fontWeight: 300, color: '#000' }}>vous êtes les bienvenus chez nous</p>
                 <h2
                     className="text-[36px] md:text-[48px] lg:text-[56px] uppercase tracking-wide mb-4"

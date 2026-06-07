@@ -150,7 +150,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                     placeholder="Nom complet / الاسم الكامل"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'none', letterSpacing: '0.5px' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}
                 />
                 <input
                     type="tel"
@@ -176,7 +176,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                             setDeliveryType('home');
                         }
                     }}
-                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'none', letterSpacing: '0.5px', color: selectedWilayaId === '' ? '#888' : '#000' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', color: selectedWilayaId === '' ? '#888' : '#000' }}
                 >
                     <option value="">Wilaya / الولاية</option>
                     {wilayas.map(w => (
@@ -186,7 +186,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                 <select
                     value={commune}
                     onChange={(e) => setCommune(e.target.value)}
-                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'none', letterSpacing: '0.5px', color: commune === '' ? '#888' : '#000' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', color: commune === '' ? '#888' : '#000' }}
                 >
                     <option value="">Ville / البلدية</option>
                     {communes.map((c) => (
