@@ -135,7 +135,7 @@ export default function CODForm({ productId, productName, productPrice, selected
     };
 
     return (
-        <div style={{
+        <div className="cod-form-container" style={{
             border: '1.5px solid #27ae60',
             borderRadius: '8px',
             padding: '20px',
@@ -144,22 +144,23 @@ export default function CODForm({ productId, productName, productPrice, selected
             maxWidth: '450px',
             width: '92%',
             fontFamily: 'inherit',
+            boxSizing: 'border-box'
         }}>
             {/* Inputs Grid */}
-            <div className="cod-form-inputs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px', marginBottom: '20px' }}>
+            <div className="cod-form-inputs-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '15px', marginBottom: '20px' }}>
                 <input
                     type="text"
                     placeholder="Nom complet / الاسم الكامل"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}
                 />
                 <input
                     type="tel"
                     placeholder="Numéro de téléphone / رقم الهاتف"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}
                 />
                 <select
                     value={selectedWilayaId}
@@ -178,7 +179,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                             setDeliveryType('home');
                         }
                     }}
-                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', color: selectedWilayaId === '' ? '#888' : '#000' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', color: selectedWilayaId === '' ? '#888' : '#000', boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}
                 >
                     <option value="">Wilaya / الولاية</option>
                     {wilayas.map(w => (
@@ -188,7 +189,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                 <select
                     value={commune}
                     onChange={(e) => setCommune(e.target.value)}
-                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', color: commune === '' ? '#888' : '#000' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', color: commune === '' ? '#888' : '#000', boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}
                 >
                     <option value="">Ville / البلدية</option>
                     {communes.map((c) => (
@@ -224,54 +225,67 @@ export default function CODForm({ productId, productName, productPrice, selected
             </div>
 
             {showSummary && (
-                <div style={{ padding: '12px 0', borderTop: '1px dotted #27ae60' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-                        <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#111', fontSize: '11px', letterSpacing: '0.5px' }}>{productName}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px' }}>
-                            <span style={{ backgroundColor: '#27ae60', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>x{quantity}</span>
+                <div style={{ padding: '12px 0', borderTop: '1px dashed #ccc' }}>
+                    {/* Row 1: Product Name & Quantity & Base Price */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', fontSize: '12px' }}>
+                        <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#111', fontSize: '11px', letterSpacing: '0.5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '70%' }}>
+                            {productName}
+                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <span style={{ backgroundColor: '#27ae60', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, fontSize: '10px' }}>x{quantity}</span>
                             <span style={{ fontWeight: 700, color: '#333' }}>
                                 {activeWilaya ? `${(productPrice * quantity).toLocaleString()} DA` : 'DA'}
                             </span>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '12px' }}>
-                        <div style={{ flex: 1 }}>
-                            <span style={{ color: '#555', display: 'block', marginBottom: '6px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>Type de livraison</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: deliveryType === 'home' ? 700 : 400 }}>
-                                    <input type="radio" checked={deliveryType === 'home'} onChange={() => setDeliveryType('home')} style={{ accentColor: '#27ae60' }} />
-                                    Domicile (Home)
-                                </label>
-                                <label style={{ 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: '6px', 
-                                    cursor: (!activeWilaya || activeWilaya.officeFee === 0) ? 'not-allowed' : 'pointer', 
-                                    fontWeight: deliveryType === 'office' ? 700 : 400,
-                                    opacity: (!activeWilaya || activeWilaya.officeFee === 0) ? 0.4 : 1
-                                }}>
-                                    <input 
-                                        type="radio" 
-                                        disabled={!activeWilaya || activeWilaya.officeFee === 0}
-                                        checked={deliveryType === 'office' && activeWilaya !== null && activeWilaya.officeFee > 0} 
-                                        onChange={() => { if (activeWilaya && activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
-                                        style={{ accentColor: '#27ae60' }} 
-                                    />
-                                    Bureau / StopDesk {activeWilaya && activeWilaya.officeFee === 0 && '(Non disp)'}
-                                </label>
-                            </div>
-                        </div>
-                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontSize: '11px' }}>
-                            <span style={{ color: '#888' }}>{activeWilaya ? activeWilaya.name : ''}</span>
-                            <span style={{ fontWeight: 700, color: '#000' }}>
-                                {deliveryFee !== null ? `${deliveryFee.toLocaleString()} DA` : 'Choisir Wilaya / الولاية'}
-                            </span>
+                    {/* Row 2: Type de livraison Selection */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', padding: '8px 0', borderTop: '1px dashed #eee', fontSize: '11px' }}>
+                        <span style={{ color: '#555', fontWeight: 700, textTransform: 'uppercase' }}>Type de livraison</span>
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', fontWeight: deliveryType === 'home' ? 700 : 400 }}>
+                                <input 
+                                    type="radio" 
+                                    checked={deliveryType === 'home'} 
+                                    onChange={() => setDeliveryType('home')} 
+                                    style={{ accentColor: '#27ae60', cursor: 'pointer' }} 
+                                />
+                                Domicile
+                            </label>
+                            <label style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '4px', 
+                                cursor: (!activeWilaya || activeWilaya.officeFee === 0) ? 'not-allowed' : 'pointer', 
+                                fontWeight: deliveryType === 'office' ? 700 : 400,
+                                opacity: (!activeWilaya || activeWilaya.officeFee === 0) ? 0.4 : 1
+                            }}>
+                                <input 
+                                    type="radio" 
+                                    disabled={!activeWilaya || activeWilaya.officeFee === 0}
+                                    checked={deliveryType === 'office' && activeWilaya !== null && activeWilaya.officeFee > 0} 
+                                    onChange={() => { if (activeWilaya && activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
+                                    style={{ accentColor: '#27ae60', cursor: 'pointer' }} 
+                                />
+                                Bureau
+                            </label>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #27ae60', paddingTop: '12px', marginTop: '8px' }}>
-                        <span style={{ fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Prix Total</span>
+                    {/* Row 3: Prix de livraison (separators are clean) */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', padding: '8px 0', borderTop: '1px dashed #eee', fontSize: '11px' }}>
+                        <span style={{ color: '#555', fontWeight: 700, textTransform: 'uppercase' }}>Prix de livraison</span>
+                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontWeight: 700, color: '#333' }}>
+                                {deliveryFee !== null ? `${deliveryFee.toLocaleString()} DA` : 'Choisir Wilaya / الولاية'}
+                            </span>
+                            {activeWilaya && <span style={{ fontSize: '9px', color: '#888' }}>({activeWilaya.name})</span>}
+                        </div>
+                    </div>
+
+                    {/* Row 4: Prix Total */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1.5px solid #27ae60', paddingTop: '12px', marginTop: '4px', fontSize: '12px' }}>
+                        <span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Prix Total</span>
                         <span style={{ fontWeight: 800, fontSize: '14px', color: '#000' }}>
                             {totalPrice !== null ? `${totalPrice.toLocaleString()} DA` : 'DA'}
                         </span>
