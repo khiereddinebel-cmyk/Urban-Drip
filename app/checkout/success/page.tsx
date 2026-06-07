@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { getProductImageUrl } from '../../../src/shared/utils/imageUtils';
 
@@ -50,144 +49,117 @@ function SuccessPageContent() {
     }, [orderNumberFromUrl]);
 
     const displayOrderNumber = orderNumberFromUrl || (order ? order.order_number : '');
+    const displayDate = order ? order.date : new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const displayTotal = order ? order.total_price : 0;
+    const subtotal = order ? (order.total_price - order.delivery_fee) : 0;
 
     return (
-        <div className="bg-white min-h-screen text-black py-16 md:py-24 font-sans uppercase">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="bg-white min-h-screen text-black py-16 md:py-24 font-sans">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6">
                 
-                {/* Header Success Banner */}
-                <div className="text-center mb-12">
-                    <div className="w-16 h-16 bg-black text-white flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                    </div>
-                    <h1 className="text-3xl font-serif font-light tracking-widest text-black mb-3">
-                        Merci. Votre commande a été reçue.
-                    </h1>
-                    <p className="text-xs text-gray-500 tracking-[1.5px] font-medium">
-                        Un conseiller vous contactera sous peu pour confirmer votre livraison.
-                    </p>
+                {/* 1. Green Dashed Banner Box */}
+                <div 
+                    className="border-2 border-dashed border-[#7a9c59] p-6 text-center text-[#7a9c59] text-[16px] md:text-[18px] font-sans font-medium mb-12 max-w-2xl mx-auto"
+                    style={{ borderRadius: '4px' }}
+                >
+                    Merci. Votre commande a été reçue.
                 </div>
 
-                {/* Top Meta Details (Order Number, Date, Total) */}
-                <div className="grid grid-cols-3 gap-4 border-t border-b border-gray-150 py-6 mb-12 text-center text-xs tracking-wider">
-                    <div>
-                        <p className="text-[10px] text-gray-400 font-bold mb-1">Numéro de Commande</p>
-                        <p className="font-bold text-black font-serif text-sm">#{displayOrderNumber || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <p className="text-[10px] text-gray-400 font-bold mb-1">Date</p>
-                        <p className="font-semibold text-black">{order ? order.date : new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                    </div>
-                    <div>
-                        <p className="text-[10px] text-gray-400 font-bold mb-1">Statut</p>
-                        <p className="font-bold text-black text-[11px] tracking-widest">EN ATTENTE</p>
+                {/* 2. Top Summary Meta Data Grid */}
+                <div className="flex justify-center mb-16">
+                    <div className="grid grid-cols-3 gap-0 border-r border-l border-gray-150 py-2 text-center max-w-xl w-full">
+                        <div className="px-4 border-r border-gray-150">
+                            <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider mb-2">Numéro de commande :</p>
+                            <p className="font-bold text-black text-[13px] md:text-[14px]">{displayOrderNumber || 'N/A'}</p>
+                        </div>
+                        <div className="px-4 border-r border-gray-150">
+                            <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider mb-2">Date :</p>
+                            <p className="font-bold text-black text-[13px] md:text-[14px]">{displayDate}</p>
+                        </div>
+                        <div className="px-4">
+                            <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider mb-2">Total :</p>
+                            <p className="font-bold text-black text-[13px] md:text-[14px]">{displayTotal.toLocaleString()} DA</p>
+                        </div>
                     </div>
                 </div>
 
-                {/* Section: Order Details */}
-                <div className="space-y-10">
-                    
-                    {/* Itemised Products List */}
-                    <div>
-                        <h2 className="text-xs font-bold tracking-[2px] text-gray-400 border-b border-gray-100 pb-3 mb-6">
-                            Détails de la commande
+                <div className="max-w-2xl mx-auto">
+                    {/* 3. Section: Order Details */}
+                    <div className="mb-16">
+                        <h2 className="text-[20px] md:text-[24px] font-bold font-serif mb-6 text-black border-none">
+                            Détails De La Commande
                         </h2>
                         
-                        {order && order.items && order.items.length > 0 ? (
-                            <div className="divide-y divide-gray-100">
-                                {order.items.map((item, index) => {
-                                    const imageUrl = getProductImageUrl(item.image);
-                                    return (
-                                        <div key={index} className="py-4 flex items-center justify-between gap-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className="relative w-12 h-12 bg-gray-50 border border-gray-100 shrink-0 flex items-center justify-center p-1">
-                                                    <Image 
-                                                        src={imageUrl} 
-                                                        alt={item.name} 
-                                                        fill 
-                                                        className="object-contain p-1" 
-                                                        unoptimized
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-[11px] font-bold text-black tracking-wider line-clamp-1">
-                                                        {item.name}
-                                                    </h4>
-                                                    <p className="text-[10px] text-gray-400 font-bold">
-                                                        Taille: {item.selectedSize} &times; {item.quantity}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <span className="text-xs font-semibold text-black tracking-wider whitespace-nowrap">
+                        <div className="w-full text-xs md:text-sm">
+                            {/* Table Header */}
+                            <div className="flex justify-between font-bold text-black border-b border-gray-200 pb-3 mb-4 tracking-wider">
+                                <span>PRODUIT</span>
+                                <span>TOTAL</span>
+                            </div>
+
+                            {/* Items List */}
+                            {order && order.items && order.items.length > 0 ? (
+                                <div className="divide-y divide-gray-100 border-b border-gray-200">
+                                    {order.items.map((item, index) => (
+                                        <div key={index} className="py-4 flex justify-between items-center text-gray-800">
+                                            <span>
+                                                {item.name} - {item.selectedSize} <span className="font-medium text-black">× {item.quantity}</span>
+                                            </span>
+                                            <span className="font-bold text-black whitespace-nowrap">
                                                 {(item.price * item.quantity).toLocaleString()} DA
                                             </span>
                                         </div>
-                                    );
-                                })}
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="py-4 border-b border-gray-200 text-gray-400 italic">
+                                    Informations produits indisponibles après rafraîchissement
+                                </div>
+                            )}
+
+                            {/* Subtotal */}
+                            <div className="flex justify-between py-4 border-b border-gray-150 text-gray-800">
+                                <span className="font-bold">Sous-total :</span>
+                                <span className="font-bold text-black">{subtotal.toLocaleString()} DA</span>
                             </div>
-                        ) : (
-                            <p className="text-xs text-gray-400 py-4 italic">Informations produits indisponibles après rafraîchissement</p>
-                        )}
+
+                            {/* Shipping */}
+                            <div className="flex justify-between py-4 border-b border-gray-150 text-gray-800">
+                                <span className="font-bold">Expédition :</span>
+                                <span className="font-bold text-[#7a9c59]">
+                                    {order ? `${order.delivery_fee.toLocaleString()} DA via ${order.delivery_type === 'home' ? 'التوصيل للمنزل' : 'Bureau/StopDesk'}` : 'N/A'}
+                                </span>
+                            </div>
+
+                            {/* Total */}
+                            <div className="flex justify-between py-5 text-black text-sm md:text-base">
+                                <span className="font-bold">Total :</span>
+                                <span className="font-bold">{displayTotal.toLocaleString()} DA</span>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Customer & Shipping Details */}
+                    {/* 4. Section: Billing Address */}
                     {order && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-gray-100 pt-8">
-                            {/* Billing/Customer details */}
-                            <div>
-                                <h3 className="text-[10px] font-bold tracking-[2px] text-gray-400 mb-4">
-                                    Informations client
-                                </h3>
-                                <div className="text-xs text-black space-y-2 font-medium tracking-wider leading-relaxed">
-                                    <p className="font-bold text-sm text-serif">{order.customer_name}</p>
-                                    <p>Téléphone: {order.customer_phone}</p>
-                                    <p>Email: {order.customer_email}</p>
-                                </div>
-                            </div>
-                            
-                            {/* Shipping details */}
-                            <div>
-                                <h3 className="text-[10px] font-bold tracking-[2px] text-gray-400 mb-4">
-                                    Adresse de facturation / livraison
-                                </h3>
-                                <div className="text-xs text-black space-y-2 font-medium tracking-wider leading-relaxed">
-                                    <p className="font-semibold text-serif">{order.shipping_address}</p>
-                                    <p>Wilaya: {order.wilaya}</p>
-                                    <p>Type: {order.delivery_type === 'home' ? 'Livraison à domicile' : 'Point de retrait Bureau'}</p>
-                                </div>
+                        <div className="mb-16">
+                            <h2 className="text-[20px] md:text-[24px] font-bold font-serif mb-6 text-black border-none">
+                                Adresse De Facturation
+                            </h2>
+                            <div className="text-xs md:text-sm text-gray-600 space-y-1.5 leading-relaxed font-serif italic">
+                                <p className="not-italic text-black font-semibold">{order.customer_name}</p>
+                                <p>{order.commune}</p>
+                                <p>{order.wilaya}</p>
+                                <p className="not-italic text-black">{order.customer_phone}</p>
                             </div>
                         </div>
                     )}
 
-                    {/* Order Financial Summary */}
-                    <div className="border-t-2 border-black pt-8 mt-10 space-y-3 font-sans text-xs tracking-wider text-gray-500">
-                        <div className="flex justify-between">
-                            <span>Sous-total</span>
-                            <span className="text-black font-semibold">
-                                {order ? (order.total_price - order.delivery_fee).toLocaleString() : 'N/A'} DA
-                            </span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Frais de livraison</span>
-                            <span className="text-black font-semibold">
-                                {order ? order.delivery_fee.toLocaleString() : 'N/A'} DA
-                            </span>
-                        </div>
-                        <div className="flex justify-between text-black font-bold text-sm pt-3 border-t border-gray-100 items-end">
-                            <span className="uppercase tracking-widest font-black">Total</span>
-                            <span className="text-2xl font-black tracking-normal">
-                                {order ? order.total_price.toLocaleString() : 'N/A'} DA
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Return Action */}
-                    <div className="text-center pt-12">
+                    {/* Return Action Button */}
+                    <div className="text-center pt-8 border-t border-gray-100">
                         <Link 
                             href="/" 
-                            className="inline-block bg-black text-white px-12 py-4 text-xs font-sans tracking-[2px] uppercase font-bold hover:opacity-85 transition-opacity"
+                            className="inline-block bg-black text-white px-10 py-3.5 text-xs font-sans tracking-[2px] uppercase font-bold hover:opacity-85 transition-opacity"
+                            style={{ borderRadius: '0px' }}
                         >
                             Retour à la boutique
                         </Link>

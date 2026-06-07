@@ -107,7 +107,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
             {/* Main Image Container */}
             <div
                 ref={mainImageRef}
-                className="relative w-full aspect-square bg-white overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last group cursor-pointer"
+                className="relative w-full max-w-[500px] aspect-square bg-white overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last group cursor-pointer mx-auto"
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onClick={() => {
@@ -117,7 +117,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                 {/* Navigation Arrows */}
                 <button
                     onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                    className="absolute left-2 z-10 text-black border-none cursor-pointer flex items-center justify-center hover:opacity-75 transition-opacity"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 text-black border-none cursor-pointer flex items-center justify-center hover:opacity-75 transition-opacity"
                     style={{ background: 'transparent', padding: '12px' }}
                     aria-label="Previous image"
                 >
@@ -125,7 +125,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                 </button>
                 <button
                     onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                    className="absolute right-2 z-10 text-black border-none cursor-pointer flex items-center justify-center hover:opacity-75 transition-opacity"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 text-black border-none cursor-pointer flex items-center justify-center hover:opacity-75 transition-opacity"
                     style={{ background: 'transparent', padding: '12px' }}
                     aria-label="Next image"
                 >

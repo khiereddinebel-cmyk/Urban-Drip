@@ -13,14 +13,14 @@ export default function ProductCard({ product, pricePrefix = "" }: ProductCardPr
   const imageUrl = getProductImageUrl(product.images?.[0]);
 
   return (
-    <Link href={`/product/${product.id}`} className="group block w-[250px] flex-shrink-0 px-3">
-      <div className="relative aspect-square w-full bg-white flex items-center justify-center mb-4 overflow-hidden">
+    <Link href={`/product/${product.id}`} className="group block w-full">
+      <div className="relative aspect-[4/3] w-full bg-white flex items-center justify-center mb-4 overflow-hidden">
         <Image
           src={imageUrl}
           alt={product.name}
           fill
           className="object-contain transition-transform duration-500 group-hover:scale-105 p-1"
-          sizes="250px"
+          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
           unoptimized
         />
       </div>

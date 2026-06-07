@@ -82,92 +82,72 @@ export default function Home({ featured = [] }: HomeProps) {
             <HeroSection />
 
 
-            <section className="max-w-[1400px] mx-auto mt-[120px] lg:mt-[250px] mb-20 lg:mb-32 px-4 md:px-8">
-                <h2 className="mb-[60px] lg:mb-[80px] px-2 text-center md:text-left">
+            <section className="max-w-[1400px] mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8">
+                <h2 className="mb-[40px] px-2 text-left">
                     <span 
-                        className="text-[36px] md:text-[48px] lg:text-[56px] uppercase tracking-wide"
+                        className="text-[28px] md:text-[36px] lg:text-[42px]"
                         style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
                     >
-                        LATEST DROPS (EXCLUSIVE)
+                        Latest Drops
                     </span>
                 </h2>
 
-                <div
-                    ref={latestRef}
-                    className="flex overflow-x-auto gap-8 md:gap-12 pb-4 snap-x scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                    <style dangerouslySetInnerHTML={{ __html: `::-webkit-scrollbar { display: none; }` }} />
-
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 md:gap-x-6 gap-y-10">
                     {latestDrops.map((product) => (
-                        <div key={`latest-${product.id}`} className="snap-start">
-                            <ProductCard product={product} />
-                        </div>
+                        <ProductCard key={`latest-${product.id}`} product={product} />
                     ))}
-                    {latestDrops.length === 0 && (
-                        <div className="text-gray-400 p-4 w-full text-center">No latest items.</div>
-                    )}
                 </div>
+                {latestDrops.length === 0 && (
+                    <div className="text-gray-400 p-4 w-full text-center">No latest items.</div>
+                )}
 
-                <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
-                    <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
-                        <button onClick={() => scroll(latestRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
-                        <span>1 - {latestDrops.length} items</span>
-                        <button onClick={() => scroll(latestRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
-                    </div>
-                    <Link href="/latest-drops" className="inline-flex items-center justify-center border border-[var(--text)] bg-[var(--text)] px-10 md:px-16 py-3 md:py-4 text-[16px] font-semibold text-[var(--bg)] hover:bg-[var(--bg)] hover:text-[var(--text)] transition-colors duration-300">
+                <div className="flex flex-col items-center justify-center mt-12">
+                    <Link href="/latest-drops" className="inline-flex items-center justify-center border border-black bg-black px-10 md:px-16 py-3 md:py-4 text-[14px] font-bold text-white hover:bg-white hover:text-black transition-colors duration-300">
                         View all
                     </Link>
                 </div>
             </section>
 
-            <section className="max-w-[1400px] mx-auto pt-[120px] lg:pt-[200px] pb-20 lg:pb-32 px-4 md:px-8">
-                <h2 
-                    className="text-[36px] md:text-[48px] lg:text-[56px] mb-[60px] lg:mb-[80px] px-2 uppercase tracking-wide text-center md:text-left"
-                    style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
-                >
-                    MOST VIEWED PRODUCTS
+            <section className="max-w-[1400px] mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]">
+                <h2 className="mb-[40px] px-2 text-left">
+                    <span 
+                        className="text-[28px] md:text-[36px] lg:text-[42px]"
+                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
+                    >
+                        Most Viewed Products
+                    </span>
                 </h2>
 
-                <div
-                    ref={viewedRef}
-                    className="flex overflow-x-auto gap-8 md:gap-12 pb-4 snap-x scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 md:gap-x-6 gap-y-10">
                     {mostViewed.map((product) => (
-                        <div key={`viewed-${product.id}`} className="snap-start">
-                            <ProductCard product={product} pricePrefix="From " />
-                        </div>
+                        <ProductCard key={`viewed-${product.id}`} product={product} pricePrefix="From " />
                     ))}
-                    {mostViewed.length === 0 && (
-                        <div className="text-gray-400 p-4 w-full text-center">No viewed items.</div>
-                    )}
                 </div>
+                {mostViewed.length === 0 && (
+                    <div className="text-gray-400 p-4 w-full text-center">No viewed items.</div>
+                )}
 
-                <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
-                    <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
-                        <button onClick={() => scroll(viewedRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
-                        <span>1 - {mostViewed.length} items</span>
-                        <button onClick={() => scroll(viewedRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
-                    </div>
-                    <Link href="/most-viewed" className="inline-flex items-center justify-center border border-[var(--text)] bg-[var(--text)] px-10 md:px-16 py-3 md:py-4 text-[16px] font-semibold text-[var(--bg)] hover:bg-[var(--bg)] hover:text-[var(--text)] transition-colors duration-300">
+                <div className="flex flex-col items-center justify-center mt-12">
+                    <Link href="/most-viewed" className="inline-flex items-center justify-center border border-black bg-black px-10 md:px-16 py-3 md:py-4 text-[14px] font-bold text-white hover:bg-white hover:text-black transition-colors duration-300">
                         View all
                     </Link>
                 </div>
             </section>
 
-            <section className="max-w-7xl mx-auto px-4 pt-[120px] lg:pt-[200px] pb-20 lg:pb-32">
-                <h2
-                    className="text-[36px] md:text-[48px] lg:text-[56px] mb-[100px] lg:mb-[140px] px-2 uppercase tracking-wide text-center"
-                    style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
-                >
-                    BRANDS
+            <section className="max-w-[1400px] mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]">
+                <h2 className="mb-[40px] px-2 text-left">
+                    <span 
+                        className="text-[28px] md:text-[36px] lg:text-[42px]"
+                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
+                    >
+                        Brands
+                    </span>
                 </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 lg:gap-16">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-10">
                     {displayBrands.map((brand, idx) => (
-                        <Link key={idx} href={brand.link} className="flex flex-col items-center w-full group">
-                            <div className="w-[85%] md:w-[85%] lg:w-[80%] aspect-square bg-[var(--surface)] relative overflow-hidden mb-5 flex items-center justify-center rounded-sm shadow-sm ring-1 ring-[var(--border-color)]">
+                        <Link key={idx} href={brand.link} className="flex flex-col items-start w-full group">
+                            <div className="w-full aspect-square bg-white relative overflow-hidden mb-4 flex items-center justify-center">
                                 <Image
                                     src={brand.image}
                                     alt={brand.name}
@@ -179,9 +159,9 @@ export default function Home({ featured = [] }: HomeProps) {
                                     }}
                                 />
                             </div>
-                            <div className="flex items-center mt-3 px-1 text-center">
-                                <span className="font-black text-[18px] md:text-[22px] text-[var(--text)] group-hover:underline uppercase tracking-wide">
-                                    {brand.name} <span className="text-gray-400 text-[18px] ml-1">&rarr;</span>
+                            <div className="flex items-center text-left mt-2 px-1">
+                                <span className="font-bold text-[15px] md:text-[16px] text-[var(--text)] group-hover:underline uppercase tracking-normal">
+                                    {brand.name} <span className="text-gray-400 text-[15px] ml-1">&rarr;</span>
                                 </span>
                             </div>
                         </Link>
