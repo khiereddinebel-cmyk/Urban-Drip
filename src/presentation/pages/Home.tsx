@@ -86,7 +86,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 <h2 className="mb-[60px] lg:mb-[80px] px-2 text-center md:text-left">
                     <span 
                         className="text-[36px] md:text-[48px] lg:text-[56px] uppercase tracking-wide"
-                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-serif)' }}
+                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
                     >
                         LATEST DROPS (EXCLUSIVE)
                     </span>
@@ -94,7 +94,7 @@ export default function Home({ featured = [] }: HomeProps) {
 
                 <div
                     ref={latestRef}
-                    className="flex overflow-x-auto gap-20 md:gap-32 pb-4 snap-x scrollbar-hide"
+                    className="flex overflow-x-auto gap-8 md:gap-12 pb-4 snap-x scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     <style dangerouslySetInnerHTML={{ __html: `::-webkit-scrollbar { display: none; }` }} />
@@ -124,14 +124,14 @@ export default function Home({ featured = [] }: HomeProps) {
             <section className="max-w-[1400px] mx-auto pt-[120px] lg:pt-[200px] pb-20 lg:pb-32 px-4 md:px-8">
                 <h2 
                     className="text-[36px] md:text-[48px] lg:text-[56px] mb-[60px] lg:mb-[80px] px-2 uppercase tracking-wide text-center md:text-left"
-                    style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-serif)' }}
+                    style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
                 >
                     MOST VIEWED PRODUCTS
                 </h2>
 
                 <div
                     ref={viewedRef}
-                    className="flex overflow-x-auto gap-20 md:gap-32 pb-4 snap-x scrollbar-hide"
+                    className="flex overflow-x-auto gap-8 md:gap-12 pb-4 snap-x scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {mostViewed.map((product) => (
@@ -159,7 +159,7 @@ export default function Home({ featured = [] }: HomeProps) {
             <section className="max-w-7xl mx-auto px-4 pt-[120px] lg:pt-[200px] pb-20 lg:pb-32">
                 <h2
                     className="text-[36px] md:text-[48px] lg:text-[56px] mb-[100px] lg:mb-[140px] px-2 uppercase tracking-wide text-center"
-                    style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-serif)' }}
+                    style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
                 >
                     BRANDS
                 </h2>

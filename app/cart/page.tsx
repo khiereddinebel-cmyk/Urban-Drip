@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '../../src/shared/context/CartContext';
 import { useAuth } from '../../src/shared/context/AuthContext';
+import { getProductImageUrl } from '../../src/shared/utils/imageUtils';
 
 export default function CartPage() {
     const { cart, removeFromCart, updateQuantity, cartTotal } = useCart();
@@ -56,7 +57,7 @@ export default function CartPage() {
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 24px', color: 'var(--text)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '60px' }}>
-                <h1 style={{ fontSize: '42px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-serif)', letterSpacing: '2px', textTransform: 'uppercase' }}>Your cart</h1>
+                <h1 style={{ fontSize: '40px', fontWeight: 700, margin: 0, fontFamily: 'var(--font-sans)', letterSpacing: '-0.5px' }}>Your cart</h1>
                 <Link href="/" style={{ fontSize: '16px', color: 'var(--text)', textDecoration: 'underline', fontWeight: 500 }}>
                     Continue shopping
                 </Link>
@@ -94,7 +95,7 @@ export default function CartPage() {
                         <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
                             <div style={{ position: 'relative', width: '120px', height: '120px', backgroundColor: 'var(--bg)', border: '1px solid var(--border-color)' }}>
                                 <Image
-                                    src={item.images[0]}
+                                    src={getProductImageUrl(item.images[0])}
                                     alt={item.name}
                                     fill
                                     style={{ objectFit: 'contain', padding: '10px' }}
@@ -168,13 +169,12 @@ export default function CartPage() {
                     style={{
                         backgroundColor: 'var(--text)',
                         color: 'var(--bg)',
-                        padding: '18px 120px',
-                        fontSize: '16px',
-                        fontWeight: 700,
+                        padding: '16px 80px',
+                        fontSize: '15px',
+                        fontWeight: 600,
                         textDecoration: 'none',
-                        textTransform: 'uppercase',
-                        letterSpacing: '2px',
-                        transition: 'opacity 0.2s'
+                        transition: 'opacity 0.2s',
+                        borderRadius: '0px'
                     }}
                     onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
                     onMouseOut={(e) => e.currentTarget.style.opacity = '1'}

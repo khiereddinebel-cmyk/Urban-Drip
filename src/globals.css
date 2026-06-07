@@ -53,9 +53,7 @@ html, body {
 
 body {
   font-family: var(--font-sans);
-  font-weight: 100;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  font-weight: 400;
   background-color: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -69,10 +67,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-serif);
-  font-weight: 400;
+  font-family: var(--font-sans);
+  font-weight: 700;
   margin-bottom: var(--spacing-md);
-  letter-spacing: 1px;
 }
 
 a {
