@@ -81,28 +81,6 @@ export default function Home({ featured = [] }: HomeProps) {
 
             <HeroSection />
 
-            <section className="w-full bg-[var(--bg)] pt-16 pb-16 md:pt-24 md:pb-24 border-b border-[var(--border-color)]">
-                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-                    <div className="flex flex-row items-center justify-between w-full overflow-x-auto whitespace-nowrap gap-6 md:gap-12 scrollbar-hide">
-                        <div className="flex flex-col items-center justify-center text-center flex-1">
-                            <h3 className="text-[13px] md:text-[15px] font-bold text-[var(--text)] mb-1 font-sans tracking-snug">LIVRAISON</h3>
-                            <p className="text-[12px] md:text-[14px] text-black font-bold">69 Wilaya disponible</p>
-                        </div>
-                        <div className="flex flex-col items-center justify-center text-center flex-1">
-                            <h3 className="text-[13px] md:text-[15px] font-bold text-[var(--text)] mb-1 font-sans tracking-snug">Exclusive Items</h3>
-                            <p className="text-[12px] md:text-[14px] text-black font-bold">Only on our website</p>
-                        </div>
-                        <div className="flex flex-col items-center justify-center text-center flex-1">
-                            <h3 className="text-[13px] md:text-[15px] font-bold text-[var(--text)] mb-1 font-sans tracking-snug">Online Support</h3>
-                            <p className="text-[12px] md:text-[14px] text-black font-bold">Serving you via WhatsApp</p>
-                        </div>
-                        <div className="flex flex-col items-center justify-center text-center flex-1">
-                            <h3 className="text-[13px] md:text-[15px] font-bold text-[var(--text)] mb-1 font-sans tracking-snug">100% Authentic</h3>
-                            <p className="text-[12px] md:text-[14px] text-black font-bold">Authentic Verified Guaranteed</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <section className="max-w-[1400px] mx-auto mt-[120px] lg:mt-[250px] mb-20 lg:mb-32 px-4 md:px-8">
                 <h2 className="mb-[60px] lg:mb-[80px] px-2 text-center md:text-left">

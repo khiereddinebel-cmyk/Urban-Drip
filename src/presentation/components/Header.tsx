@@ -94,23 +94,6 @@ export default function Header() {
     return (
         <>
             <div style={{ position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'var(--bg)' }}>
-                {/* Top Announcement Bar */}
-                <div style={{
-                    backgroundColor: 'var(--black)',
-                    color: 'var(--white)',
-                    height: '35px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    letterSpacing: '1px',
-                    fontFamily: 'var(--font-sans)',
-                    textTransform: 'uppercase'
-                }}>
-                    WELCOME TO URBAN DRIP - PREMIUM SNEAKERS & STREETWEAR
-                </div>
-
                 {!isSearchOpen ? (
                     <>
                         {/* Main Header */}

@@ -76,20 +76,6 @@ export default function HeroSection() {
                     >
                         URBAN DRIP
                     </h1>
-                    <p
-                        className="text-sm md:text-lg font-black tracking-[4px] uppercase mb-10 text-black"
-                        style={{ fontFamily: 'var(--font-sans)', maxWidth: '600px' }}
-                    >
-                        Exclusive Sneakers & Streetwear
-                    </p>
-                    <Link href="/category/sneakers">
-                        <button
-                            className="bg-[var(--text)] text-[var(--bg)] px-12 py-4 text-sm font-bold uppercase tracking-[3px] transition-all border border-[var(--text)] hover:bg-[var(--bg)] hover:text-[var(--text)]"
-                            style={{ fontFamily: 'var(--font-sans)' }}
-                        >
-                            Shop Now
-                        </button>
-                    </Link>
                 </div>
             </section>
         );
@@ -179,24 +165,6 @@ export default function HeroSection() {
                 >
                     {currentSlide.title}
                 </h1>
-                {currentSlide.subtitle && (
-                    <p
-                        className="text-sm md:text-lg font-black tracking-[4px] uppercase mb-10 text-black"
-                        style={{ fontFamily: 'var(--font-sans)', maxWidth: '600px' }}
-                    >
-                        {currentSlide.subtitle}
-                    </p>
-                )}
-                {currentSlide.button_text && (
-                    <Link href={currentSlide.button_link || '#'}>
-                        <button
-                            className="bg-[var(--text)] text-[var(--bg)] px-12 py-4 text-sm font-bold uppercase tracking-[3px] transition-all border border-[var(--text)] hover:bg-[var(--bg)] hover:text-[var(--text)]"
-                            style={{ fontFamily: 'var(--font-sans)' }}
-                        >
-                            {currentSlide.button_text}
-                        </button>
-                    </Link>
-                )}
             </div>
 
             {/* Slider Dots Indicator */}
