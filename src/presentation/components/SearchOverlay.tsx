@@ -42,25 +42,37 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                 const data = await response.json();
                 const results = data.results || data;
                 
-                const mapped: Product[] = results.map((item: any) => ({
-                    id: item.id.toString(),
-                    name: item.name,
-                    price: parseFloat(item.price),
-                    images: (item.images && item.images.length > 0)
-                        ? item.images.map((img: any) => getProductImageUrl(typeof img === 'string' ? img : (img?.image || img || '')))
-                        : [getProductImageUrl(item.image || item.thumbnail || '')],
-                    brand: item.brand_name || item.brand?.name || '',
-                    category: item.category_name || item.category?.name || 'Sneakers',
-                    description: item.description || '',
-                    isExclusive: item.is_exclusive || false,
-                    viewCount: item.view_count || 0,
-                    createdAt: item.created_at,
-                    sizes: (item.sizes || []).map((s: any) => ({
-                        size: s.size,
-                        cm: s.cm
-                    })),
-                    colors: item.colors || []
-                })).slice(0, 5);
+                const mapped: Product[] = results.map((item: any) => {
+                    const imgUrls: string[] = [];
+                    if (item.image) imgUrls.push(getProductImageUrl(item.image));
+                    if (item.main_image) imgUrls.push(getProductImageUrl(item.main_image));
+                    if (item.images && Array.isArray(item.images)) {
+                        item.images.forEach((img: any) => {
+                            if (typeof img === 'string') imgUrls.push(getProductImageUrl(img));
+                            else if (img && img.image) imgUrls.push(getProductImageUrl(img.image));
+                        });
+                    }
+                    if (imgUrls.length === 0) {
+                        imgUrls.push("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100%' height='100%' fill='%23f5f5f5'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='10' fill='%23cccccc'>IMAGE</text></svg>");
+                    }
+                    return {
+                        id: item.id.toString(),
+                        name: item.name,
+                        price: parseFloat(item.price),
+                        images: imgUrls,
+                        brand: item.brand_name || item.brand?.name || '',
+                        category: item.category_name || item.category?.name || 'Sneakers',
+                        description: item.description || '',
+                        isExclusive: item.is_exclusive || false,
+                        viewCount: item.view_count || 0,
+                        createdAt: item.created_at,
+                        sizes: (item.sizes || []).map((s: any) => ({
+                            size: s.size,
+                            cm: s.cm
+                        })),
+                        colors: item.colors || []
+                    };
+                }).slice(0, 5);
                 
                 setProducts(mapped);
             } catch (error) {
@@ -146,6 +158,8 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
         return <span style={{ fontWeight: 700, color: '#111', fontSize: '15px', fontFamily: 'var(--font-sans)' }}>{suggestion}</span>;
     };
 
+    const PLACEHOLDER_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100%' height='100%' fill='%23f5f5f5'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='10' fill='%23cccccc'>IMAGE</text></svg>";
+
     if (!isOpen) return null;
 
     return (
@@ -154,9 +168,11 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                 position: 'fixed', 
                 inset: 0, 
                 zIndex: 9999, 
-                backgroundColor: 'rgba(0,0,0,0.5)',
+                backgroundColor: 'rgba(0,0,0,0.4)',
                 display: 'flex',
-                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
                 overflowY: 'auto'
             }}
             onClick={onClose}
@@ -165,30 +181,60 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                 style={{ 
                     backgroundColor: 'white', 
                     width: '100%', 
-                    minHeight: '100vh',
+                    maxWidth: '800px',
+                    maxHeight: '85vh',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    position: 'relative',
+                    border: '1.5px solid #000',
+                    overflowY: 'auto'
                 }}
+                className="w-full md:max-w-[800px] h-auto rounded-sm shadow-xl"
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* Desktop Close X Button */}
+                <button
+                    onClick={onClose}
+                    style={{
+                        position: 'absolute',
+                        right: '-45px',
+                        top: '0',
+                        background: 'none',
+                        border: 'none',
+                        color: '#000000',
+                        cursor: 'pointer',
+                        padding: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                    className="hidden md:flex"
+                    aria-label="Close"
+                >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+
                 {/* Search Bar Header */}
                 <div style={{
-                    borderBottom: '2px solid #000',
-                    height: '110px',
+                    borderBottom: '1.5px solid #eee',
+                    height: '90px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: '0 24px',
                     backgroundColor: 'white'
                 }}>
-                    <div style={{ width: '100%', maxWidth: '1200px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '15px' }}>
                         <div style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                             <label style={{ 
-                                fontSize: '11px', 
-                                fontWeight: 600, 
-                                textTransform: 'capitalize', 
-                                color: '#0070f3',
-                                letterSpacing: '0.5px',
+                                fontSize: '10px', 
+                                fontWeight: 700, 
+                                textTransform: 'uppercase', 
+                                color: '#888888',
+                                letterSpacing: '1px',
                                 fontFamily: 'var(--font-sans)',
                                 marginBottom: '2px'
                             }}>
@@ -205,7 +251,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                                         width: '100%', 
                                         border: 'none', 
                                         outline: 'none', 
-                                        fontSize: '28px',
+                                        fontSize: '22px',
                                         fontWeight: 700,
                                         textTransform: 'uppercase',
                                         fontFamily: 'var(--font-sans)',
@@ -231,7 +277,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                                         }}
                                         aria-label="Clear text"
                                     >
-                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <circle cx="12" cy="12" r="10" fill="#f3f4f6" stroke="none"></circle>
                                             <line x1="15" y1="9" x2="9" y2="15" stroke="#4b5563" strokeLinecap="round"></line>
                                             <line x1="9" y1="9" x2="15" y2="15" stroke="#4b5563" strokeLinecap="round"></line>
@@ -242,7 +288,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         </div>
 
                         {/* Divider Line */}
-                        <div style={{ height: '35px', width: '1px', backgroundColor: '#e5e7eb' }}></div>
+                        <div style={{ height: '30px', width: '1px', backgroundColor: '#e5e7eb' }}></div>
 
                         {/* Search Magnifying Glass Icon / Close */}
                         <button 
@@ -250,31 +296,39 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             aria-label="Close search"
                         >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="1.5">
-                                <circle cx="10.5" cy="10.5" r="7.5"></circle>
-                                <path d="M21 21l-5.2-5.2"></path>
-                            </svg>
+                            <span className="hidden md:block">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="1.5">
+                                    <circle cx="10.5" cy="10.5" r="7.5"></circle>
+                                    <path d="M21 21l-5.2-5.2"></path>
+                                </svg>
+                            </span>
+                            <span className="md:hidden">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="1.5">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </span>
                         </button>
                     </div>
                 </div>
 
                 {/* Suggestions & Products Columns */}
-                <div style={{ flex: 1, padding: '40px 24px', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
-                    <div className="flex flex-col md:flex-row gap-10">
+                <div style={{ flex: 1, padding: '24px', width: '100%' }}>
+                    <div className="flex flex-col md:flex-row gap-8">
                         {/* Suggestions Column */}
-                        <div className="w-full md:w-[320px] md:border-r md:border-gray-200 md:pr-10">
+                        <div className="w-full md:w-[260px] md:border-r md:border-gray-200 md:pr-6">
                             <h3 style={{ 
                                 fontSize: '11px', 
                                 fontWeight: 700, 
                                 color: '#999', 
                                 textTransform: 'uppercase', 
                                 letterSpacing: '1px',
-                                marginBottom: '20px',
+                                marginBottom: '15px',
                                 fontFamily: 'var(--font-sans)'
                             }}>
                                 SUGGESTIONS
                             </h3>
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-3.5">
                                 {suggestions.map((s, i) => (
                                     <div 
                                         key={i} 
@@ -291,19 +345,19 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         </div>
 
                         {/* Products Column */}
-                        <div className="flex-1 md:pl-2">
+                        <div className="flex-1">
                             <h3 style={{ 
                                 fontSize: '11px', 
                                 fontWeight: 700, 
                                 color: '#999', 
                                 textTransform: 'uppercase', 
                                 letterSpacing: '1px',
-                                marginBottom: '20px',
+                                marginBottom: '15px',
                                 fontFamily: 'var(--font-sans)'
                             }}>
                                 PRODUCTS
                             </h3>
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col gap-5">
                                 {loading ? (
                                     <p style={{ fontSize: '14px', color: '#999', fontFamily: 'var(--font-sans)' }}>Searching products...</p>
                                 ) : (
@@ -315,7 +369,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                                             style={{ 
                                                 display: 'flex', 
                                                 alignItems: 'center', 
-                                                gap: '20px', 
+                                                gap: '15px', 
                                                 textDecoration: 'none',
                                                 color: 'black',
                                                 transition: 'opacity 0.2s'
@@ -331,20 +385,20 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 overflow: 'hidden',
-                                                borderRadius: '4px'
+                                                borderRadius: '4px',
+                                                border: '1px solid #eaeaea'
                                             }} className="shrink-0">
                                                 <img
-                                                    src={product.images[0] || '/images/placeholder.jpg'} 
+                                                    src={product.images[0] || PLACEHOLDER_SVG} 
                                                     alt={product.name} 
-                                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
                                                     onError={(e) => {
-                                                        // fallback in case of broken image URL
-                                                        e.currentTarget.src = '/images/placeholder.jpg';
+                                                        e.currentTarget.src = PLACEHOLDER_SVG;
                                                     }}
                                                 />
                                             </div>
                                             <span style={{ 
-                                                fontSize: '15px', 
+                                                fontSize: '14px', 
                                                 fontWeight: 700,
                                                 fontFamily: 'var(--font-sans)',
                                                 color: '#000',
@@ -369,22 +423,20 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         onClick={onClose}
                         style={{ 
                             borderTop: '1px solid #eee', 
-                            padding: '20px 24px',
+                            padding: '15px 24px',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             cursor: 'pointer',
                             fontFamily: 'var(--font-sans)',
                             width: '100%',
-                            maxWidth: '1200px',
-                            margin: '0 auto',
                             backgroundColor: 'white'
                         }}
                     >
-                        <span style={{ fontSize: '16px', fontWeight: 700 }}>
+                        <span style={{ fontSize: '15px', fontWeight: 700 }}>
                             Search for &ldquo;{searchTerm}&rdquo;
                         </span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>

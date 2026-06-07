@@ -243,7 +243,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
                             margin: '0 auto'
                         }}>
                             {displayedProducts.map(product => (
-                                <ProductCard key={product.id} product={product} />
+                                <ProductCard key={product.id} product={product} className="w-full" />
                             ))}
                         </div>
 

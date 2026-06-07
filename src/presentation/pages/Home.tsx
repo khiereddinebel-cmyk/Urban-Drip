@@ -82,7 +82,7 @@ export default function Home({ featured = [] }: HomeProps) {
             <HeroSection />
 
 
-            <section className="max-w-[1400px] mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8">
+            <section className="max-w-7xl mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8">
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -92,23 +92,34 @@ export default function Home({ featured = [] }: HomeProps) {
                     </span>
                 </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 md:gap-x-6 gap-y-10">
+                <div
+                    ref={latestRef}
+                    className="flex overflow-x-auto gap-4 pb-4 snap-x scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
                     {latestDrops.map((product) => (
-                        <ProductCard key={`latest-${product.id}`} product={product} />
+                        <div key={`latest-${product.id}`} className="snap-start">
+                            <ProductCard product={product} />
+                        </div>
                     ))}
                 </div>
                 {latestDrops.length === 0 && (
                     <div className="text-gray-400 p-4 w-full text-center">No latest items.</div>
                 )}
 
-                <div className="flex flex-col items-center justify-center mt-12">
+                <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
+                    <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
+                        <button onClick={() => scroll(latestRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
+                        <span>1 - {latestDrops.length} items</span>
+                        <button onClick={() => scroll(latestRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
+                    </div>
                     <Link href="/latest-drops" className="inline-flex items-center justify-center border border-black bg-black px-10 md:px-16 py-3 md:py-4 text-[14px] font-bold text-white hover:bg-white hover:text-black transition-colors duration-300">
                         View all
                     </Link>
                 </div>
             </section>
 
-            <section className="max-w-[1400px] mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]">
+            <section className="max-w-7xl mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]">
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -118,23 +129,34 @@ export default function Home({ featured = [] }: HomeProps) {
                     </span>
                 </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 md:gap-x-6 gap-y-10">
+                <div
+                    ref={viewedRef}
+                    className="flex overflow-x-auto gap-4 pb-4 snap-x scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
                     {mostViewed.map((product) => (
-                        <ProductCard key={`viewed-${product.id}`} product={product} pricePrefix="From " />
+                        <div key={`viewed-${product.id}`} className="snap-start">
+                            <ProductCard product={product} pricePrefix="From " />
+                        </div>
                     ))}
                 </div>
                 {mostViewed.length === 0 && (
                     <div className="text-gray-400 p-4 w-full text-center">No viewed items.</div>
                 )}
 
-                <div className="flex flex-col items-center justify-center mt-12">
+                <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
+                    <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
+                        <button onClick={() => scroll(viewedRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
+                        <span>1 - {mostViewed.length} items</span>
+                        <button onClick={() => scroll(viewedRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
+                    </div>
                     <Link href="/most-viewed" className="inline-flex items-center justify-center border border-black bg-black px-10 md:px-16 py-3 md:py-4 text-[14px] font-bold text-white hover:bg-white hover:text-black transition-colors duration-300">
                         View all
                     </Link>
                 </div>
             </section>
 
-            <section className="max-w-[1400px] mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]">
+            <section className="max-w-7xl mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]">
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -144,10 +166,10 @@ export default function Home({ featured = [] }: HomeProps) {
                     </span>
                 </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-10">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 lg:gap-16">
                     {displayBrands.map((brand, idx) => (
                         <Link key={idx} href={brand.link} className="flex flex-col items-start w-full group">
-                            <div className="w-full aspect-square bg-white relative overflow-hidden mb-4 flex items-center justify-center">
+                            <div className="w-[80%] sm:w-[75%] md:w-[70%] lg:w-[65%] aspect-square bg-white relative overflow-hidden mb-4 flex items-center justify-center rounded-sm border border-gray-200">
                                 <Image
                                     src={brand.image}
                                     alt={brand.name}

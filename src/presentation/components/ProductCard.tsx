@@ -7,20 +7,24 @@ import { getProductImageUrl } from '../../shared/utils/imageUtils';
 interface ProductCardProps {
   product: Product;
   pricePrefix?: string;
+  className?: string;
 }
 
-export default function ProductCard({ product, pricePrefix = "" }: ProductCardProps) {
+export default function ProductCard({ product, pricePrefix = "", className = "" }: ProductCardProps) {
   const imageUrl = getProductImageUrl(product.images?.[0]);
 
   return (
-    <Link href={`/product/${product.id}`} className="group block w-full">
-      <div className="relative aspect-[4/3] w-full bg-white flex items-center justify-center mb-4 overflow-hidden">
+    <Link 
+      href={`/product/${product.id}`} 
+      className={`group block flex-shrink-0 px-3 ${className || 'w-[200px] md:w-[240px]'}`}
+    >
+      <div className="relative aspect-square w-full bg-white flex items-center justify-center mb-4 overflow-hidden border border-gray-50 rounded-sm">
         <Image
           src={imageUrl}
           alt={product.name}
           fill
-          className="object-contain transition-transform duration-500 group-hover:scale-105 p-1"
-          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
+          className="object-contain transition-transform duration-500 group-hover:scale-105 p-6 md:p-8"
+          sizes="(max-width: 768px) 200px, 240px"
           unoptimized
         />
       </div>
