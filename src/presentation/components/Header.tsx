@@ -192,42 +192,7 @@ export default function Header() {
                             </div>
                         </header>
 
-                        {/* Sub-Navigation Bar - Updated for all items visibility */}
-                        <nav className="sub-nav-bar desktop-subnav" style={{
-                            backgroundColor: 'var(--bg)',
-                            borderBottom: '1px solid var(--border-color)',
-                            padding: '12px 24px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            flexWrap: 'wrap', // Allow two lines
-                            gap: '12px 25px', // Horizontal 25px, Vertical 12px
-                            overflowX: 'hidden',
-                            minHeight: '45px'
-                        }}>
-                            {orderedNavItems.map((item) => {
-                                const isActive = pathname === item.path;
-                                return (
-                                    <Link
-                                        key={`${item.name}-${item.path}`}
-                                        href={item.path}
-                                        style={{
-                                            fontSize: '12px',
-                                            fontWeight: isActive ? 700 : 500,
-                                            letterSpacing: '1px',
-                                            color: 'var(--text)',
-                                            textDecoration: 'none',
-                                            transition: 'var(--transition-fast)',
-                                            fontFamily: 'var(--font-sans)',
-                                            borderBottom: isActive ? '2px solid var(--text)' : '2px solid transparent',
-                                            paddingBottom: '2px',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                );
-                            })}
-                        </nav>
+
                     </>
                 ) : (
                     /* Search Mode Header */

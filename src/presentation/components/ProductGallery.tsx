@@ -78,7 +78,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
             {/* Thumbnails list */}
             {galleryImages.length > 1 && (
                 <div 
-                    className="flex flex-row md:flex-col gap-3 w-full md:w-[85px] overflow-x-auto md:overflow-y-auto pb-2 md:pb-0 order-last md:order-first max-h-[500px] shrink-0"
+                    className="flex flex-row md:flex-col gap-3 w-full md:w-[85px] pb-2 md:pb-0 order-last md:order-first shrink-0"
                     style={{
                         scrollbarWidth: 'thin',
                         msOverflowStyle: 'none',
@@ -88,7 +88,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                         <button
                             key={idx}
                             onClick={() => { setActiveImage(idx); }}
-                            className={`relative w-[65px] h-[65px] md:w-[85px] md:h-[85px] overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 border ${
+                            className={`relative flex-1 aspect-square md:w-[85px] md:h-[85px] md:flex-initial rounded-xl overflow-hidden cursor-pointer transition-all duration-200 border ${
                                 activeImage === idx ? 'border-black' : 'border-gray-200 hover:border-gray-400'
                             }`}
                         >
@@ -107,7 +107,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
             {/* Main Image Container */}
             <div
                 ref={mainImageRef}
-                className="relative w-full max-w-[500px] aspect-square bg-white overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last group cursor-pointer mx-auto"
+                className="relative w-full max-w-[500px] aspect-[4/5] md:aspect-square bg-white overflow-hidden flex items-center justify-center touch-pan-y flex-1 order-first md:order-last group cursor-pointer mx-auto"
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onClick={() => {
@@ -132,10 +132,10 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
                 </button>
 
-                {/* Expand / Fullscreen Button (Bottom-Right) */}
+                {/* Expand / Fullscreen Button (Bottom-Left Circle) */}
                 <button
                     onClick={(e) => { e.stopPropagation(); setIsFullscreen(true); }}
-                    className="absolute right-4 bottom-4 z-10 bg-white/80 hover:bg-white text-black border-none rounded-sm w-9 h-9 cursor-pointer flex items-center justify-center shadow-sm transition-colors duration-200"
+                    className="absolute left-4 bottom-4 z-10 bg-white text-black border-none rounded-full w-10 h-10 cursor-pointer flex items-center justify-center shadow-md transition-colors duration-200"
                     aria-label="Fullscreen zoom"
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -145,6 +145,18 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                         <line x1="3" y1="21" x2="10" y2="14"></line>
                     </svg>
                 </button>
+
+                {/* Dot pagination indicators */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+                    {galleryImages.map((_, idx) => (
+                        <span
+                            key={idx}
+                            className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                                activeImage === idx ? 'bg-white scale-125' : 'bg-white/50'
+                            }`}
+                        />
+                    ))}
+                </div>
 
                 {/* Active Image (No hover zoom) */}
                 <div className="relative w-full h-full p-4">

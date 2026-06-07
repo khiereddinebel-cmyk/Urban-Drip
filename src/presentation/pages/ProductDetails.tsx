@@ -56,39 +56,42 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                 </div>
 
                 {/* Right: Info & COD Form */}
-                <div style={{ position: 'sticky', top: '20px' }}>
-                    <div style={{ marginBottom: '30px' }}>
+                <div style={{ position: 'sticky', top: '20px' }} className="w-full">
+                    <div className="text-center md:text-left mb-[30px]">
                         <h2 style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text)', opacity: 0.6, marginBottom: '10px' }}>
                             {product.brand}
                         </h2>
                         <h1 className="product-details-title" style={{ fontSize: '32px', fontWeight: 400, fontFamily: 'var(--font-sans)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px', color: '#222' }}>
                             {product.name}
                         </h1>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '20px', fontWeight: 500, color: '#333' }}>
-                            <span style={{ color: '#888', textDecoration: 'line-through', fontWeight: 400, fontSize: '18px' }}>
+                        <div className="flex justify-center md:justify-start items-center gap-[15px] text-[20px] font-medium text-[#333]">
+                            <span className="hidden md:inline text-[#888] line-through font-normal text-[18px]">
                                 {(product.price * 1.1).toLocaleString()} DA
                             </span>
-                            <span style={{ color: '#27ae60' }}>
+                            <span style={{ color: '#27ae60' }} className="text-[22px] md:text-[20px] font-bold">
                                 {product.price.toLocaleString()} DA
                             </span>
                         </div>
                     </div>
 
                     {/* Sizes Section */}
-                    <div style={{ marginBottom: '30px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '12px' }}>
-                            <h4 style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', margin: 0 }}>Pointeur:</h4>
+                    <div style={{ marginBottom: '30px' }} className="w-full" id="sizes-section">
+                        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-[12px] gap-2 md:gap-0">
+                            <h4 style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', margin: 0 }} className="text-center md:text-left">
+                                Pointeur :
+                            </h4>
                             <button 
                                 onClick={() => {
                                     const guide = product.sizes.map(s => `EU ${s.size} = ${s.cm}cm`).join('\n');
                                     alert(`Guide des Tailles :\n${guide || 'Aucune donnée disponible'}`);
                                 }}
                                 style={{ fontSize: '11px', textDecoration: 'underline', color: '#27ae60', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontWeight: 700 }}
+                                className="hidden md:block"
                             >
                                 SIZE GUIDE (CM)
                             </button>
                         </div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        <div className="flex flex-wrap justify-center md:justify-start gap-[8px] max-w-[340px] md:max-w-none mx-auto md:mx-0">
                             {product.sizes.map((size) => {
                                 const isActive = selectedSize === size.size;
                                 const isHovered = hoveredSize === size.size;
@@ -121,7 +124,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                         </div>
                     </div>
 
-                    <div style={{ marginBottom: '15px' }}>
+                    <div style={{ marginBottom: '15px' }} className="hidden md:block">
                         <button
                             onClick={handleAddToCart}
                             style={{
@@ -205,6 +208,32 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                         <p style={{ textAlign: 'center', color: 'var(--text)', opacity: 0.4 }}>Informations bientôt disponibles pour cette section.</p>
                     )}
                 </div>
+            </div>
+
+            {/* Mobile Sticky Action Bar */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-[50] bg-white border-t border-gray-200 p-3 flex justify-center items-center shadow-lg">
+                <button
+                    onClick={() => {
+                        const el = document.getElementById('sizes-section');
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }}
+                    style={{
+                        backgroundColor: '#27ae60',
+                        color: '#fff',
+                        width: '100%',
+                        padding: '14px',
+                        fontSize: '14px',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        borderRadius: '4px',
+                        textAlign: 'center'
+                    }}
+                >
+                    SELECT OPTIONS
+                </button>
             </div>
         </div>
     );
