@@ -91,6 +91,8 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                 {/* Navigation Arrows */}
                 <button
                     onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
                     className="absolute z-10 border-none cursor-pointer flex items-center justify-center hover:opacity-90 transition-opacity"
                     style={{ 
                         left: '12px',
@@ -109,6 +111,8 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                 </button>
                 <button
                     onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
                     className="absolute z-10 border-none cursor-pointer flex items-center justify-center hover:opacity-90 transition-opacity"
                     style={{ 
                         right: '12px',
@@ -123,7 +127,7 @@ export default function ProductGallery({ images = [] }: ProductGalleryProps) {
                     }}
                     aria-label="Next image"
                 >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)" /></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
                 </button>
 
                 {/* Dot pagination indicators */}
