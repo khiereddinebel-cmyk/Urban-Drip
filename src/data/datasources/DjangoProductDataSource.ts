@@ -1,12 +1,12 @@
 import { ProductModel } from '../models/ProductModel';
 import { ProductRemoteDataSource } from './ProductRemoteDataSource';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-const BASE_URL = `${API_BASE_URL}/api`;
+import { getApiBaseUrl } from '../../shared/utils/imageUtils';
 
 export class DjangoProductDataSource implements ProductRemoteDataSource {
     private async fetchApi(endpoint: string, options: RequestInit = {}) {
-        const response = await fetch(`${BASE_URL}${endpoint}`, {
+        const apiBase = getApiBaseUrl();
+        const cleanBase = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase;
+        const response = await fetch(`${cleanBase}/api${endpoint}`, {
             cache: 'no-store',
             ...options,
             headers: {
@@ -32,13 +32,11 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
                 if (
                     parsed.hostname === 'localhost' || 
                     parsed.hostname === '127.0.0.1' || 
-                    parsed.hostname === '0.0.0.0' || 
-                    parsed.pathname.startsWith('/media/') ||
-                    parsed.hostname.includes('railway')
+                    parsed.hostname === '0.0.0.0'
                 ) {
                     path = parsed.pathname;
                 } else {
-                    return url; // Keep external hosts (e.g., Unsplash, Firebase)
+                    return url; // Keep external or production hosts (e.g., Railway, custom domain)
                 }
             } catch (e) {
                 // fallback
@@ -54,7 +52,8 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
             cleanUrl = `/media${cleanUrl}`;
         }
         
-        const base = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+        const apiBase = getApiBaseUrl();
+        const base = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase;
         return `${base}${cleanUrl}`;
     }
 

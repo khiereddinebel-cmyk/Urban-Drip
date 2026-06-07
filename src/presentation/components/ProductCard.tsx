@@ -18,7 +18,8 @@ export default function ProductCard({ product, pricePrefix = "", className = "" 
   return (
     <Link 
       href={`/product/${product.id}`} 
-      className={`group block flex-shrink-0 px-3 snap-start ${widthClass} ${className}`}
+      className={`group block flex-shrink-0 snap-start ${widthClass} ${className}`}
+      style={{ paddingLeft: '12px', paddingRight: '12px' }}
     >
       <div className="relative aspect-square w-full bg-white flex items-center justify-center mb-4 overflow-hidden border border-gray-50 rounded-sm">
         <Image

@@ -95,7 +95,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 <div
                     ref={latestRef}
                     className="flex overflow-x-auto justify-start md:justify-center gap-8 md:gap-10 pb-4 snap-x scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', gap: '30px' }}
                 >
                     {latestDrops.map((product) => (
                         <ProductCard key={`latest-${product.id}`} product={product} />
@@ -130,7 +130,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 <div
                     ref={viewedRef}
                     className="flex overflow-x-auto justify-start md:justify-center gap-8 md:gap-10 pb-4 snap-x scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', gap: '30px' }}
                 >
                     {mostViewed.map((product) => (
                         <ProductCard key={`viewed-${product.id}`} product={product} pricePrefix="From " />

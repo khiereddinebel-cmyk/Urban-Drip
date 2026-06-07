@@ -146,7 +146,7 @@ export default function CODForm({ productId, productName, productPrice, selected
             fontFamily: 'inherit',
         }}>
             {/* Inputs Grid */}
-            <div className="cod-form-inputs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+            <div className="cod-form-inputs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px', marginBottom: '20px' }}>
                 <input
                     type="text"
                     placeholder="Nom complet / الاسم الكامل"
