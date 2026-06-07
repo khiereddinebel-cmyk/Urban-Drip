@@ -82,7 +82,10 @@ export default function Home({ featured = [] }: HomeProps) {
             <HeroSection />
 
 
-            <section className="max-w-7xl mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8">
+            <section 
+                className="max-w-7xl mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8"
+                style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}
+            >
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -119,7 +122,10 @@ export default function Home({ featured = [] }: HomeProps) {
                 </div>
             </section>
 
-            <section className="max-w-7xl mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]">
+            <section 
+                className="max-w-7xl mx-auto pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]"
+                style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', borderTop: '1px solid var(--border-color)' }}
+            >
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -156,7 +162,10 @@ export default function Home({ featured = [] }: HomeProps) {
                 </div>
             </section>
 
-            <section className="max-w-7xl mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]">
+            <section 
+                className="max-w-7xl mx-auto px-4 pt-[100px] lg:pt-[150px] pb-20 lg:pb-32 border-t border-[var(--border-color)]"
+                style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', borderTop: '1px solid var(--border-color)' }}
+            >
                 <h2 className="mb-[40px] px-2 text-left">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
@@ -168,7 +177,7 @@ export default function Home({ featured = [] }: HomeProps) {
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 lg:gap-16">
                     {displayBrands.map((brand, idx) => (
-                        <Link key={idx} href={brand.link} className="flex flex-col items-start w-full group">
+                        <Link key={idx} href={brand.link} className="flex flex-col items-center w-full group">
                             <div className="w-[80%] sm:w-[75%] md:w-[70%] lg:w-[65%] aspect-square bg-white relative overflow-hidden mb-4 flex items-center justify-center rounded-sm border border-gray-200">
                                 <Image
                                     src={brand.image}
@@ -181,7 +190,7 @@ export default function Home({ featured = [] }: HomeProps) {
                                     }}
                                 />
                             </div>
-                            <div className="flex items-center text-left mt-2 px-1">
+                            <div className="flex items-center text-center mt-2 px-1">
                                 <span className="font-bold text-[15px] md:text-[16px] text-[var(--text)] group-hover:underline uppercase tracking-normal">
                                     {brand.name} <span className="text-gray-400 text-[15px] ml-1">&rarr;</span>
                                 </span>
@@ -245,7 +254,10 @@ export default function Home({ featured = [] }: HomeProps) {
                 </section>
             )}
 
-            <section className="max-w-[1400px] mx-auto py-16 px-4 md:px-8 mt-24 lg:mt-32 text-center mb-16">
+            <section 
+                className="max-w-[1400px] mx-auto py-16 px-4 md:px-8 mt-24 lg:mt-32 text-center mb-16"
+                style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}
+            >
                 <p className="text-[14px] uppercase tracking-widest mb-2" style={{ fontWeight: 300, color: '#000' }}>vous êtes les bienvenus chez nous</p>
                 <h2
                     className="text-[36px] md:text-[48px] lg:text-[56px] uppercase tracking-wide mb-4"

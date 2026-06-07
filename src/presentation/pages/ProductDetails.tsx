@@ -57,7 +57,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                 </div>
 
                 {/* Right: Info & COD Form */}
-                <div style={{ position: 'sticky', top: '20px' }} className="w-full">
+                <div style={{ position: 'sticky', top: '20px' }} className="w-full px-4 md:px-0">
                     <div className="text-center md:text-left mb-[30px]">
                         <h2 style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text)', opacity: 0.6, marginBottom: '10px' }}>
                             {product.brand}
