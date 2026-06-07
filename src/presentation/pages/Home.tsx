@@ -82,8 +82,8 @@ export default function Home({ featured = [] }: HomeProps) {
             <HeroSection />
 
 
-            <section className="max-w-[1400px] mx-auto mt-[120px] lg:mt-[250px] mb-20 lg:mb-32 px-4 md:px-8">
-                <h2 className="mb-[60px] lg:mb-[80px] px-2 text-center md:text-left">
+            <section className="max-w-[1400px] mx-auto mt-[120px] lg:mt-[200px] mb-20 lg:mb-32 px-4 md:px-8">
+                <h2 className="mb-[60px] lg:mb-[80px] px-2 text-center">
                     <span 
                         className="text-[36px] md:text-[48px] lg:text-[56px] uppercase tracking-wide"
                         style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-serif)' }}
@@ -92,65 +92,45 @@ export default function Home({ featured = [] }: HomeProps) {
                     </span>
                 </h2>
 
-                <div
-                    ref={latestRef}
-                    className="flex overflow-x-auto gap-20 md:gap-32 pb-4 snap-x scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                    <style dangerouslySetInnerHTML={{ __html: `::-webkit-scrollbar { display: none; }` }} />
-
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-16 justify-items-center">
                     {latestDrops.map((product) => (
-                        <div key={`latest-${product.id}`} className="snap-start">
+                        <div key={`latest-${product.id}`} className="w-full flex justify-center">
                             <ProductCard product={product} />
                         </div>
                     ))}
-                    {latestDrops.length === 0 && (
-                        <div className="text-gray-400 p-4 w-full text-center">No latest items.</div>
-                    )}
                 </div>
+                {latestDrops.length === 0 && (
+                    <div className="text-gray-400 p-4 w-full text-center">No latest items.</div>
+                )}
 
-                <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
-                    <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
-                        <button onClick={() => scroll(latestRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
-                        <span>1 - {latestDrops.length} items</span>
-                        <button onClick={() => scroll(latestRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
-                    </div>
-                    <Link href="/latest-drops" className="inline-flex items-center justify-center border border-[var(--text)] bg-[var(--text)] px-10 md:px-16 py-3 md:py-4 text-[16px] font-semibold text-[var(--bg)] hover:bg-[var(--bg)] hover:text-[var(--text)] transition-colors duration-300">
+                <div className="flex flex-col items-center justify-center mt-12">
+                    <Link href="/latest-drops" className="inline-flex items-center justify-center border border-[var(--text)] bg-[var(--text)] px-10 md:px-16 py-3 md:py-4 text-[13px] font-semibold text-[var(--bg)] hover:bg-[var(--bg)] hover:text-[var(--text)] transition-colors duration-300 tracking-[2px] uppercase">
                         View all
                     </Link>
                 </div>
             </section>
 
-            <section className="max-w-[1400px] mx-auto pt-[120px] lg:pt-[200px] pb-20 lg:pb-32 px-4 md:px-8">
+            <section className="max-w-[1400px] mx-auto pt-[120px] lg:pt-[200px] pb-20 lg:pb-32 px-4 md:px-8 border-t border-[var(--border-color)]">
                 <h2 
-                    className="text-[36px] md:text-[48px] lg:text-[56px] mb-[60px] lg:mb-[80px] px-2 uppercase tracking-wide text-center md:text-left"
+                    className="text-[36px] md:text-[48px] lg:text-[56px] mb-[60px] lg:mb-[80px] px-2 uppercase tracking-wide text-center"
                     style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-serif)' }}
                 >
                     MOST VIEWED PRODUCTS
                 </h2>
 
-                <div
-                    ref={viewedRef}
-                    className="flex overflow-x-auto gap-20 md:gap-32 pb-4 snap-x scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-16 justify-items-center">
                     {mostViewed.map((product) => (
-                        <div key={`viewed-${product.id}`} className="snap-start">
+                        <div key={`viewed-${product.id}`} className="w-full flex justify-center">
                             <ProductCard product={product} pricePrefix="From " />
                         </div>
                     ))}
-                    {mostViewed.length === 0 && (
-                        <div className="text-gray-400 p-4 w-full text-center">No viewed items.</div>
-                    )}
                 </div>
+                {mostViewed.length === 0 && (
+                    <div className="text-gray-400 p-4 w-full text-center">No viewed items.</div>
+                )}
 
-                <div className="flex flex-col items-center justify-center mt-6 lg:mt-10">
-                    <div className="flex items-center gap-6 text-gray-500 text-[15px] font-bold mb-6">
-                        <button onClick={() => scroll(viewedRef, 'left')} className="text-gray-400 hover:text-gray-800 transition-colors px-2">&lt;</button>
-                        <span>1 - {mostViewed.length} items</span>
-                        <button onClick={() => scroll(viewedRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
-                    </div>
-                    <Link href="/most-viewed" className="inline-flex items-center justify-center border border-[var(--text)] bg-[var(--text)] px-10 md:px-16 py-3 md:py-4 text-[16px] font-semibold text-[var(--bg)] hover:bg-[var(--bg)] hover:text-[var(--text)] transition-colors duration-300">
+                <div className="flex flex-col items-center justify-center mt-12">
+                    <Link href="/most-viewed" className="inline-flex items-center justify-center border border-[var(--text)] bg-[var(--text)] px-10 md:px-16 py-3 md:py-4 text-[13px] font-semibold text-[var(--bg)] hover:bg-[var(--bg)] hover:text-[var(--text)] transition-colors duration-300 tracking-[2px] uppercase">
                         View all
                     </Link>
                 </div>

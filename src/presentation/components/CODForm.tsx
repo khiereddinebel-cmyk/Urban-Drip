@@ -1,5 +1,7 @@
 'use client';
+
 import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { wilayas } from '../../shared/utils/wilayaData';
 import { communesByWilaya } from '../../shared/utils/communeData';
 
@@ -8,9 +10,11 @@ interface CODFormProps {
     productName: string;
     productPrice: number;
     selectedSize: number | string | null;
+    productImage?: string;
 }
 
-export default function CODForm({ productId, productName, productPrice, selectedSize }: CODFormProps) {
+export default function CODForm({ productId, productName, productPrice, selectedSize, productImage = "" }: CODFormProps) {
+    const router = useRouter();
     const [quantity, setQuantity] = useState(1);
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
@@ -38,7 +42,7 @@ export default function CODForm({ productId, productName, productPrice, selected
         }
 
         if (!customerName || !customerPhone || !commune) {
-            alert('Veuillez remplir tous les champs / يرجى ملء كل الخانات');
+            alert('Veuillez remplir tous les champs / يergى ملء كل الخانات');
             return;
         }
 
@@ -80,13 +84,42 @@ export default function CODForm({ productId, productName, productPrice, selected
             }
 
             if (result && result.order_number) {
-                alert(`Commande confirmée ! / تم تأكيد الطلب\n#${result.order_number}`);
+                // Save order details to sessionStorage for the success page
+                const completedOrder = {
+                    order_number: result.order_number,
+                    date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+                    status: 'En cours de traitement',
+                    customer_name: customerName,
+                    customer_phone: customerPhone,
+                    customer_email: 'customer@urbandrip.com',
+                    shipping_address: `${activeWilaya.name} (${activeWilaya.nameAr}), ${commune} - ${deliveryType === 'home' ? 'Domicile' : 'Bureau/StopDesk'}`,
+                    wilaya: activeWilaya.name,
+                    baladiya: commune,
+                    delivery_fee: deliveryFee,
+                    delivery_type: deliveryType,
+                    total_price: totalPrice,
+                    items: [
+                        {
+                            name: productName,
+                            image: productImage,
+                            quantity: quantity,
+                            price: productPrice,
+                            selectedSize: String(selectedSize)
+                        }
+                    ]
+                };
+
+                sessionStorage.setItem('last_completed_order', JSON.stringify(completedOrder));
                 
+                // Clear state
                 setCustomerName('');
                 setCustomerPhone('');
                 setCommune('');
+
+                // Redirect to success page
+                router.push(`/checkout/success?order_number=${result.order_number}`);
             } else {
-                throw new Error('La réponse du serveur ne contient pas de numéro de commande / Server response missing order number');
+                throw new Error('La réponse du serveur ne contient pas de numéro de commande');
             }
         } catch (error: any) {
             console.error('Order error:', error);
@@ -98,29 +131,28 @@ export default function CODForm({ productId, productName, productPrice, selected
 
     return (
         <div style={{
-            border: '2px solid #27ae60',
-            borderRadius: '12px',
-            padding: '30px',
+            border: '1px solid #111',
+            borderRadius: '0px',
+            padding: '24px',
             backgroundColor: '#fff',
             marginTop: '30px',
             fontFamily: 'inherit',
-            boxShadow: '0 10px 40px rgba(39, 174, 96, 0.08)'
         }}>
             {/* Inputs Grid */}
-            <div className="cod-form-inputs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
+            <div className="cod-form-inputs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
                 <input
                     type="text"
                     placeholder="Nom Complet / الإسم الكامل"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    style={{ padding: '15px', border: '1.5px solid #eee', borderRadius: '8px', fontSize: '15px', outline: 'none', backgroundColor: '#fcfcfc' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '0px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}
                 />
                 <input
                     type="tel"
                     placeholder="Téléphone / رقم الهاتف"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    style={{ padding: '15px', border: '1.5px solid #eee', borderRadius: '8px', fontSize: '15px', outline: 'none', backgroundColor: '#fcfcfc' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '0px', fontSize: '13px', outline: 'none', backgroundColor: '#fff' }}
                 />
                 <select
                     value={selectedWilayaId}
@@ -133,7 +165,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                             setDeliveryType('home');
                         }
                     }}
-                    style={{ padding: '15px', border: '1.5px solid #eee', borderRadius: '8px', fontSize: '15px', outline: 'none', backgroundColor: '#fcfcfc' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '0px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}
                 >
                     {wilayas.map(w => (
                         <option key={w.id} value={w.id}>{w.id} {w.name} - {w.nameAr}</option>
@@ -142,7 +174,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                 <select
                     value={commune}
                     onChange={(e) => setCommune(e.target.value)}
-                    style={{ padding: '15px', border: '1.5px solid #eee', borderRadius: '8px', fontSize: '15px', outline: 'none', backgroundColor: '#fcfcfc' }}
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '0px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}
                 >
                     <option value="">Commune / البلدية</option>
                     {communes.map((c) => (
@@ -159,47 +191,45 @@ export default function CODForm({ productId, productName, productPrice, selected
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'space-between', 
-                    padding: '15px 0', 
-                    borderTop: '1px solid #f0f0f0', 
+                    padding: '12px 0', 
+                    borderTop: '1px solid #eee', 
                     cursor: 'pointer',
-                    color: '#444'
+                    color: '#111'
                 }}
             >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#27ae60" strokeWidth="1.5">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="1.5">
                         <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                     </svg>
-                    <span style={{ fontWeight: 600, fontSize: '14px' }}>Récapitulatif de la commande</span>
+                    <span style={{ fontWeight: 700, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Récapitulatif</span>
                 </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: showSummary ? 'rotate(180deg)' : 'none', transition: '0.3s' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: showSummary ? 'rotate(180deg)' : 'none', transition: '0.3s' }}>
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
             </div>
 
             {showSummary && (
-                <div style={{ padding: '15px 0', borderTop: '1px dotted #ccc' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                        <span style={{ fontWeight: 800, textTransform: 'uppercase', color: '#333' }}>{productName}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <span style={{ backgroundColor: '#27ae60', color: '#fff', fontSize: '11px', padding: '2px 6px', borderRadius: '3px', fontWeight: 800 }}>x{quantity}</span>
-                            <span style={{ fontWeight: 600 }}>DA</span>
+                <div style={{ padding: '12px 0', borderTop: '1px dotted #ccc' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                        <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#111', fontSize: '11px', letterSpacing: '0.5px' }}>{productName}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px' }}>
+                            <span style={{ backgroundColor: '#000', color: '#fff', padding: '1px 5px', borderRadius: '0px', fontWeight: 700 }}>x{quantity}</span>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '12px' }}>
                         <div style={{ flex: 1 }}>
-                            <span style={{ fontSize: '14px', color: '#666', display: 'block', marginBottom: '8px' }}>Prix de livraison</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: deliveryType === 'home' ? 700 : 400 }}>
-                                    <input type="radio" checked={deliveryType === 'home'} onChange={() => setDeliveryType('home')} style={{ accentColor: '#27ae60' }} />
-                                    التوصيل للمنزل (Home)
+                            <span style={{ color: '#555', display: 'block', marginBottom: '6px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>Type de livraison</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: deliveryType === 'home' ? 700 : 400 }}>
+                                    <input type="radio" checked={deliveryType === 'home'} onChange={() => setDeliveryType('home')} style={{ accentColor: '#000' }} />
+                                    Domicile (Home)
                                 </label>
                                 <label style={{ 
                                     display: 'flex', 
                                     alignItems: 'center', 
-                                    gap: '8px', 
-                                    fontSize: '13px', 
+                                    gap: '6px', 
                                     cursor: activeWilaya.officeFee === 0 ? 'not-allowed' : 'pointer', 
                                     fontWeight: deliveryType === 'office' ? 700 : 400,
                                     opacity: activeWilaya.officeFee === 0 ? 0.4 : 1
@@ -209,47 +239,49 @@ export default function CODForm({ productId, productName, productPrice, selected
                                         disabled={activeWilaya.officeFee === 0}
                                         checked={deliveryType === 'office' && activeWilaya.officeFee > 0} 
                                         onChange={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
-                                        style={{ accentColor: '#27ae60' }} 
+                                        style={{ accentColor: '#000' }} 
                                     />
-                                    توصيل للمكتب (Office) {activeWilaya.officeFee === 0 && '(Non disponible)'}
+                                    Bureau / StopDesk {activeWilaya.officeFee === 0 && '(Non disp)'}
                                 </label>
                             </div>
                         </div>
-                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                            <span style={{ color: '#aaa', fontSize: '12px' }}>{activeWilaya.name} / {activeWilaya.nameAr}</span>
+                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontSize: '11px' }}>
+                            <span style={{ color: '#888' }}>{activeWilaya.name}</span>
                             <span style={{ fontWeight: 700, color: '#000' }}>{deliveryFee.toLocaleString()} DA</span>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '2px solid #f0f0f0', paddingTop: '15px', marginTop: '10px' }}>
-                        <span style={{ fontWeight: 800, fontSize: '16px' }}>Prix Total</span>
-                        <span style={{ fontWeight: 800, fontSize: '18px', color: '#000' }}>{totalPrice.toLocaleString()} DA</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #111', paddingTop: '12px', marginTop: '8px' }}>
+                        <span style={{ fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Prix Total</span>
+                        <span style={{ fontWeight: 800, fontSize: '14px', color: '#000' }}>{totalPrice.toLocaleString()} DA</span>
                     </div>
                 </div>
             )}
 
             {/* Footer: Quantity + Confirm */}
-            <div style={{ display: 'flex', gap: '15px', marginTop: '25px' }}>
-                <div style={{ display: 'flex', border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden' }}>
-                    <button onClick={() => setQuantity(quantity + 1)} style={{ padding: '0 15px', fontSize: '18px', fontWeight: 600 }}>+</button>
-                    <div style={{ padding: '12px 20px', backgroundColor: '#f9f9f9', borderLeft: '1px solid #ccc', borderRight: '1px solid #ccc', fontWeight: 700, minWidth: '45px', textAlign: 'center' }}>{quantity}</div>
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ padding: '0 15px', fontSize: '18px', fontWeight: 600 }}>-</button>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <div style={{ display: 'flex', border: '1px solid #ccc', borderRadius: '0px', overflow: 'hidden' }}>
+                    <button onClick={() => setQuantity(quantity + 1)} style={{ padding: '0 10px', fontSize: '14px', fontWeight: 600 }}>+</button>
+                    <div style={{ padding: '8px 12px', backgroundColor: '#f9f9f9', borderLeft: '1px solid #ccc', borderRight: '1px solid #ccc', fontWeight: 700, minWidth: '35px', textAlign: 'center', fontSize: '13px' }}>{quantity}</div>
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ padding: '0 10px', fontSize: '14px', fontWeight: 600 }}>-</button>
                 </div>
                 <button
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     style={{
                         flex: 1,
-                        backgroundColor: isSubmitting ? '#999' : '#27ae60',
+                        backgroundColor: isSubmitting ? '#999' : '#000',
                         color: '#fff',
-                        borderRadius: '8px',
-                        fontSize: '15px',
-                        fontWeight: 800,
+                        borderRadius: '0px',
+                        fontSize: '11px',
+                        fontWeight: 700,
                         textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
+                        letterSpacing: '2px',
+                        border: 'none',
+                        cursor: 'pointer'
                     }}
                 >
-                    {isSubmitting ? 'CHARGEMENT...' : 'CLIQUEZ ICI POUR CONFIRMER'}
+                    {isSubmitting ? 'CHARGEMENT...' : 'CONFIRMER LA COMMANDE'}
                 </button>
             </div>
         </div>

@@ -53,9 +53,9 @@ html, body {
 
 body {
   font-family: var(--font-sans);
-  font-weight: 100;
+  font-weight: 300;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   background-color: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -70,9 +70,10 @@ h4,
 h5,
 h6 {
   font-family: var(--font-serif);
-  font-weight: 400;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
   margin-bottom: var(--spacing-md);
-  letter-spacing: 1px;
 }
 
 a {
@@ -87,12 +88,20 @@ a:hover {
 
 button {
   font-family: var(--font-sans);
-  text-transform: inherit;
-  letter-spacing: inherit;
-  font-weight: inherit;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 400;
   cursor: pointer;
   border: none;
   background: none;
+  border-radius: 0 !important;
+}
+
+input, select, textarea {
+  border-radius: 0 !important;
+  font-family: var(--font-sans) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 ul {

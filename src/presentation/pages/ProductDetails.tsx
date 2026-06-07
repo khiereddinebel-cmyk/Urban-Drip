@@ -149,6 +149,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                         productName={product.name}
                         productPrice={product.price}
                         selectedSize={selectedSize}
+                        productImage={product.images?.[0]}
                     />
 
                     <div style={{ marginTop: '30px', borderTop: '1px solid var(--border-color)', paddingTop: '20px', fontSize: '13px', color: 'var(--text)', opacity: 0.6 }}>

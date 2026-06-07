@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '../../src/shared/context/CartContext';
 import { useAuth } from '../../src/shared/context/AuthContext';
+import { getProductImageUrl } from '../../src/shared/utils/imageUtils';
 
 export default function CartPage() {
     const { cart, removeFromCart, updateQuantity, cartTotal } = useCart();
@@ -12,41 +13,29 @@ export default function CartPage() {
 
     if (cart.length === 0) {
         return (
-            <div style={{ padding: '100px 24px', textAlign: 'center', backgroundColor: 'var(--bg)', minHeight: '60vh' }}>
-                <h1 style={{ fontSize: '48px', fontWeight: 600, marginBottom: '40px', color: 'var(--text)' }}>
-                    Your cart is empty
+            <div className="min-h-[60vh] bg-white flex flex-col items-center justify-center text-center px-4 py-24">
+                <h1 className="text-3xl md:text-5xl font-serif font-light uppercase tracking-widest text-black mb-8">
+                    Votre panier est vide
                 </h1>
                 
                 <Link 
                     href="/" 
-                    style={{
-                        display: 'inline-block',
-                        backgroundColor: 'var(--text)',
-                        color: 'var(--bg)',
-                        padding: '18px 60px',
-                        fontSize: '16px',
-                        fontWeight: 600,
-                        textDecoration: 'none',
-                        marginBottom: '60px',
-                        transition: 'opacity 0.2s'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
-                    onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                    className="inline-block bg-black text-white px-12 py-5 text-sm font-sans tracking-widest uppercase hover:opacity-80 transition-opacity mb-12"
                 >
-                    Continue shopping
+                    Continuer vos achats
                 </Link>
 
-                <div style={{ marginTop: '40px' }}>
-                    <h3 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '15px', color: 'var(--text)' }}>
-                        Have an account?
+                <div className="pt-8 border-t border-gray-100 w-full max-w-md">
+                    <h3 className="text-sm font-sans font-bold uppercase tracking-widest text-black mb-3">
+                        Avez-vous un compte?
                     </h3>
-                    <p style={{ fontSize: '16px', color: 'var(--text)' }}>
+                    <p className="text-xs text-gray-500 tracking-wider uppercase">
                         <button 
                             onClick={openLoginModal} 
-                            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--text)', textDecoration: 'underline', cursor: 'pointer' }}
+                            className="underline text-black font-semibold uppercase hover:opacity-70 transition-opacity"
                         >
-                            Log in
-                        </button> to check out faster.
+                            Connectez-vous
+                        </button> pour finaliser votre commande plus rapidement.
                     </p>
                 </div>
             </div>
@@ -54,133 +43,137 @@ export default function CartPage() {
     }
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 24px', color: 'var(--text)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '60px' }}>
-                <h1 style={{ fontSize: '42px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-serif)', letterSpacing: '2px', textTransform: 'uppercase' }}>Your cart</h1>
-                <Link href="/" style={{ fontSize: '16px', color: 'var(--text)', textDecoration: 'underline', fontWeight: 500 }}>
-                    Continue shopping
-                </Link>
-            </div>
-
-            {/* Table Header */}
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '2fr 1fr 1fr', 
-                paddingBottom: '20px', 
-                borderBottom: '1px solid var(--border-color)',
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--text)',
-                opacity: 0.5,
-                textTransform: 'uppercase',
-                letterSpacing: '1px'
-            }}>
-                <div>PRODUCT</div>
-                <div style={{ textAlign: 'center' }}>QUANTITY</div>
-                <div style={{ textAlign: 'right' }}>TOTAL</div>
-            </div>
-
-            {/* Cart Items */}
-            <div style={{ marginBottom: '60px' }}>
-                {cart.map((item) => (
-                    <div key={`${item.id}-${item.selectedSize}`} style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: '2fr 1fr 1fr', 
-                        padding: '30px 0', 
-                        borderBottom: '1px solid var(--border-color)',
-                        alignItems: 'center'
-                    }}>
-                        {/* Product Info */}
-                        <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
-                            <div style={{ position: 'relative', width: '120px', height: '120px', backgroundColor: 'var(--bg)', border: '1px solid var(--border-color)' }}>
-                                <Image
-                                    src={item.images[0]}
-                                    alt={item.name}
-                                    fill
-                                    style={{ objectFit: 'contain', padding: '10px' }}
-                                />
-                            </div>
-                            <div>
-                                <h3 style={{ fontSize: '16px', fontWeight: 500, fontFamily: 'var(--font-sans)', margin: '0 0 8px 0', color: 'var(--text)' }}>{item.name}</h3>
-                                <p style={{ fontSize: '14px', color: 'var(--text)', margin: '0 0 8px 0' }}>{item.price.toLocaleString()} DA</p>
-                                <p style={{ fontSize: '14px', color: 'var(--text)', opacity: 0.6, margin: 0 }}>Size: {item.selectedSize}</p>
-                            </div>
-                        </div>
-
-                        {/* Quantity Controls */}
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px' }}>
-                            <div style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '0',
-                                padding: '5px'
-                            }}>
-                                <button 
-                                    onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity - 1)}
-                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 15px', color: '#666', fontWeight: 300 }}
-                                >
-                                    &mdash;
-                                </button>
-                                <div style={{ minWidth: '40px', textAlign: 'center', fontSize: '16px', fontWeight: 500 }}>{item.quantity}</div>
-                                <button 
-                                    onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)}
-                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 15px', color: '#666', fontSize: '20px' }}
-                                >
-                                    +
-                                </button>
-                            </div>
-                            <button 
-                                onClick={() => removeFromCart(item.id, item.selectedSize)}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666', display: 'flex', alignItems: 'center' }}
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                            </button>
-                        </div>
-
-                        {/* Total */}
-                        <div style={{ textAlign: 'right', fontSize: '16px', fontWeight: 700 }}>
-                            {(item.price * item.quantity).toLocaleString()} DA
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Summary Footer */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '30px' }}>
-                <div style={{ textAlign: 'right', color: 'var(--text)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '40px', marginBottom: '10px' }}>
-                        <span style={{ fontSize: '18px', fontWeight: 500 }}>Estimated total</span>
-                        <span style={{ fontSize: '24px', fontWeight: 700 }}>{cartTotal.toLocaleString()} DA</span>
-                    </div>
-                    <p style={{ fontSize: '13px', color: 'var(--text)', opacity: 0.6, margin: 0 }}>
-                        Taxes, discounts and shipping calculated at checkout.
-                    </p>
+        <div className="bg-white min-h-screen text-black py-16 md:py-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header */}
+                <div className="flex justify-between items-end border-b border-gray-100 pb-6 mb-12">
+                    <h1 className="text-3xl md:text-4xl font-serif font-light uppercase tracking-widest text-black m-0">
+                        Votre Panier
+                    </h1>
+                    <Link href="/" className="text-xs md:text-sm text-gray-500 hover:text-black uppercase tracking-widest font-medium underline">
+                        Continuer vos achats
+                    </Link>
                 </div>
 
-                <Link 
-                    href="/checkout"
-                    style={{
-                        backgroundColor: 'var(--text)',
-                        color: 'var(--bg)',
-                        padding: '18px 120px',
-                        fontSize: '16px',
-                        fontWeight: 700,
-                        textDecoration: 'none',
-                        textTransform: 'uppercase',
-                        letterSpacing: '2px',
-                        transition: 'opacity 0.2s'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
-                    onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
-                >
-                    Check out
-                </Link>
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
+                    {/* Left Column: Cart Items List */}
+                    <div className="lg:col-span-2 space-y-8">
+                        {/* Table Header for Desktop */}
+                        <div className="hidden md:grid grid-cols-[3fr_1fr_1fr] pb-4 border-b border-gray-100 text-[10px] font-bold tracking-[2px] text-gray-400 uppercase">
+                            <div>PRODUIT</div>
+                            <div className="text-center">QUANTITE</div>
+                            <div className="text-right">TOTAL</div>
+                        </div>
+
+                        {/* Cart Items */}
+                        <div className="divide-y divide-gray-100">
+                            {cart.map((item) => {
+                                const imageUrl = getProductImageUrl(item.images?.[0]);
+                                return (
+                                    <div key={`${item.id}-${item.selectedSize}`} className="py-6 md:py-8 grid grid-cols-1 md:grid-cols-[3fr_1fr_1fr] items-center gap-6">
+                                        
+                                        {/* Product info (Image, Title, Size) */}
+                                        <div className="flex gap-4 md:gap-6 items-center">
+                                            {/* Thumbnail frame */}
+                                            <div className="relative w-24 h-24 md:w-28 md:h-28 bg-white border border-gray-100 shrink-0 flex items-center justify-center p-2">
+                                                <Image
+                                                    src={imageUrl}
+                                                    alt={item.name}
+                                                    fill
+                                                    className="object-contain p-1"
+                                                    unoptimized
+                                                />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-sm font-sans font-medium uppercase text-black tracking-[1.5px] mb-1 truncate">
+                                                    {item.name}
+                                                </h3>
+                                                <p className="text-xs text-gray-500 font-medium tracking-wide mb-2">
+                                                    {item.price.toLocaleString()} DA
+                                                </p>
+                                                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+                                                    Taille: {item.selectedSize}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Quantity Controls & Delete button */}
+                                        <div className="flex md:flex-col justify-between md:justify-center items-center gap-4">
+                                            <div className="flex items-center border border-gray-200 bg-white">
+                                                <button 
+                                                    onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity - 1)}
+                                                    className="px-3 py-2 text-gray-400 hover:text-black font-light text-xs transition-colors"
+                                                    aria-label="Diminuer la quantité"
+                                                >
+                                                    &mdash;
+                                                </button>
+                                                <div className="w-8 text-center text-xs font-semibold font-sans">{item.quantity}</div>
+                                                <button 
+                                                    onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)}
+                                                    className="px-3 py-2 text-gray-400 hover:text-black font-light text-xs transition-colors"
+                                                    aria-label="Augmenter la quantité"
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                            <button 
+                                                onClick={() => removeFromCart(item.id, item.selectedSize)}
+                                                className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                                aria-label="Supprimer l'article"
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        {/* Total Price */}
+                                        <div className="text-right font-semibold text-sm md:text-base text-black tracking-wider border-t border-gray-50 pt-4 md:border-t-0 md:pt-0">
+                                            <span className="md:hidden text-xs text-gray-400 uppercase tracking-widest font-normal mr-2">Total:</span>
+                                            {(item.price * item.quantity).toLocaleString()} DA
+                                        </div>
+
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Right Column: Order Summary Card */}
+                    <div className="bg-gray-50 p-6 md:p-8 border border-gray-100">
+                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] text-black border-b border-gray-200 pb-4 mb-6">
+                            RÉCAPITULATIF DE LA COMMANDE
+                        </h3>
+                        
+                        <div className="space-y-4 text-xs font-sans tracking-[1.5px] uppercase text-gray-600 mb-8">
+                            <div className="flex justify-between">
+                                <span>Sous-total</span>
+                                <span className="text-black font-semibold">{cartTotal.toLocaleString()} DA</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Livraison</span>
+                                <span className="text-black font-semibold text-[10px] text-gray-400">Calculée à la caisse</span>
+                            </div>
+                            <div className="border-t border-gray-200 pt-4 mt-4 flex justify-between text-sm text-black font-bold">
+                                <span>Total Estimé</span>
+                                <span className="text-lg text-black font-black tracking-normal">
+                                    {cartTotal.toLocaleString()} DA
+                                </span>
+                            </div>
+                        </div>
+
+                        <Link 
+                            href="/checkout"
+                            className="block w-full text-center bg-black text-white py-4 text-xs font-sans tracking-[2px] uppercase font-bold hover:opacity-85 transition-opacity border-none rounded-none"
+                        >
+                            Passer à la caisse
+                        </Link>
+                    </div>
+                </div>
             </div>
         </div>
     );

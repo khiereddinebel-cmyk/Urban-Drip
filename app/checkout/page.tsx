@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../../src/shared/context/CartContext';
-import { wilayas, Wilaya } from '../../src/shared/utils/wilayaData';
+import { wilayas } from '../../src/shared/utils/wilayaData';
+import { getProductImageUrl } from '../../src/shared/utils/imageUtils';
 
 export default function CheckoutPage() {
     const { cart, cartTotal, clearCart } = useCart();
@@ -20,8 +21,6 @@ export default function CheckoutPage() {
     const [loadingCommunes, setLoadingCommunes] = useState(false);
     const [deliveryType, setDeliveryType] = useState<'home' | 'office'>('home');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [orderDone, setOrderDone] = useState(false);
-    const [orderNumber, setOrderNumber] = useState('');
 
     const activeWilaya = useMemo(() => 
         wilayas.find(w => w.id === selectedWilayaId) || wilayas[0]
@@ -50,11 +49,12 @@ export default function CheckoutPage() {
     const deliveryFee = deliveryType === 'home' ? activeWilaya.homeFee : activeWilaya.officeFee;
     const finalTotal = cartTotal + deliveryFee;
 
+    // Redirect empty cart
     useEffect(() => {
-        if (cart.length === 0 && !orderDone) {
+        if (cart.length === 0) {
             router.push('/cart');
         }
-    }, [cart, orderDone, router]);
+    }, [cart, router]);
 
     const handleSubmitOrder = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -95,9 +95,33 @@ export default function CheckoutPage() {
             if (!response.ok) throw new Error('Order submission failed');
 
             const result = await response.json();
-            setOrderNumber(result.order_number);
-            setOrderDone(true);
+            
+            // Format order summary details for the dedicated success page
+            const completedOrder = {
+                order_number: result.order_number,
+                date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+                status: 'En cours de traitement',
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                customer_email: 'customer@urbandrip.com',
+                shipping_address: `${activeWilaya.name} (${activeWilaya.nameAr}), ${commune} - ${deliveryType === 'home' ? 'Domicile' : 'Bureau/StopDesk'}`,
+                wilaya: activeWilaya.name,
+                baladiya: commune,
+                delivery_fee: deliveryFee,
+                delivery_type: deliveryType,
+                total_price: finalTotal,
+                items: cart.map(item => ({
+                    name: item.name,
+                    image: item.images?.[0] || '',
+                    quantity: item.quantity,
+                    price: item.price,
+                    selectedSize: String(item.selectedSize)
+                }))
+            };
+
+            sessionStorage.setItem('last_completed_order', JSON.stringify(completedOrder));
             clearCart();
+            router.push(`/checkout/success?order_number=${result.order_number}`);
             
         } catch (error) {
             console.error('Checkout error:', error);
@@ -107,63 +131,49 @@ export default function CheckoutPage() {
         }
     };
 
-    if (orderDone) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center py-32 px-4 max-w-2xl mx-auto text-center">
-                <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white mb-10 shadow-lg shadow-green-200">
-                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-black uppercase italic mb-6 tracking-tight">Order Confirmed!</h1>
-                <p className="text-sm font-bold text-gray-500 mb-4 tracking-widest uppercase">Thank you for shopping with Urban Drip.</p>
-                <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl px-10 py-6 mb-12">
-                   <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-gray-400">Order Number</p>
-                   <p className="text-3xl font-black italic">#{orderNumber}</p>
-                </div>
-                <p className="text-sm text-gray-600 mb-10 leading-relaxed uppercase tracking-widest">
-                    We'll call you shortly on <strong>{customerPhone}</strong> to confirm your delivery to <strong>{activeWilaya.name}</strong>.
-                </p>
-                <Link href="/" className="bg-black text-white px-12 py-5 font-black uppercase italic tracking-widest hover:opacity-90">
-                    Return to Shop
-                </Link>
-            </div>
-        );
-    }
-
     return (
-        <div className="max-w-7xl mx-auto px-4 py-20 md:py-32">
-            <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 800 }} className="text-4xl md:text-6xl uppercase italic mb-16 tracking-tighter text-center">Checkout</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-black">
+            <h1 className="text-3xl md:text-5xl font-serif font-light uppercase tracking-widest mb-16 text-center">
+                Caisse
+            </h1>
             
-            <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+            <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
                 {/* Information Section */}
                 <div className="space-y-12">
                     <section>
-                        <h3 className="text-xl font-black uppercase italic mb-8 border-b-4 border-black pb-4 tracking-tighter">Shipping Information</h3>
+                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-8 border-b border-gray-100 pb-4">
+                            Informations de livraison
+                        </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Full Name / الإسم الكامل</label>
+                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
+                                    Nom Complet / الإسم الكامل
+                                </label>
                                 <input 
                                     required
                                     value={customerName}
                                     onChange={(e) => setCustomerName(e.target.value)}
-                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-black focus:outline-none px-6 py-4 font-bold transition-all" 
+                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none uppercase text-black" 
                                     placeholder="Ex: Mohamed Amine"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Phone / رقم الهاتف</label>
+                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
+                                    Téléphone / رقم الهاتف
+                                </label>
                                 <input 
                                     required
                                     type="tel"
                                     value={customerPhone}
                                     onChange={(e) => setCustomerPhone(e.target.value)}
-                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-black focus:outline-none px-6 py-4 font-bold transition-all" 
+                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none text-black" 
                                     placeholder="05 / 06 / 07 ..."
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Wilaya / الولاية</label>
+                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
+                                    Wilaya / الولاية
+                                </label>
                                 <select 
                                     value={selectedWilayaId}
                                     onChange={(e) => {
@@ -175,60 +185,91 @@ export default function CheckoutPage() {
                                             setDeliveryType('home');
                                         }
                                     }}
-                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-black focus:outline-none px-6 py-4 font-bold transition-all cursor-pointer"
+                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none cursor-pointer uppercase text-black"
                                 >
-                                    {wilayas.map(w => <option key={w.id} value={w.id}>{w.id} {w.name} - {w.nameAr}</option>)}
+                                    {wilayas.map(w => (
+                                        <option key={w.id} value={w.id}>
+                                            {w.id} {w.name} - {w.nameAr}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Commune / البلدية</label>
+                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
+                                    Commune / البلدية
+                                </label>
                                 <select 
                                     required
                                     value={commune}
                                     onChange={(e) => setCommune(e.target.value)}
                                     disabled={loadingCommunes}
-                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-black focus:outline-none px-6 py-4 font-bold transition-all cursor-pointer"
+                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none cursor-pointer uppercase text-black"
                                 >
-                                    <option value="">{loadingCommunes ? 'Chargement...' : 'Sélectionner / إختر'}</option>
+                                    <option value="">
+                                        {loadingCommunes ? 'CHARGEMENT...' : 'SELECTIONNER / إختر'}
+                                    </option>
                                     {apiCommunes.map((c: any) => (
-                                        <option key={c.id} value={c.name}>{c.name} - {c.name_ar}</option>
+                                        <option key={c.id} value={c.name}>
+                                            {c.name} - {c.name_ar}
+                                        </option>
                                     ))}
-                                    {!loadingCommunes && apiCommunes.length === 0 && <option value="Autre">Autre / أخرى</option>}
+                                    {!loadingCommunes && apiCommunes.length === 0 && (
+                                        <option value="Autre">Autre / أخرى</option>
+                                    )}
                                 </select>
                             </div>
                         </div>
                     </section>
 
                     <section>
-                        <h3 className="text-xl font-black uppercase italic mb-8 border-b-4 border-black pb-4 tracking-tighter">Delivery Option</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <label className={`flex flex-col p-6 cursor-pointer border-2 transition-all rounded-xl ${deliveryType === 'home' ? 'border-green-500 bg-green-50' : 'border-gray-100 bg-gray-50'}`}>
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="font-black uppercase tracking-widest text-sm">Domicile / المنزل</span>
-                                    <input type="radio" checked={deliveryType === 'home'} onChange={() => setDeliveryType('home')} className="accent-green-500" />
-                                </div>
-                                <span className="text-xs font-bold text-gray-500 uppercase">توصيل للمنزل</span>
-                                <span className="mt-4 font-black text-lg text-green-600">{activeWilaya.homeFee.toLocaleString()} DA</span>
-                            </label>
-
-                            <label className={`flex flex-col p-6 border-2 transition-all rounded-xl ${
-                                activeWilaya.officeFee === 0 
-                                    ? 'opacity-40 cursor-not-allowed border-gray-100 bg-gray-100' 
-                                    : (deliveryType === 'office' ? 'border-green-500 bg-green-50 cursor-pointer' : 'border-gray-100 bg-gray-50 cursor-pointer')
+                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-8 border-b border-gray-100 pb-4">
+                            Option de livraison
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <label className={`flex flex-col p-6 cursor-pointer border transition-all rounded-none ${
+                                deliveryType === 'home' ? 'border-black bg-gray-50' : 'border-gray-200 bg-white'
                             }`}>
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="font-black uppercase tracking-widest text-sm">Bureau / المكتب</span>
+                                    <span className="font-sans font-bold uppercase tracking-widest text-xs">
+                                        Domicile / Domicile
+                                    </span>
+                                    <input 
+                                        type="radio" 
+                                        checked={deliveryType === 'home'} 
+                                        onChange={() => setDeliveryType('home')} 
+                                        className="accent-black" 
+                                    />
+                                </div>
+                                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                                    توصيل للمنزل
+                                </span>
+                                <span className="mt-4 font-sans font-bold text-base text-black">
+                                    {activeWilaya.homeFee.toLocaleString()} DA
+                                </span>
+                            </label>
+
+                            <label className={`flex flex-col p-6 border transition-all rounded-none ${
+                                activeWilaya.officeFee === 0 
+                                    ? 'opacity-40 cursor-not-allowed border-gray-100 bg-gray-50' 
+                                    : (deliveryType === 'office' ? 'border-black bg-gray-50 cursor-pointer' : 'border-gray-200 bg-white cursor-pointer')
+                            }`}>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="font-sans font-bold uppercase tracking-widest text-xs">
+                                        Bureau / StopDesk
+                                    </span>
                                     <input 
                                         type="radio" 
                                         disabled={activeWilaya.officeFee === 0}
                                         checked={deliveryType === 'office' && activeWilaya.officeFee > 0} 
                                         onChange={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
-                                        className="accent-green-500" 
+                                        className="accent-black" 
                                     />
                                 </div>
-                                <span className="text-xs font-bold text-gray-500 uppercase">توصيل شركة التوصيل</span>
-                                <span className="mt-4 font-black text-lg text-green-600">
-                                    {activeWilaya.officeFee === 0 ? 'Non disponible / غير متوفر' : `${activeWilaya.officeFee.toLocaleString()} DA`}
+                                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                                    توصيل للمكتب
+                                </span>
+                                <span className="mt-4 font-sans font-bold text-base text-black">
+                                    {activeWilaya.officeFee === 0 ? 'Non disponible' : `${activeWilaya.officeFee.toLocaleString()} DA`}
                                 </span>
                             </label>
                         </div>
@@ -236,50 +277,69 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Right Bar - My Order */}
-                <div className="lg:pl-16">
-                    <div className="bg-gray-50 p-10 sticky top-32 rounded-3xl border border-gray-100 shadow-sm">
-                        <h3 className="text-xl font-black uppercase italic mb-8 tracking-tighter">Order Summary</h3>
+                <div className="lg:pl-12">
+                    <div className="bg-gray-50 p-8 md:p-10 sticky top-32 border border-gray-100">
+                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-8 border-b border-gray-200 pb-4">
+                            Récapitulatif de la commande
+                        </h3>
                         
-                        <div className="max-h-96 overflow-y-auto mb-8 space-y-6 pr-4 custom-scrollbar">
-                            {cart.map((item) => (
-                                <div key={`${item.id}-${item.selectedSize}`} className="flex gap-4 items-center">
-                                    <div className="relative w-16 h-16 bg-white rounded-xl p-1 border border-gray-200 shadow-sm">
-                                        <Image src={item.images[0]} alt={item.name} fill className="object-contain p-1" />
-                                        <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black">
-                                            {item.quantity}
+                        <div className="max-h-96 overflow-y-auto mb-8 space-y-6 pr-4 divide-y divide-gray-100">
+                            {cart.map((item, index) => {
+                                const imageUrl = getProductImageUrl(item.images?.[0]);
+                                return (
+                                    <div key={`${item.id}-${item.selectedSize}`} className={`flex gap-4 items-center ${index > 0 ? 'pt-4' : ''}`}>
+                                        <div className="relative w-16 h-16 bg-white border border-gray-200 p-1 shrink-0 flex items-center justify-center">
+                                            <Image 
+                                                src={imageUrl} 
+                                                alt={item.name} 
+                                                fill 
+                                                className="object-contain p-1" 
+                                                unoptimized
+                                            />
+                                            <span className="absolute -top-2 -right-2 bg-black text-white text-[9px] w-5 h-5 flex items-center justify-center rounded-full font-sans font-bold">
+                                                {item.quantity}
+                                            </span>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[11px] font-sans font-bold uppercase tracking-wider text-black truncate mb-1">
+                                                {item.name}
+                                            </p>
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                                Taille: {item.selectedSize}
+                                            </p>
+                                        </div>
+                                        <span className="text-xs font-semibold text-black tracking-wider whitespace-nowrap">
+                                            {(item.price * item.quantity).toLocaleString()} DA
                                         </span>
                                     </div>
-                                    <div className="flex-1">
-                                        <p className="text-xs font-black uppercase tracking-tight text-gray-900 mb-1">{item.name}</p>
-                                        <p className="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Size {item.selectedSize}</p>
-                                    </div>
-                                    <span className="text-sm font-black italic">{(item.price * item.quantity).toLocaleString()} DA</span>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
-                        <div className="space-y-4 border-t border-gray-200 pt-6 mb-8">
-                            <div className="flex justify-between text-xs uppercase tracking-widest text-gray-400">
-                                <span>Subtotal</span>
-                                <span className="text-black font-black">{cartTotal.toLocaleString()} DA</span>
+                        <div className="space-y-4 border-t border-gray-200 pt-6 mb-6 text-xs uppercase tracking-wider text-gray-500 font-sans">
+                            <div className="flex justify-between">
+                                <span>Sous-total</span>
+                                <span className="text-black font-semibold">{cartTotal.toLocaleString()} DA</span>
                             </div>
-                            <div className="flex justify-between text-xs uppercase tracking-widest text-gray-400">
-                                <span>Shipping ({deliveryType === 'home' ? 'Home' : 'Office'})</span>
-                                <span className="text-black font-black">{deliveryFee.toLocaleString()} DA</span>
+                            <div className="flex justify-between">
+                                <span>Expédition ({deliveryType === 'home' ? 'Domicile' : 'Bureau'})</span>
+                                <span className="text-black font-semibold">{deliveryFee.toLocaleString()} DA</span>
                             </div>
                         </div>
 
-                        <div className="border-t-4 border-black pt-6 mb-10 flex justify-between items-end">
-                            <span className="text-sm font-black uppercase italic tracking-widest">Total</span>
-                            <span className="text-4xl font-black italic tracking-tighter text-black">{finalTotal.toLocaleString()} DA</span>
+                        <div className="border-t-2 border-black pt-6 mb-10 flex justify-between items-end font-sans">
+                            <span className="text-sm font-bold uppercase tracking-widest text-black">Total</span>
+                            <span className="text-2xl font-black text-black tracking-normal">
+                                {finalTotal.toLocaleString()} DA
+                            </span>
                         </div>
 
                         <button 
                             type="submit"
                             disabled={isSubmitting}
-                            className="bg-green-600 text-white w-full py-6 font-black uppercase tracking-widest hover:bg-green-700 transition-all text-base rounded-xl shadow-xl shadow-green-200"
+                            className="bg-black text-white w-full py-4 font-sans font-bold uppercase tracking-[2px] hover:opacity-85 transition-opacity text-xs border-none rounded-none"
                         >
-                            {isSubmitting ? 'CHARGEMENT...' : 'CLIQUEZ ICI POUR CONFIRMER'}
+                            {isSubmitting ? 'CHARGEMENT...' : 'CONFIRMER LA COMMANDE'}
                         </button>
                     </div>
                 </div>
