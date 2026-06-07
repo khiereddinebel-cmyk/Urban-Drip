@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,7 +9,6 @@ import SearchOverlay from './SearchOverlay';
 import LoginSidebar from './LoginSidebar';
 import { useCart } from '../../shared/context/CartContext';
 import { useAuth } from '../../shared/context/AuthContext';
-import { useEffect } from 'react';
 
 interface NavItem {
     name: string;
@@ -26,6 +25,28 @@ export default function Header() {
     const [categories, setCategories] = useState<NavItem[]>([]);
     const pathname = usePathname();
     const { cartCount } = useCart();
+
+    const isHome = pathname === '/';
+    const [isScrolled, setIsScrolled] = useState(!isHome);
+
+    useEffect(() => {
+        if (!isHome) {
+            setIsScrolled(true);
+            return;
+        }
+
+        const handleScroll = () => {
+            if (window.scrollY > 50) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+
+        handleScroll();
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [pathname, isHome]);
 
     useEffect(() => {
         const fetchNavData = async () => {
@@ -90,13 +111,24 @@ export default function Header() {
         setIsSearchOpen(isOpen);
     };
 
+    const iconColor = (isHome && !isScrolled) ? '#fff' : 'var(--black)';
+
     return (
         <>
-            <div style={{ position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'var(--bg)' }}>
+            <div style={{ 
+                position: isHome ? (isScrolled ? 'fixed' : 'absolute') : 'sticky', 
+                top: 0, 
+                left: 0, 
+                right: 0, 
+                zIndex: 100, 
+                backgroundColor: isScrolled ? 'var(--bg)' : 'transparent',
+                borderBottom: isScrolled ? '1px solid var(--border-color)' : 'none',
+                transition: 'background-color 0.3s ease, border-color 0.3s ease',
+                width: '100%'
+            }}>
                 {/* Main Header */}
                 <header style={{
-                    backgroundColor: 'var(--bg)',
-                    borderBottom: '1px solid var(--border-color)',
+                    backgroundColor: 'transparent',
                     padding: '0 24px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -107,7 +139,7 @@ export default function Header() {
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            style={{ padding: '8px', marginLeft: '-8px', background: 'none', border: 'none', cursor: 'pointer' }}
+                            style={{ padding: '8px', marginLeft: '-8px', background: 'none', border: 'none', cursor: 'pointer', color: iconColor }}
                             aria-label="Open Menu"
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -131,7 +163,11 @@ export default function Header() {
                                     src="/logo.png"
                                     alt="Urban Drip Logo"
                                     fill
-                                    style={{ objectFit: 'contain' }}
+                                    style={{ 
+                                        objectFit: 'contain',
+                                        filter: (isHome && !isScrolled) ? 'brightness(0) invert(1)' : 'none',
+                                        transition: 'filter 0.3s ease'
+                                    }}
                                 />
                             </div>
                         </Link>
@@ -140,7 +176,7 @@ export default function Header() {
                     {/* Right: Icons */}
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '22px', alignItems: 'center' }}>
                         {/* Search Icon - Clean Circle */}
-                        <button onClick={() => toggleSearch(true)} aria-label="Search" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--black)' }}>
+                        <button onClick={() => toggleSearch(true)} aria-label="Search" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: iconColor }}>
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                 <circle cx="10.5" cy="10.5" r="7.5"></circle>
                                 <path d="M21 21l-5.2-5.2"></path>
@@ -151,7 +187,7 @@ export default function Header() {
                         <button 
                             onClick={openLoginModal}
                             aria-label={isAuthenticated ? "Account" : "Login / Account"} 
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: isAuthenticated ? '#438E44' : 'var(--black)', display: 'flex', alignItems: 'center' }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: isAuthenticated ? '#438E44' : iconColor, display: 'flex', alignItems: 'center' }}
                         >
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                 <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path>
@@ -160,7 +196,7 @@ export default function Header() {
                         </button>
 
                         {/* Cart Icon - Bag Shape */}
-                        <Link href="/cart" aria-label="Cart" style={{ position: 'relative', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--black)', display: 'flex', alignItems: 'center' }}>
+                        <Link href="/cart" aria-label="Cart" style={{ position: 'relative', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: iconColor, display: 'flex', alignItems: 'center' }}>
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                 <path d="M6 8l1-5h10l1 5"></path>
                                 <path d="M4 8h16l-1 13H5L4 8z"></path>
@@ -171,8 +207,8 @@ export default function Header() {
                                     position: 'absolute',
                                     top: '-6px',
                                     right: '-8px',
-                                    backgroundColor: 'var(--black)',
-                                    color: 'var(--white)',
+                                    backgroundColor: (isHome && !isScrolled) ? '#fff' : 'var(--black)',
+                                    color: (isHome && !isScrolled) ? 'var(--black)' : 'var(--white)',
                                     fontSize: '9px',
                                     fontWeight: 900,
                                     width: '15px',
@@ -181,6 +217,7 @@ export default function Header() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
+                                    transition: 'all 0.3s'
                                 }}>
                                     {cartCount}
                                 </span>

@@ -58,24 +58,108 @@ export default function HeroSection() {
     // Fallback if no slides exist
     if (slides.length === 0) {
         return (
-            <section className="w-full bg-[var(--bg)] flex flex-col items-center overflow-hidden border-b border-[var(--border-color)]">
-                {/* Banner Image */}
-                <div className="w-full">
+            <section style={{ width: '100%', height: '100vh', minHeight: '500px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
+                {/* Banner Image wrapper */}
+                <div style={{ position: 'absolute', inset: 0, zIndex: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
                     <img
                         src="/images/home page hero banner.jpg"
-                        className="w-full h-auto object-cover max-h-[85vh]"
                         alt="Urban Drip Sneaker Collection"
+                        style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover', 
+                            objectPosition: 'center', 
+                            display: 'block' 
+                        }}
                     />
                 </div>
 
-                {/* Clear Text Content Below Banner */}
-                <div className="w-full text-center text-[var(--text)] py-16 px-4 flex flex-col items-center max-w-4xl mx-auto">
-                    <h1
-                        className="text-5xl md:text-7xl font-black tracking-widest uppercase mb-4"
-                        style={{ fontFamily: 'var(--font-serif)', lineHeight: 1 }}
-                    >
-                        URBAN DRIP
-                    </h1>
+                {/* Dark Overlay */}
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    zIndex: 2,
+                    pointerEvents: 'none'
+                }} />
+
+                {/* Centered Content Container */}
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 10,
+                    padding: '24px',
+                    textAlign: 'center',
+                    color: '#ffffff',
+                    pointerEvents: 'none'
+                }}>
+                    <div style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '800px', width: '100%' }}>
+                        {/* Logo */}
+                        <div style={{ position: 'relative', width: '80px', height: '80px', marginBottom: '24px' }}>
+                            <img
+                                src="/logo.png"
+                                alt="Urban Drip Logo"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'contain',
+                                    filter: 'brightness(0) invert(1)'
+                                }}
+                            />
+                        </div>
+
+                        {/* Main Title */}
+                        <h1 style={{
+                            fontFamily: 'var(--font-sans)',
+                            fontWeight: 900,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.15em',
+                            lineHeight: 1.1,
+                            color: '#ffffff',
+                            margin: '0 0 16px 0',
+                        }} className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
+                            URBAN DRIP
+                        </h1>
+
+                        {/* Subtitle */}
+                        <p style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontStyle: 'italic',
+                            color: 'rgba(255, 255, 255, 0.95)',
+                            margin: '0 0 32px 0',
+                            fontWeight: 300,
+                            letterSpacing: '0.05em'
+                        }} className="text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]">
+                            Sneaker & Streetwear Culture
+                        </p>
+
+                        {/* CTA Button */}
+                        <Link
+                            href="/latest-drops"
+                            style={{
+                                backgroundColor: '#000000',
+                                color: '#ffffff',
+                                border: '1px solid rgba(255,255,255,0.4)',
+                                padding: '14px 36px',
+                                fontSize: '13px',
+                                fontWeight: 700,
+                                letterSpacing: '0.15em',
+                                textTransform: 'uppercase',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                textDecoration: 'none',
+                            }}
+                            className="hover:bg-white hover:text-black hover:border-white"
+                        >
+                            EXPLORE NEW RELEASES 2026 &rarr;
+                        </Link>
+                    </div>
                 </div>
             </section>
         );
@@ -84,12 +168,14 @@ export default function HeroSection() {
     const currentSlide = slides[currentSlideIndex];
 
     return (
-        <section className="w-full bg-[var(--bg)] flex flex-col items-center overflow-hidden border-b border-[var(--border-color)] relative">
-            {/* Banner Image wrapper with fade effect */}
-            <div className="w-full relative min-h-[50vh] md:min-h-[70vh] flex items-center justify-center bg-black overflow-hidden" style={{ width: '100%' }}>
+        <section style={{ width: '100%', height: '100vh', minHeight: '500px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
+            {/* Banner Image wrapper */}
+            <div style={{ position: 'absolute', inset: 0, zIndex: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
                 {slides.map((slide, index) => (
                     <picture key={slide.id} style={{
-                        position: index === currentSlideIndex ? 'relative' : 'absolute',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
                         width: '100%',
                         height: '100%',
                         opacity: index === currentSlideIndex ? 1 : 0,
@@ -99,89 +185,181 @@ export default function HeroSection() {
                         {slide.mobile_image && <source media="(max-width: 768px)" srcSet={slide.mobile_image} />}
                         <img
                             src={slide.image}
-                            className="w-full h-full object-cover max-h-[85vh]"
                             alt={slide.title}
-                            style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+                            style={{ 
+                                width: '100%', 
+                                height: '100%', 
+                                objectFit: 'cover', 
+                                objectPosition: 'center', 
+                                display: 'block' 
+                            }}
                         />
                     </picture>
                 ))}
-                
-                {/* Navigation Arrows */}
-                {slides.length > 1 && (
-                    <>
-                        <button
-                            onClick={() => setCurrentSlideIndex((prev) => (prev - 1 + slides.length) % slides.length)}
-                            style={{
-                                position: 'absolute',
-                                left: '20px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                zIndex: 10,
-                                background: 'rgba(255,255,255,0.7)',
-                                border: 'none',
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50%',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            &#10094;
-                        </button>
-                        <button
-                            onClick={() => setCurrentSlideIndex((prev) => (prev + 1) % slides.length)}
-                            style={{
-                                position: 'absolute',
-                                right: '20px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                zIndex: 10,
-                                background: 'rgba(255,255,255,0.7)',
-                                border: 'none',
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50%',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            &#10095;
-                        </button>
-                    </>
-                )}
             </div>
 
-            {/* Clear Text Content Below Banner */}
-            <div className="w-full text-center text-[var(--text)] py-16 px-4 flex flex-col items-center max-w-4xl mx-auto">
-                <h1
-                    className="text-5xl md:text-7xl font-black tracking-widest uppercase mb-4"
-                    style={{ fontFamily: 'var(--font-serif)', lineHeight: 1 }}
-                >
-                    {currentSlide.title}
-                </h1>
+            {/* Dark Overlay */}
+            <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                zIndex: 2,
+                pointerEvents: 'none'
+            }} />
+
+            {/* Centered Content Container */}
+            <div style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+                padding: '24px',
+                textAlign: 'center',
+                color: '#ffffff',
+                pointerEvents: 'none'
+            }}>
+                <div style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '800px', width: '100%' }}>
+                    {/* Logo */}
+                    <div style={{ position: 'relative', width: '80px', height: '80px', marginBottom: '24px' }}>
+                        <img
+                            src="/logo.png"
+                            alt="Urban Drip Logo"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                                filter: 'brightness(0) invert(1)'
+                            }}
+                        />
+                    </div>
+
+                    {/* Main Title */}
+                    <h1 style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontWeight: 900,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.15em',
+                        lineHeight: 1.1,
+                        color: '#ffffff',
+                        margin: '0 0 16px 0',
+                    }} className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
+                        {currentSlide.title || "URBAN DRIP"}
+                    </h1>
+
+                    {/* Subtitle */}
+                    <p style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontStyle: 'italic',
+                        color: 'rgba(255, 255, 255, 0.95)',
+                        margin: '0 0 32px 0',
+                        fontWeight: 300,
+                        letterSpacing: '0.05em'
+                    }} className="text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]">
+                        {currentSlide.subtitle || "Sneaker & Streetwear Culture"}
+                    </p>
+
+                    {/* CTA Button */}
+                    <Link
+                        href={currentSlide.button_link || "/latest-drops"}
+                        style={{
+                            backgroundColor: '#000000',
+                            color: '#ffffff',
+                            border: '1px solid rgba(255,255,255,0.4)',
+                            padding: '14px 36px',
+                            fontSize: '13px',
+                            fontWeight: 700,
+                            letterSpacing: '0.15em',
+ textTransform: 'uppercase',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                            textDecoration: 'none',
+                        }}
+                        className="hover:bg-white hover:text-black hover:border-white"
+                    >
+                        {currentSlide.button_text || "EXPLORE NEW RELEASES 2026"} &rarr;
+                    </Link>
+                </div>
             </div>
+
+            {/* Navigation Arrows */}
+            {slides.length > 1 && (
+                <>
+                    <button
+                        onClick={() => setCurrentSlideIndex((prev) => (prev - 1 + slides.length) % slides.length)}
+                        style={{
+                            position: 'absolute',
+                            left: '24px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            zIndex: 20,
+                            background: 'rgba(0, 0, 0, 0.3)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            color: '#ffffff',
+                            width: '46px',
+                            height: '46px',
+                            borderRadius: '50%',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '18px',
+                            transition: 'all 0.3s'
+                        }}
+                        className="hover:bg-white hover:text-black hover:border-white hidden md:flex"
+                        aria-label="Previous Slide"
+                    >
+                        &#10094;
+                    </button>
+                    <button
+                        onClick={() => setCurrentSlideIndex((prev) => (prev + 1) % slides.length)}
+                        style={{
+                            position: 'absolute',
+                            right: '24px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            zIndex: 20,
+                            background: 'rgba(0, 0, 0, 0.3)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            color: '#ffffff',
+                            width: '46px',
+                            height: '46px',
+                            borderRadius: '50%',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '18px',
+                            transition: 'all 0.3s'
+                        }}
+                        className="hover:bg-white hover:text-black hover:border-white hidden md:flex"
+                        aria-label="Next Slide"
+                    >
+                        &#10095;
+                    </button>
+                </>
+            )}
 
             {/* Slider Dots Indicator */}
             {slides.length > 1 && (
-                <div style={{ display: 'flex', gap: '8px', position: 'absolute', bottom: '230px', zIndex: 10 }}>
+                <div style={{ display: 'flex', gap: '10px', position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
                     {slides.map((_, index) => (
                         <button
                             key={index}
                             onClick={() => setCurrentSlideIndex(index)}
                             style={{
-                                width: '10px',
-                                height: '10px',
+                                width: '8px',
+                                height: '8px',
                                 borderRadius: '50%',
                                 border: 'none',
-                                background: index === currentSlideIndex ? 'var(--text)' : 'rgba(0,0,0,0.3)',
+                                background: index === currentSlideIndex ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
                                 cursor: 'pointer',
-                                padding: 0
+                                padding: 0,
+                                transition: 'all 0.3s'
                             }}
                             aria-label={`Go to slide ${index + 1}`}
                         />
@@ -190,4 +368,5 @@ export default function HeroSection() {
             )}
         </section>
     );
+
 }
