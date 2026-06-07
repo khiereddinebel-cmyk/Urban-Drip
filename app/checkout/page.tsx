@@ -132,33 +132,33 @@ export default function CheckoutPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-black">
-            <h1 className="text-3xl md:text-5xl font-serif font-light uppercase tracking-widest mb-16 text-center">
-                Caisse
-            </h1>
-            
-            <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-                {/* Information Section */}
-                <div className="space-y-12">
+        <div className="bg-[#f9fafb] min-h-screen py-12 md:py-20 text-black">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6">
+                <h1 className="text-3xl md:text-4xl font-sans font-bold uppercase tracking-widest mb-10 text-center">
+                    Caisse
+                </h1>
+                
+                <form onSubmit={handleSubmitOrder} className="bg-white p-6 md:p-10 border border-gray-200 rounded-lg shadow-sm space-y-10">
+                    {/* Information Section */}
                     <section>
-                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-8 border-b border-gray-100 pb-4">
+                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-6 border-b border-gray-200 pb-3">
                             Informations de livraison
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-5">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
-                                    Nom Complet / الإسم الكامل
+                                <label className="text-xs font-semibold text-gray-700 block">
+                                    Nom complet / الاسم الكامل
                                 </label>
                                 <input 
                                     required
                                     value={customerName}
                                     onChange={(e) => setCustomerName(e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none uppercase text-black" 
-                                    placeholder="Ex: Mohamed Amine"
+                                    className="w-full bg-white border border-gray-300 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-md uppercase text-black" 
+                                    placeholder="EX. MOHAMED AMINE"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
+                                <label className="text-xs font-semibold text-gray-700 block">
                                     Téléphone / رقم الهاتف
                                 </label>
                                 <input 
@@ -166,12 +166,12 @@ export default function CheckoutPage() {
                                     type="tel"
                                     value={customerPhone}
                                     onChange={(e) => setCustomerPhone(e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none text-black" 
+                                    className="w-full bg-white border border-gray-300 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-md text-black" 
                                     placeholder="05 / 06 / 07 ..."
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
+                                <label className="text-xs font-semibold text-gray-700 block">
                                     Wilaya / الولاية
                                 </label>
                                 <select 
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
                                             setDeliveryType('home');
                                         }
                                     }}
-                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none cursor-pointer uppercase text-black"
+                                    className="w-full bg-white border border-gray-300 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-md cursor-pointer uppercase text-black"
                                 >
                                     {wilayas.map(w => (
                                         <option key={w.id} value={w.id}>
@@ -195,7 +195,7 @@ export default function CheckoutPage() {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400">
+                                <label className="text-xs font-semibold text-gray-700 block">
                                     Commune / البلدية
                                 </label>
                                 <select 
@@ -203,7 +203,7 @@ export default function CheckoutPage() {
                                     value={commune}
                                     onChange={(e) => setCommune(e.target.value)}
                                     disabled={loadingCommunes}
-                                    className="w-full bg-gray-50 border border-gray-200 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-none cursor-pointer uppercase text-black"
+                                    className="w-full bg-white border border-gray-300 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-md cursor-pointer uppercase text-black"
                                 >
                                     <option value="">
                                         {loadingCommunes ? 'CHARGEMENT...' : 'SELECTIONNER / إختر'}
@@ -221,129 +221,166 @@ export default function CheckoutPage() {
                         </div>
                     </section>
 
+                    {/* Delivery Options Section */}
                     <section>
-                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-8 border-b border-gray-100 pb-4">
+                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-6 border-b border-gray-200 pb-3">
                             Option de livraison
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <label className={`flex flex-col p-6 cursor-pointer border transition-all rounded-none ${
-                                deliveryType === 'home' ? 'border-black bg-gray-50' : 'border-gray-200 bg-white'
-                            }`}>
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="font-sans font-bold uppercase tracking-widest text-xs">
-                                        Domicile / Domicile
-                                    </span>
-                                    <input 
-                                        type="radio" 
-                                        checked={deliveryType === 'home'} 
-                                        onChange={() => setDeliveryType('home')} 
-                                        className="accent-black" 
-                                    />
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* Row 1, Col 1: Domicile Text Card */}
+                            <div 
+                                className={`p-5 border cursor-pointer flex justify-between items-start rounded-md transition-all ${
+                                    deliveryType === 'home' ? 'border-[#27ae60] bg-[#f2f9fc]' : 'border-gray-200 bg-white'
+                                }`} 
+                                onClick={() => setDeliveryType('home')}
+                            >
+                                <div>
+                                    <span className="font-bold text-xs block mb-1 text-black">DOMICILE / DOMICILE</span>
+                                    <span className="text-[10px] text-gray-400 block mb-3 font-semibold">توصيل للمنزل</span>
+                                    <span className="font-bold text-sm block text-black">{activeWilaya.homeFee.toLocaleString()} DA</span>
                                 </div>
-                                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
-                                    توصيل للمنزل
-                                </span>
-                                <span className="mt-4 font-sans font-bold text-base text-black">
-                                    {activeWilaya.homeFee.toLocaleString()} DA
-                                </span>
-                            </label>
+                                <input 
+                                    type="radio" 
+                                    checked={deliveryType === 'home'} 
+                                    onChange={() => setDeliveryType('home')} 
+                                    className="accent-[#27ae60] cursor-pointer mt-1" 
+                                />
+                            </div>
 
-                            <label className={`flex flex-col p-6 border transition-all rounded-none ${
-                                activeWilaya.officeFee === 0 
-                                    ? 'opacity-40 cursor-not-allowed border-gray-100 bg-gray-50' 
-                                    : (deliveryType === 'office' ? 'border-black bg-gray-50 cursor-pointer' : 'border-gray-200 bg-white cursor-pointer')
-                            }`}>
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="font-sans font-bold uppercase tracking-widest text-xs">
-                                        Bureau / StopDesk
-                                    </span>
-                                    <input 
-                                        type="radio" 
-                                        disabled={activeWilaya.officeFee === 0}
-                                        checked={deliveryType === 'office' && activeWilaya.officeFee > 0} 
-                                        onChange={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
-                                        className="accent-black" 
-                                    />
+                            {/* Row 1, Col 2: Domicile Icon Card */}
+                            <div 
+                                className={`p-5 border cursor-pointer flex justify-between items-center rounded-md transition-all ${
+                                    deliveryType === 'home' ? 'border-[#27ae60] bg-[#f2f9fc]' : 'border-gray-200 bg-white'
+                                }`} 
+                                onClick={() => setDeliveryType('home')}
+                            >
+                                <div className="flex items-center justify-center p-2 bg-gray-50 rounded-md">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={deliveryType === 'home' ? '#27ae60' : '#444'} strokeWidth="1.5">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                        <polyline points="9 22 9 12 15 12 15 22" />
+                                    </svg>
                                 </div>
-                                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
-                                    توصيل للمكتب
-                                </span>
-                                <span className="mt-4 font-sans font-bold text-base text-black">
-                                    {activeWilaya.officeFee === 0 ? 'Non disponible' : `${activeWilaya.officeFee.toLocaleString()} DA`}
-                                </span>
-                            </label>
+                                <input 
+                                    type="radio" 
+                                    checked={deliveryType === 'home'} 
+                                    onChange={() => setDeliveryType('home')} 
+                                    className="accent-[#27ae60] cursor-pointer" 
+                                />
+                            </div>
+
+                            {/* Row 2, Col 1: Bureau Text Card */}
+                            <div 
+                                className={`p-5 border flex justify-between items-start rounded-md transition-all ${
+                                    activeWilaya.officeFee === 0 
+                                        ? 'opacity-40 cursor-not-allowed border-gray-100 bg-gray-50' 
+                                        : (deliveryType === 'office' ? 'border-[#27ae60] bg-[#f2f9fc] cursor-pointer' : 'border-gray-200 bg-white cursor-pointer')
+                                }`} 
+                                onClick={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }}
+                            >
+                                <div>
+                                    <span className="font-bold text-xs block mb-1 text-black">BUREAU / STOPDESK</span>
+                                    <span className="text-[10px] text-gray-400 block mb-3 font-semibold">توصيل للمكتب</span>
+                                    <span className="font-bold text-sm block text-black">
+                                        {activeWilaya.officeFee === 0 ? 'Non disponible' : `${activeWilaya.officeFee.toLocaleString()} DA`}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="radio" 
+                                    disabled={activeWilaya.officeFee === 0}
+                                    checked={deliveryType === 'office' && activeWilaya.officeFee > 0} 
+                                    onChange={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
+                                    className="accent-[#27ae60] cursor-pointer mt-1" 
+                                />
+                            </div>
+
+                            {/* Row 2, Col 2: Bureau Icon Card */}
+                            <div 
+                                className={`p-5 border flex justify-between items-center rounded-md transition-all ${
+                                    activeWilaya.officeFee === 0 
+                                        ? 'opacity-40 cursor-not-allowed border-gray-100 bg-gray-50' 
+                                        : (deliveryType === 'office' ? 'border-[#27ae60] bg-[#f2f9fc] cursor-pointer' : 'border-gray-200 bg-white cursor-pointer')
+                                }`} 
+                                onClick={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }}
+                            >
+                                <div className="flex items-center justify-center p-2 bg-gray-50 rounded-md">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={deliveryType === 'office' ? '#27ae60' : '#444'} strokeWidth="1.5">
+                                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                                        <line x1="8" y1="21" x2="16" y2="21" />
+                                        <line x1="12" y1="17" x2="12" y2="21" />
+                                    </svg>
+                                </div>
+                                <input 
+                                    type="radio" 
+                                    disabled={activeWilaya.officeFee === 0}
+                                    checked={deliveryType === 'office' && activeWilaya.officeFee > 0} 
+                                    onChange={() => { if (activeWilaya.officeFee > 0) setDeliveryType('office'); }} 
+                                    className="accent-[#27ae60] cursor-pointer" 
+                                />
+                            </div>
                         </div>
                     </section>
-                </div>
 
-                {/* Right Bar - My Order */}
-                <div className="lg:pl-12">
-                    <div className="bg-gray-50 p-8 md:p-10 sticky top-32 border border-gray-100">
-                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-8 border-b border-gray-200 pb-4">
+                    {/* Order Summary Section */}
+                    <section>
+                        <h3 className="text-sm font-sans font-bold uppercase tracking-[2px] mb-6 border-b border-gray-200 pb-3">
                             Récapitulatif de la commande
                         </h3>
                         
-                        <div className="max-h-96 overflow-y-auto mb-8 space-y-6 pr-4 divide-y divide-gray-100">
-                            {cart.map((item, index) => {
-                                const imageUrl = getProductImageUrl(item.images?.[0]);
-                                return (
-                                    <div key={`${item.id}-${item.selectedSize}`} className={`flex gap-4 items-center ${index > 0 ? 'pt-4' : ''}`}>
-                                        <div className="relative w-16 h-16 bg-white border border-gray-200 p-1 shrink-0 flex items-center justify-center">
-                                            <Image 
-                                                src={imageUrl} 
-                                                alt={item.name} 
-                                                fill 
-                                                className="object-contain p-1" 
-                                                unoptimized
-                                            />
-                                            <span className="absolute -top-2 -right-2 bg-black text-white text-[9px] w-5 h-5 flex items-center justify-center rounded-full font-sans font-bold">
-                                                {item.quantity}
-                                            </span>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[11px] font-sans font-bold uppercase tracking-wider text-black truncate mb-1">
-                                                {item.name}
-                                            </p>
-                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                                                Taille: {item.selectedSize}
-                                            </p>
-                                        </div>
-                                        <span className="text-xs font-semibold text-black tracking-wider whitespace-nowrap">
-                                            {(item.price * item.quantity).toLocaleString()} DA
-                                        </span>
+                        <div className="space-y-4 mb-6">
+                            {cart.map((item) => (
+                                <div key={`${item.id}-${item.selectedSize}`} className="flex justify-between items-start text-xs border-b border-gray-100 pb-3">
+                                    <div>
+                                        <p className="font-sans font-bold uppercase tracking-wider text-black mb-1">
+                                            {item.name} {item.quantity > 1 ? `x${item.quantity}` : ''}
+                                        </p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                            Taille: {item.selectedSize}
+                                        </p>
                                     </div>
-                                );
-                            })}
+                                    <span className="font-semibold text-black tracking-wider whitespace-nowrap ml-4">
+                                        {(item.price * item.quantity).toLocaleString()} DA
+                                    </span>
+                                </div>
+                            ))}
                         </div>
 
-                        <div className="space-y-4 border-t border-gray-200 pt-6 mb-6 text-xs uppercase tracking-wider text-gray-500 font-sans">
+                        <div className="space-y-3 border-t border-gray-200 pt-5 mb-6 text-xs uppercase tracking-wider text-gray-500 font-sans font-bold">
                             <div className="flex justify-between">
                                 <span>Sous-total</span>
-                                <span className="text-black font-semibold">{cartTotal.toLocaleString()} DA</span>
+                                <span className="text-black font-bold">{cartTotal.toLocaleString()} DA</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Expédition ({deliveryType === 'home' ? 'Domicile' : 'Bureau'})</span>
-                                <span className="text-black font-semibold">{deliveryFee.toLocaleString()} DA</span>
+                                <span className="text-black font-bold">{deliveryFee.toLocaleString()} DA</span>
                             </div>
                         </div>
 
-                        <div className="border-t-2 border-black pt-6 mb-10 flex justify-between items-end font-sans">
+                        <div className="border-t-2 border-black pt-5 mb-8 flex justify-between items-end font-sans">
                             <span className="text-sm font-bold uppercase tracking-widest text-black">Total</span>
-                            <span className="text-2xl font-black text-black tracking-normal">
+                            <span className="text-xl font-black text-black tracking-normal">
                                 {finalTotal.toLocaleString()} DA
                             </span>
                         </div>
 
-                        <button 
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="bg-black text-white w-full py-4 font-sans font-bold uppercase tracking-[2px] hover:opacity-85 transition-opacity text-xs border-none rounded-none"
-                        >
-                            {isSubmitting ? 'CHARGEMENT...' : 'CONFIRMER LA COMMANDE'}
-                        </button>
-                    </div>
+                        <div className="flex justify-center pt-4">
+                            <button 
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="bg-black text-white w-full max-w-md py-4 font-sans font-bold uppercase tracking-[2px] hover:opacity-85 transition-opacity text-xs border-none rounded-md"
+                            >
+                                {isSubmitting ? 'CHARGEMENT...' : 'CONFIRMER LA COMMANDE'}
+                            </button>
+                        </div>
+                    </section>
+                </form>
+
+                {/* Footer Links */}
+                <div className="flex justify-center gap-8 mt-12 pb-8 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+                    <Link href="/track-order" className="hover:text-black transition-colors">Track Order</Link>
+                    <Link href="/faq" className="hover:text-black transition-colors">Faq</Link>
+                    <Link href="/store-policy" className="hover:text-black transition-colors">Store Policy</Link>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }
