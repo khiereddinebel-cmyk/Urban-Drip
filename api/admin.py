@@ -212,6 +212,25 @@ class HomepageBannerAdmin(admin.ModelAdmin):
         return "No Image"
     banner_preview_detail.short_description = "Preview"
 
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    list_display = ('title', 'page', 'image_preview', 'is_active')
+    list_editable = ('is_active',)
+    list_filter = ('page', 'is_active')
+    readonly_fields = ('image_preview_detail',)
+
+    def image_preview(self, obj):
+        if obj and obj.image:
+            return format_html('<img src="{}" style="max-height: 40px; width: auto; border-radius: 2px;" />', obj.image.url)
+        return "-"
+    image_preview.short_description = "Preview"
+
+    def image_preview_detail(self, obj):
+        if obj and obj.image:
+            return format_html('<img src="{}" style="max-height: 150px; width: auto; border-radius: 4px;" />', obj.image.url)
+        return "No Image"
+    image_preview_detail.short_description = "Preview"
+
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = ('site_name', 'homepage_title', 'show_logo_text', 'maintenance_mode')

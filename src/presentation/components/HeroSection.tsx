@@ -16,9 +16,14 @@ interface Slide {
 }
 
 export default function HeroSection() {
+    const [mounted, setMounted] = useState(false);
     const [slides, setSlides] = useState<Slide[]>([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const fetchSlides = async () => {
@@ -83,6 +88,92 @@ export default function HeroSection() {
         }, 5000);
         return () => clearInterval(interval);
     }, [slides]);
+
+    // Pre-mount rendering to avoid hydration mismatches
+    if (!mounted) {
+        return (
+            <section style={{ width: '100%', height: '100vh', minHeight: '500px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
+                <div style={{ position: 'absolute', inset: 0, zIndex: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
+                    <img
+                        src="/images/home page hero banner.jpg"
+                        alt="Urban Drip Sneaker Collection"
+                        style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover', 
+                            objectPosition: 'center', 
+                            display: 'block' 
+                        }}
+                    />
+                </div>
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    zIndex: 2,
+                    pointerEvents: 'none'
+                }} />
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 10,
+                    padding: '24px',
+                    textAlign: 'center',
+                    color: '#ffffff',
+                    pointerEvents: 'none'
+                }}>
+                    <div style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '800px', width: '100%' }}>
+                        <h1 style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontWeight: 900,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.15em',
+                            lineHeight: 1.1,
+                            color: '#ffffff',
+                            margin: '0 0 16px 0',
+                        }} className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
+                            URBAN DRIP
+                        </h1>
+                        <p style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontStyle: 'italic',
+                            color: 'rgba(255, 255, 255, 0.95)',
+                            margin: '0 0 32px 0',
+                            fontWeight: 300,
+                            letterSpacing: '0.05em'
+                        }} className="text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]">
+                            Sneaker & Streetwear Culture
+                        </p>
+                        <Link
+                            href="/latest-drops"
+                            style={{
+                                backgroundColor: '#000000',
+                                color: '#ffffff',
+                                border: '1px solid rgba(255,255,255,0.4)',
+                                padding: '14px 36px',
+                                fontSize: '13px',
+                                fontWeight: 700,
+                                letterSpacing: '0.15em',
+                                textTransform: 'uppercase',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                textDecoration: 'none',
+                            }}
+                            className="hover:bg-white hover:text-black hover:border-white"
+                        >
+                            EXPLORE NEW RELEASES 2026 &rarr;
+                        </Link>
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
     if (loading) {
         return (
@@ -196,6 +287,7 @@ export default function HeroSection() {
             <div style={{ position: 'absolute', inset: 0, zIndex: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
                 {slides.map((slide, index) => (
                     <picture key={slide.id} style={{
+                        display: 'block',
                         position: 'absolute',
                         top: 0,
                         left: 0,
@@ -281,7 +373,7 @@ export default function HeroSection() {
                             fontSize: '13px',
                             fontWeight: 700,
                             letterSpacing: '0.15em',
- textTransform: 'uppercase',
+                            textTransform: 'uppercase',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '12px',
@@ -313,13 +405,10 @@ export default function HeroSection() {
                             height: '46px',
                             borderRadius: '50%',
                             cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
                             fontSize: '18px',
                             transition: 'all 0.3s'
                         }}
-                        className="hover:bg-white hover:text-black hover:border-white hidden md:flex"
+                        className="hover:bg-white hover:text-black hover:border-white hidden md:flex items-center justify-center"
                         aria-label="Previous Slide"
                     >
                         &#10094;
@@ -339,13 +428,10 @@ export default function HeroSection() {
                             height: '46px',
                             borderRadius: '50%',
                             cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
                             fontSize: '18px',
                             transition: 'all 0.3s'
                         }}
-                        className="hover:bg-white hover:text-black hover:border-white hidden md:flex"
+                        className="hover:bg-white hover:text-black hover:border-white hidden md:flex items-center justify-center"
                         aria-label="Next Slide"
                     >
                         &#10095;
