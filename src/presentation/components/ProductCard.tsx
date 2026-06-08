@@ -21,12 +21,12 @@ export default function ProductCard({ product, pricePrefix = "", className = "" 
       className={`group block flex-shrink-0 snap-start ${widthClass} ${className}`}
       style={{ paddingLeft: '12px', paddingRight: '12px' }}
     >
-      <div className="relative aspect-square w-full bg-white flex items-center justify-center mb-4 overflow-hidden border border-gray-50 rounded-sm">
+      <div className="relative aspect-square w-full bg-white flex items-center justify-center mb-4 overflow-hidden border border-gray-200 rounded-sm">
         <Image
           src={imageUrl}
           alt={product.name}
           fill
-          className="object-contain transition-transform duration-500 group-hover:scale-105 p-6 md:p-8"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 768px) 200px, 240px"
           unoptimized
         />
