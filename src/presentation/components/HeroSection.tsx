@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getProductImageUrl } from '../../shared/utils/imageUtils';
+
 
 interface Slide {
     id: number;
@@ -31,11 +33,11 @@ export default function HeroSection() {
                         const mappedSlides = activeSlides.map((b: any) => ({
                             id: b.id,
                             title: b.title,
-                            image: b.image,
+                            image: getProductImageUrl(b.image),
                             button_link: b.link,
                             // fallbacks for undefined values to use defaults
                             subtitle: b.subtitle,
-                            mobile_image: b.mobile_image,
+                            mobile_image: b.mobile_image ? getProductImageUrl(b.mobile_image) : undefined,
                             button_text: b.button_text
                         }));
                         setSlides(mappedSlides);
@@ -50,7 +52,16 @@ export default function HeroSection() {
                     const data = await resSliders.json();
                     const activeSlides = data.results || data;
                     if (Array.isArray(activeSlides) && activeSlides.length > 0) {
-                        setSlides(activeSlides);
+                        const mappedSliders = activeSlides.map((b: any) => ({
+                            id: b.id,
+                            title: b.title,
+                            image: getProductImageUrl(b.image),
+                            button_link: b.button_link,
+                            subtitle: b.subtitle,
+                            mobile_image: b.mobile_image ? getProductImageUrl(b.mobile_image) : undefined,
+                            button_text: b.button_text
+                        }));
+                        setSlides(mappedSliders);
                         setLoading(false);
                         return;
                     }
