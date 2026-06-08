@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 interface SidebarNavItem {
     name: string;
@@ -92,12 +91,17 @@ export default function Sidebar({ isOpen, onClose, onLoginClick }: SidebarProps)
                         height: '60px',
                         padding: '0 8px'
                     }}>
-                        <div style={{ position: 'relative', height: '60px', width: '60px' }}>
-                            <Image
+                        <div style={{ height: '60px', width: '60px' }}>
+                            <img
                                 src="/logo.png"
                                 alt="Urban Drip Logo"
-                                fill
-                                style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+                                style={{ 
+                                    width: '100%', 
+                                    height: '100%', 
+                                    objectFit: 'contain', 
+                                    filter: 'brightness(0) invert(1)',
+                                    display: 'block' 
+                                }}
                             />
                         </div>
                         <span style={{
