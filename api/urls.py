@@ -4,7 +4,7 @@ from .views import (
     BrandViewSet, CategoryViewSet, ProductViewSet, ProductImageViewSet,
     HeroSliderViewSet, HomepageBannerViewSet, BannerViewSet,
     SiteSettingsViewSet, HomepageSectionViewSet, CarouselImageViewSet,
-    OrderViewSet, WilayaViewSet, BaladiyaViewSet
+    OrderViewSet, WilayaViewSet, BaladiyaViewSet, inspect_media
 )
 
 router = DefaultRouter()
@@ -23,5 +23,6 @@ router.register(r'wilayas', WilayaViewSet)
 router.register(r'baladiyas', BaladiyaViewSet)
 
 urlpatterns = [
+    path('inspect-media/', inspect_media, name='inspect-media'),
     path('', include(router.urls)),
 ]

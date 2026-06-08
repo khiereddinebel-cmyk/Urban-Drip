@@ -168,3 +168,23 @@ class OrderViewSet(viewsets.ModelViewSet):
         except Exception as e:
             logger.exception(f"Checkout exception occurred during order saving: {e}")
             return Response({"success": False, "error": str(e)}, status=500)
+
+import os
+from django.http import JsonResponse
+from django.conf import settings
+
+def inspect_media(request):
+    media_root = settings.MEDIA_ROOT
+    files_list = []
+    if os.path.exists(media_root):
+        for root, dirs, files in os.walk(media_root):
+            for file in files:
+                rel_path = os.path.relpath(os.path.join(root, file), media_root)
+                files_list.append(rel_path)
+    return JsonResponse({
+        'media_root': str(media_root),
+        'exists': os.path.exists(media_root),
+        'files': files_list,
+        'base_dir': str(settings.BASE_DIR),
+        'cwd': os.getcwd(),
+    })

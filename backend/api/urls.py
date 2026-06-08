@@ -4,7 +4,7 @@ from .views import (
     BrandViewSet, CategoryViewSet, ProductViewSet, ProductImageViewSet,
     HeroSliderViewSet, HomepageBannerViewSet, BannerViewSet,
     SiteSettingsViewSet, HomepageSectionViewSet, CarouselImageViewSet,
-    OrderViewSet
+    OrderViewSet, inspect_media
 )
 
 router = DefaultRouter()
@@ -21,5 +21,6 @@ router.register(r'carousel', CarouselImageViewSet)
 router.register(r'orders', OrderViewSet)
 
 urlpatterns = [
+    path('inspect-media/', inspect_media, name='inspect-media'),
     path('', include(router.urls)),
 ]
