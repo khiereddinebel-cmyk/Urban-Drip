@@ -97,7 +97,7 @@ export default function Sidebar({ isOpen, onClose, onLoginClick }: SidebarProps)
                                 src="/logo.png"
                                 alt="Urban Drip Logo"
                                 fill
-                                style={{ objectFit: 'contain' }}
+                                style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
                             />
                         </div>
                         <span style={{
