@@ -21,12 +21,38 @@ export default function HeroSection() {
     useEffect(() => {
         const fetchSlides = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/hero-sliders/`);
+                // Fetch from banners endpoint first (as configured in Django Admin Banners section)
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/banners/?page=home`);
                 if (res.ok) {
                     const data = await res.json();
                     const activeSlides = data.results || data;
-                    if (Array.isArray(activeSlides)) {
+                    if (Array.isArray(activeSlides) && activeSlides.length > 0) {
+                        // Map Banner fields (title, image, link) to Slide interface
+                        const mappedSlides = activeSlides.map((b: any) => ({
+                            id: b.id,
+                            title: b.title,
+                            image: b.image,
+                            button_link: b.link,
+                            // fallbacks for undefined values to use defaults
+                            subtitle: b.subtitle,
+                            mobile_image: b.mobile_image,
+                            button_text: b.button_text
+                        }));
+                        setSlides(mappedSlides);
+                        setLoading(false);
+                        return;
+                    }
+                }
+                
+                // Fallback to hero-sliders if banners list is empty
+                const resSliders = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/hero-sliders/`);
+                if (resSliders.ok) {
+                    const data = await resSliders.json();
+                    const activeSlides = data.results || data;
+                    if (Array.isArray(activeSlides) && activeSlides.length > 0) {
                         setSlides(activeSlides);
+                        setLoading(false);
+                        return;
                     }
                 }
             } catch (error) {
