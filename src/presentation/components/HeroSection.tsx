@@ -98,20 +98,6 @@ export default function HeroSection() {
                     pointerEvents: 'none'
                 }}>
                     <div style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '800px', width: '100%' }}>
-                        {/* Logo */}
-                        <div style={{ position: 'relative', width: '80px', height: '80px', marginBottom: '24px' }}>
-                            <img
-                                src="/logo.png"
-                                alt="Urban Drip Logo"
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'contain',
-                                    filter: 'brightness(0) invert(1)'
-                                }}
-                            />
-                        </div>
-
                         {/* Main Title */}
                         <h1 style={{
                             fontFamily: 'var(--font-serif)',
@@ -222,20 +208,6 @@ export default function HeroSection() {
                 pointerEvents: 'none'
             }}>
                 <div style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '800px', width: '100%' }}>
-                    {/* Logo */}
-                    <div style={{ position: 'relative', width: '80px', height: '80px', marginBottom: '24px' }}>
-                        <img
-                            src="/logo.png"
-                            alt="Urban Drip Logo"
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'contain',
-                                filter: 'brightness(0) invert(1)'
-                            }}
-                        />
-                    </div>
-
                     {/* Main Title */}
                     <h1 style={{
                         fontFamily: 'var(--font-serif)',

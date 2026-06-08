@@ -158,15 +158,17 @@ export default function Header() {
                         alignItems: 'center'
                     }}>
                         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                            <div style={{ position: 'relative', width: '72px', height: '72px' }}>
-                                <Image
+                            <div style={{ width: '72px', height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <img
                                     src="/logo.png"
                                     alt="Urban Drip Logo"
-                                    fill
                                     style={{ 
+                                        width: '100%',
+                                        height: '100%',
                                         objectFit: 'contain',
                                         filter: (isHome && !isScrolled) ? 'brightness(0) invert(1)' : 'none',
-                                        transition: 'filter 0.3s ease'
+                                        transition: 'filter 0.3s ease',
+                                        display: 'block'
                                     }}
                                 />
                             </div>
