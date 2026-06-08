@@ -29,7 +29,7 @@ export default function HeroSection() {
         const fetchSlides = async () => {
             try {
                 // Fetch from banners endpoint first (as configured in Django Admin Banners section)
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/banners/?page=home`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/banners/?page=home`, { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     const activeSlides = data.results || data;
@@ -52,7 +52,7 @@ export default function HeroSection() {
                 }
                 
                 // Fallback to hero-sliders if banners list is empty
-                const resSliders = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/hero-sliders/`);
+                const resSliders = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/hero-sliders/`, { cache: 'no-store' });
                 if (resSliders.ok) {
                     const data = await resSliders.json();
                     const activeSlides = data.results || data;
