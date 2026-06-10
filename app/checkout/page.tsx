@@ -15,6 +15,7 @@ export default function CheckoutPage() {
     // Form state
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
+    const [confirmPhone, setConfirmPhone] = useState('');
     const [selectedWilayaId, setSelectedWilayaId] = useState<number>(wilayas[15].id); // Default to Alger
     const [commune, setCommune] = useState('');
     const [apiCommunes, setApiCommunes] = useState<any[]>([]);
@@ -61,6 +62,11 @@ export default function CheckoutPage() {
         
         if (!customerName || !customerPhone || !commune) {
             alert('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+
+        if (customerPhone !== confirmPhone) {
+            alert('Veuillez entrer le même numéro de téléphone pour le confirmer.');
             return;
         }
 
@@ -169,6 +175,28 @@ export default function CheckoutPage() {
                                     className="w-full bg-white border border-gray-300 focus:border-black focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-md text-black" 
                                     placeholder="05 / 06 / 07 ..."
                                 />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold text-gray-700 block">
+                                    Confirmer votre numéro / تأكيد رقم الهاتف
+                                </label>
+                                <input 
+                                    required
+                                    type="tel"
+                                    value={confirmPhone}
+                                    onChange={(e) => setConfirmPhone(e.target.value)}
+                                    className={`w-full bg-white border focus:outline-none px-4 py-3 text-xs tracking-wider transition-all rounded-md text-black ${
+                                        confirmPhone && customerPhone !== confirmPhone 
+                                            ? 'border-red-500 focus:border-red-500' 
+                                            : 'border-gray-300 focus:border-black'
+                                    }`}
+                                    placeholder="05 / 06 / 07 ..."
+                                />
+                                {confirmPhone && customerPhone !== confirmPhone && (
+                                    <p className="text-[10px] text-red-500 font-semibold mt-1">
+                                        Veuillez entrer le même numéro de téléphone pour le confirmer. / الرجاء إدخال نفس رقم الهاتف للتأكيد.
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-semibold text-gray-700 block">
