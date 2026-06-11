@@ -92,34 +92,38 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                                 SIZE GUIDE (CM)
                             </button>
                         </div>
-                        <div className="flex flex-wrap justify-center md:justify-start gap-[8px] max-w-[340px] md:max-w-none mx-auto md:mx-0">
+                        <div className="flex flex-wrap justify-center md:justify-start gap-[12px] max-w-[340px] md:max-w-none mx-auto md:mx-0">
                             {product.sizes.map((size) => {
                                 const isActive = selectedSize === size.size;
                                 const isHovered = hoveredSize === size.size;
                                 return (
-                                    <button
-                                        key={size.size}
-                                        onClick={() => setSelectedSize(size.size)}
-                                        onMouseEnter={() => setHoveredSize(size.size)}
-                                        onMouseLeave={() => setHoveredSize(null)}
-                                        style={{
-                                            minWidth: '50px',
-                                            height: '45px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            border: (isActive || isHovered) ? '2px solid var(--text)' : '1px solid var(--border-color)',
-                                            backgroundColor: (isActive || isHovered) ? 'var(--text)' : 'var(--bg)',
-                                            color: (isActive || isHovered) ? 'var(--bg)' : 'var(--text)',
-                                            cursor: 'pointer',
-                                            fontSize: '14px',
-                                            fontWeight: 700,
-                                            transition: 'all 0.2s',
-                                            borderRadius: '4px'
-                                        }}
-                                    >
-                                        {size.size}
-                                    </button>
+                                    <div key={size.size} className="flex flex-col items-center gap-1">
+                                        <button
+                                            onClick={() => setSelectedSize(size.size)}
+                                            onMouseEnter={() => setHoveredSize(size.size)}
+                                            onMouseLeave={() => setHoveredSize(null)}
+                                            style={{
+                                                minWidth: '50px',
+                                                height: '45px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                border: (isActive || isHovered) ? '2px solid var(--text)' : '1px solid var(--border-color)',
+                                                backgroundColor: (isActive || isHovered) ? 'var(--text)' : 'var(--bg)',
+                                                color: (isActive || isHovered) ? 'var(--bg)' : 'var(--text)',
+                                                cursor: 'pointer',
+                                                fontSize: '14px',
+                                                fontWeight: 700,
+                                                transition: 'all 0.2s',
+                                                borderRadius: '4px'
+                                            }}
+                                        >
+                                            {size.size}
+                                        </button>
+                                        <span style={{ fontSize: '11px', color: '#666', fontWeight: 600 }}>
+                                            {size.cm ? `${size.cm} cm` : ''}
+                                        </span>
+                                    </div>
                                 );
                             })}
                         </div>
