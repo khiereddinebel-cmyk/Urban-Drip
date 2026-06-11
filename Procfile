@@ -1,1 +1,1 @@
-web: gunicorn core.wsgi:application --log-file -
+web: /opt/venv/bin/python manage.py migrate --no-input && gunicorn core.wsgi:application --log-file -
