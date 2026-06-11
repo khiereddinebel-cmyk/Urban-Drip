@@ -185,6 +185,33 @@ from django.http import JsonResponse
 from django.conf import settings
 
 def inspect_media(request):
+    import io
+    from django.core.management import call_command
+    from django.db import connection
+
+    # 1. Run migrations dynamically
+    out = io.StringIO()
+    err = io.StringIO()
+    try:
+        call_command('migrate', no_input=True, stdout=out, stderr=err)
+        migrate_out = out.getvalue()
+        migrate_err = err.getvalue()
+    except Exception as e:
+        migrate_out = out.getvalue()
+        migrate_err = str(e)
+
+    # 2. Check table columns
+    columns = []
+    tables = []
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
+            tables = [row[0] for row in cursor.fetchall()]
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'api_banner'")
+            columns = [row[0] for row in cursor.fetchall()]
+        except Exception as e:
+            columns = [str(e)]
+
     media_root = settings.MEDIA_ROOT
     files_list = []
     if os.path.exists(media_root):
@@ -192,10 +219,15 @@ def inspect_media(request):
             for file in files:
                 rel_path = os.path.relpath(os.path.join(root, file), media_root)
                 files_list.append(rel_path)
+
     return JsonResponse({
         'media_root': str(media_root),
         'exists': os.path.exists(media_root),
         'files': files_list,
         'base_dir': str(settings.BASE_DIR),
         'cwd': os.getcwd(),
+        'migrate_out': migrate_out,
+        'migrate_err': migrate_err,
+        'tables': tables,
+        'banner_columns': columns,
     })
