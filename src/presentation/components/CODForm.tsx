@@ -18,6 +18,7 @@ export default function CODForm({ productId, productName, productPrice, selected
     const [quantity, setQuantity] = useState(1);
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
+    const [confirmPhone, setConfirmPhone] = useState('');
     const [selectedWilayaId, setSelectedWilayaId] = useState<number | ''>(''); // Start with empty wilaya selection
     const [commune, setCommune] = useState('');
     const [deliveryType, setDeliveryType] = useState<'home' | 'office'>('home');
@@ -46,8 +47,13 @@ export default function CODForm({ productId, productName, productPrice, selected
             return;
         }
 
-        if (!customerName || !customerPhone || !commune || !activeWilaya) {
+        if (!customerName || !customerPhone || !confirmPhone || !commune || !activeWilaya) {
             alert('Veuillez remplir tous les champs / يرجى ملء كل الخانات');
+            return;
+        }
+
+        if (customerPhone !== confirmPhone) {
+            alert('Veuillez entrer le même numéro de téléphone pour le confirmer. / الرجاء إدخال نفس رقم الهاتف للتأكيد.');
             return;
         }
 
@@ -119,6 +125,7 @@ export default function CODForm({ productId, productName, productPrice, selected
                 // Clear state
                 setCustomerName('');
                 setCustomerPhone('');
+                setConfirmPhone('');
                 setCommune('');
 
                 // Redirect to success page
@@ -162,6 +169,30 @@ export default function CODForm({ productId, productName, productPrice, selected
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', outline: 'none', backgroundColor: '#fff', boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}
                 />
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                    <input
+                        type="tel"
+                        placeholder="Confirmer votre numéro / تأكيد رقم الهاتف"
+                        value={confirmPhone}
+                        onChange={(e) => setConfirmPhone(e.target.value)}
+                        style={{ 
+                            padding: '12px', 
+                            border: confirmPhone && customerPhone !== confirmPhone ? '1px solid #e74c3c' : '1px solid #ccc', 
+                            borderRadius: '4px', 
+                            fontSize: '13px', 
+                            outline: 'none', 
+                            backgroundColor: '#fff', 
+                            boxSizing: 'border-box', 
+                            width: '100%', 
+                            maxWidth: '100%' 
+                        }}
+                    />
+                    {confirmPhone && customerPhone !== confirmPhone && (
+                        <span style={{ color: '#e74c3c', fontSize: '10px', marginTop: '4px', fontWeight: 600 }}>
+                            Veuillez entrer le même numéro de téléphone pour le confirmer. / الرجاء إدخال نفس رقم الهاتف للتأكيد.
+                        </span>
+                    )}
+                </div>
                 <select
                     value={selectedWilayaId}
                     onChange={(e) => {
