@@ -119,6 +119,7 @@ class Banner(models.Model):
     link = models.CharField(max_length=255, blank=True, null=True)
     page = models.CharField(max_length=20, choices=PAGE_CHOICES, default="home")
     is_active = models.BooleanField(default=True)
+    button_text = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.title

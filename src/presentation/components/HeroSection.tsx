@@ -167,7 +167,7 @@ export default function HeroSection() {
                             }}
                             className="hover:bg-white hover:text-black hover:border-white"
                         >
-                            EXPLORE NEW RELEASES 2026 &rarr;
+                            EXPLORE NEW RELEASES &rarr;
                         </Link>
                     </div>
                 </div>
@@ -271,7 +271,7 @@ export default function HeroSection() {
                             }}
                             className="hover:bg-white hover:text-black hover:border-white"
                         >
-                            EXPLORE NEW RELEASES 2026 &rarr;
+                            EXPLORE NEW RELEASES &rarr;
                         </Link>
                     </div>
                 </div>
@@ -382,7 +382,7 @@ export default function HeroSection() {
                         }}
                         className="hover:bg-white hover:text-black hover:border-white"
                     >
-                        {currentSlide.button_text || "EXPLORE NEW RELEASES 2026"} &rarr;
+                        {currentSlide.button_text || "EXPLORE NEW RELEASES"} &rarr;
                     </Link>
                 </div>
             </div>
