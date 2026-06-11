@@ -86,7 +86,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 <h2 className="mb-[40px] px-2 text-center">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
-                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
+                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)', letterSpacing: '0.15em', textTransform: 'uppercase' }}
                     >
                         Latest Drops
                     </span>
@@ -121,7 +121,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 <h2 className="mb-[40px] px-2 text-center">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
-                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
+                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)', letterSpacing: '0.15em', textTransform: 'uppercase' }}
                     >
                         Most Viewed Products
                     </span>
@@ -156,7 +156,7 @@ export default function Home({ featured = [] }: HomeProps) {
                 <h2 className="mb-[40px] px-2 text-center">
                     <span 
                         className="text-[28px] md:text-[36px] lg:text-[42px]"
-                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)' }}
+                        style={{ color: '#000', fontWeight: 700, fontFamily: 'var(--font-sans)', letterSpacing: '0.15em', textTransform: 'uppercase' }}
                     >
                         Brands
                     </span>

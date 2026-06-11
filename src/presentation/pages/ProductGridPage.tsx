@@ -166,7 +166,7 @@ export default function ProductGridPage({ title, brand, category, bannerImage, l
                         </div>
 
                         {/* Price Dropdown */}
-                        <div style={{ position: 'relative' }}>
+                        <div className="hidden md:block" style={{ position: 'relative' }}>
                             <button 
                                 onClick={() => toggleFilter('Price')}
                                 style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: 500 }}
