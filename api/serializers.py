@@ -109,9 +109,22 @@ class HomepageBannerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BannerSerializer(serializers.ModelSerializer):
+    button_text = serializers.SerializerMethodField()
+    button_link = serializers.SerializerMethodField()
+
     class Meta:
         model = Banner
-        fields = '__all__'
+        fields = ('id', 'title', 'image', 'link', 'page', 'is_active', 'button_text', 'button_link')
+
+    def get_button_text(self, obj):
+        from .models import BannerCTA
+        cta = BannerCTA.objects.first()
+        return cta.button_text if (cta and cta.button_text) else "EXPLORE NEW RELEASES"
+
+    def get_button_link(self, obj):
+        from .models import BannerCTA
+        cta = BannerCTA.objects.first()
+        return cta.button_link if (cta and cta.button_link) else "/latest-drops"
 
 class SiteSettingsSerializer(serializers.ModelSerializer):
     class Meta:
