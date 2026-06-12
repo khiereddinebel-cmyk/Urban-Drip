@@ -159,8 +159,8 @@ class ProductSizeInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
-    list_display = ('image_preview', 'name', 'brand', 'category', 'price', 'stock', 'stock_indicator', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
-    list_editable = ('price', 'stock', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
+    list_display = ('image_preview', 'name', 'brand', 'category', 'price', 'discount_price', 'stock', 'stock_indicator', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
+    list_editable = ('price', 'discount_price', 'stock', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
     list_filter = ('brand', 'category', 'featured', 'is_latest_drop', 'is_most_viewed', 'is_active')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')

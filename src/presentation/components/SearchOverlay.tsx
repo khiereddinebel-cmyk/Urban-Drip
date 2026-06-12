@@ -59,6 +59,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         id: item.id.toString(),
                         name: item.name,
                         price: parseFloat(item.price),
+                        discountPrice: item.discount_price ? parseFloat(item.discount_price) : undefined,
                         images: imgUrls,
                         brand: item.brand_name || item.brand?.name || '',
                         category: item.category_name || item.category?.name || 'Sneakers',

@@ -103,7 +103,16 @@ export default function CartPage() {
                             </div>
                             <div>
                                 <h3 style={{ fontSize: '16px', fontWeight: 500, fontFamily: 'var(--font-sans)', margin: '0 0 8px 0', color: 'var(--text)' }}>{item.name}</h3>
-                                <p style={{ fontSize: '14px', color: 'var(--text)', margin: '0 0 8px 0' }}>{item.price.toLocaleString()} DA</p>
+                                <p style={{ fontSize: '14px', color: 'var(--text)', margin: '0 0 8px 0' }}>
+                                    {item.discountPrice && item.discountPrice > 0 ? (
+                                        <>
+                                            <span style={{ color: '#27ae60', fontWeight: 'bold', marginRight: '8px' }}>{(item.discountPrice).toLocaleString()} DA</span>
+                                            <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '12px' }}>{item.price.toLocaleString()} DA</span>
+                                        </>
+                                    ) : (
+                                        <span>{item.price.toLocaleString()} DA</span>
+                                    )}
+                                </p>
                                 <p style={{ fontSize: '14px', color: 'var(--text)', opacity: 0.6, margin: 0 }}>Size: {item.selectedSize}</p>
                             </div>
                         </div>
@@ -146,7 +155,7 @@ export default function CartPage() {
 
                         {/* Total */}
                         <div style={{ textAlign: 'right', fontSize: '16px', fontWeight: 700 }}>
-                            {(item.price * item.quantity).toLocaleString()} DA
+                            {((item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price) * item.quantity).toLocaleString()} DA
                         </div>
                     </div>
                 ))}

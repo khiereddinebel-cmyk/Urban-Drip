@@ -66,12 +66,20 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                             {product.name}
                         </h1>
                         <div className="flex justify-center md:justify-start items-center gap-[15px] text-[20px] font-medium text-[#333]">
-                            <span className="hidden md:inline text-[#888] line-through font-normal text-[18px]">
-                                {(product.price * 1.1).toLocaleString()} DA
-                            </span>
-                            <span style={{ color: '#27ae60' }} className="text-[22px] md:text-[20px] font-bold">
-                                {product.price.toLocaleString()} DA
-                            </span>
+                            {product.discountPrice && product.discountPrice > 0 ? (
+                                <>
+                                    <span className="text-[#888] line-through font-normal text-[18px]">
+                                        {product.price.toLocaleString()} DA
+                                    </span>
+                                    <span style={{ color: '#27ae60' }} className="text-[22px] md:text-[20px] font-bold">
+                                        {product.discountPrice.toLocaleString()} DA
+                                    </span>
+                                </>
+                            ) : (
+                                <span style={{ color: '#27ae60' }} className="text-[22px] md:text-[20px] font-bold">
+                                    {product.price.toLocaleString()} DA
+                                </span>
+                            )}
                         </div>
                     </div>
 
@@ -155,7 +163,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                     <CODForm
                         productId={product.id}
                         productName={product.name}
-                        productPrice={product.price}
+                        productPrice={product.discountPrice && product.discountPrice > 0 ? product.discountPrice : product.price}
                         selectedSize={selectedSize}
                         productImage={product.images?.[0]}
                     />

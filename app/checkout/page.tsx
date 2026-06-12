@@ -87,7 +87,7 @@ export default function CheckoutPage() {
                 items: cart.map(item => ({
                     product: parseInt(item.id),
                     quantity: item.quantity,
-                    price: item.price,
+                    price: item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price,
                     size: String(item.selectedSize)
                 }))
             };
@@ -120,7 +120,7 @@ export default function CheckoutPage() {
                     name: item.name,
                     image: item.images?.[0] || '',
                     quantity: item.quantity,
-                    price: item.price,
+                    price: item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price,
                     selectedSize: String(item.selectedSize)
                 }))
             };
@@ -366,7 +366,7 @@ export default function CheckoutPage() {
                                         </p>
                                     </div>
                                     <span className="font-semibold text-black tracking-wider whitespace-nowrap ml-4">
-                                        {(item.price * item.quantity).toLocaleString()} DA
+                                        {((item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price) * item.quantity).toLocaleString()} DA
                                     </span>
                                 </div>
                             ))}

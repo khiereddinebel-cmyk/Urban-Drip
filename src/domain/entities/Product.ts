@@ -9,6 +9,7 @@ export interface Product {
     name: string;
     description: string;
     price: number;
+    discountPrice?: number;
     brand: string;
     sizes: ProductSize[];
     colors: string[];

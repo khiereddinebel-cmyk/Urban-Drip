@@ -39,9 +39,17 @@ export default function ProductCard({ product, pricePrefix = "", className = "" 
           {product.name}
         </h3>
         <p 
-          className="text-[13px] md:text-[14px] font-sans font-bold text-black"
+          className="text-[13px] md:text-[14px] font-sans font-bold text-black flex items-center flex-wrap gap-x-2 justify-center md:justify-start"
         >
-          {pricePrefix ? `${pricePrefix} ` : ""}{product.price.toLocaleString()} DA
+          {pricePrefix ? `${pricePrefix} ` : ""}
+          {product.discountPrice && product.discountPrice > 0 ? (
+            <>
+              <span style={{ color: '#27ae60' }}>{product.discountPrice.toLocaleString()} DA</span>
+              <span className="text-[#888] line-through font-normal text-[11px] md:text-[12px]">{product.price.toLocaleString()} DA</span>
+            </>
+          ) : (
+            <span>{product.price.toLocaleString()} DA</span>
+          )}
         </p>
       </div>
     </Link>

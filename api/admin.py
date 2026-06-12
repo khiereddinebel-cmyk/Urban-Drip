@@ -119,8 +119,8 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
-    list_display = ('name', 'brand', 'category', 'price', 'stock_badge', 'total_sales', 'total_views', 'featured', 'is_active')
-    list_editable = ('price', 'featured', 'is_active')
+    list_display = ('name', 'brand', 'category', 'price', 'discount_price', 'stock_badge', 'total_sales', 'total_views', 'featured', 'is_active')
+    list_editable = ('price', 'discount_price', 'featured', 'is_active')
     list_filter = ('brand', 'category', 'featured', 'is_active')
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
@@ -144,7 +144,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('General Details', {
-            'fields': ('name', 'slug', 'description', 'price', 'is_active')
+            'fields': ('name', 'slug', 'description', 'price', 'discount_price', 'is_active')
         }),
         ('Categorization', {
             'fields': ('brand', 'category')

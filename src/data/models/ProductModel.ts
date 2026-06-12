@@ -6,6 +6,7 @@ export interface ProductModel {
     name: string;
     description: string;
     price: number;
+    discountPrice?: number;
     brand: string;
     sizes: ProductSize[];
     colors: string[];
@@ -23,6 +24,7 @@ export const mapProductModelToEntity = (id: string, model: ProductModel): Produc
         name: model.name,
         description: model.description,
         price: model.price,
+        discountPrice: model.discountPrice,
         brand: model.brand,
         sizes: model.sizes,
         colors: model.colors || [],
