@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.utils.html import format_html
-from .models import Brand, Category, Product, ProductImage, ProductSize, CarouselImage, Banner, Order, OrderItem, Wilaya, Baladiya
+from .models import Brand, Category, Product, ProductImage, ProductSize, CarouselImage, Banner, Order, OrderItem, Wilaya, Baladiya, BannerCTA
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
@@ -201,13 +201,8 @@ class ProductAdmin(admin.ModelAdmin):
     stock_indicator.admin_order_field = 'stock'
 
 
-class BannerAdminForm(forms.ModelForm):
+class BannerCTAForm(forms.ModelForm):
     internal_link_page = forms.MultipleChoiceField(
-        choices=[
-            ('/latest-drops/', '/latest-drops/'),
-            ('/most-viewed/', '/most-viewed/'),
-            ('/brands/', '/brands/'),
-        ],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'internal-link-checkbox'}),
         required=False,
         label="Internal Link Page",
@@ -215,14 +210,34 @@ class BannerAdminForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Banner
-        fields = '__all__'
+        model = BannerCTA
+        fields = ('button_text', 'button_link')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        choices = [
+            ('/latest-drops', '/latest-drops'),
+            ('/most-viewed', '/most-viewed'),
+        ]
+        try:
+            from .models import Brand
+            for b in Brand.objects.all().order_by('name'):
+                choices.append((f'/brand/{b.slug}', f'/brand/{b.slug}'))
+        except Exception:
+            pass
+
+        try:
+            from .models import Category
+            for c in Category.objects.all().order_by('name'):
+                choices.append((f'/category/{c.slug}', f'/category/{c.slug}'))
+        except Exception:
+            pass
+
+        self.fields['internal_link_page'].choices = choices
+
         if self.instance and self.instance.pk and self.instance.button_link:
             val = self.instance.button_link
-            choices_vals = [c[0] for c in self.fields['internal_link_page'].choices]
+            choices_vals = [c[0] for c in choices]
             if val in choices_vals:
                 self.initial['internal_link_page'] = [val]
 
@@ -237,19 +252,30 @@ class BannerAdminForm(forms.ModelForm):
 
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
-    form = BannerAdminForm
     list_display = ('title', 'page', 'is_active')
     list_editable = ('is_active',)
     list_filter = ('page', 'is_active')
 
-    fieldsets = (
-        ('Banner Content', {
-            'fields': ('title', 'image', 'page', 'is_active', 'link')
-        }),
-        ('Call to Action', {
-            'fields': ('button_text', 'internal_link_page', 'button_link')
-        }),
-    )
+    def changelist_view(self, request, extra_context=None):
+        from .models import BannerCTA
+        extra_context = extra_context or {}
+        
+        # Load or create singleton BannerCTA
+        cta_obj, created = BannerCTA.objects.get_or_create(id=1)
+        
+        if request.method == "POST" and request.POST.get('save_cta') == '1':
+            cta_form = BannerCTAForm(request.POST, instance=cta_obj)
+            if cta_form.is_valid():
+                cta_form.save()
+                from django.contrib import messages
+                messages.success(request, "Banner Call to Action saved successfully.")
+                from django.shortcuts import redirect
+                return redirect(request.path)
+        else:
+            cta_form = BannerCTAForm(instance=cta_obj)
+            
+        extra_context['cta_form'] = cta_form
+        return super().changelist_view(request, extra_context=extra_context)
 
     class Media:
         js = ('admin/js/banner_cta.js',)
