@@ -88,10 +88,10 @@ export default function Sidebar({ isOpen, onClose, onLoginClick }: SidebarProps)
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
-                        height: '60px',
+                        height: '76px',
                         padding: '0 8px'
                     }}>
-                        <div style={{ height: '60px', width: '60px' }}>
+                        <div style={{ height: '76px', width: '76px' }}>
                             <img
                                 src="/logo.png"
                                 alt="Urban Drip Logo"

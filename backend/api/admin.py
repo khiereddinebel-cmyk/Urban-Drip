@@ -201,11 +201,58 @@ class ProductAdmin(admin.ModelAdmin):
     stock_indicator.admin_order_field = 'stock'
 
 
+class BannerAdminForm(forms.ModelForm):
+    internal_link_page = forms.MultipleChoiceField(
+        choices=[
+            ('/latest-drops/', '/latest-drops/'),
+            ('/most-viewed/', '/most-viewed/'),
+            ('/brands/', '/brands/'),
+        ],
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'internal-link-checkbox'}),
+        required=False,
+        label="Internal Link Page",
+        help_text="Select an internal URL from the list of available pages. The button will link to the selected URL. The 'Button Link' is independent of the button text. Only one selection can be active."
+    )
+
+    class Meta:
+        model = Banner
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.button_link:
+            val = self.instance.button_link
+            choices_vals = [c[0] for c in self.fields['internal_link_page'].choices]
+            if val in choices_vals:
+                self.initial['internal_link_page'] = [val]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        internal_link_pages = cleaned_data.get('internal_link_page')
+        if internal_link_pages:
+            if len(internal_link_pages) > 1:
+                raise forms.ValidationError("Only one selection can be active.")
+            cleaned_data['button_link'] = internal_link_pages[0]
+        return cleaned_data
+
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
+    form = BannerAdminForm
     list_display = ('title', 'page', 'is_active')
     list_editable = ('is_active',)
     list_filter = ('page', 'is_active')
+
+    fieldsets = (
+        ('Banner Content', {
+            'fields': ('title', 'image', 'page', 'is_active', 'link')
+        }),
+        ('Call to Action', {
+            'fields': ('button_text', 'internal_link_page', 'button_link')
+        }),
+    )
+
+    class Media:
+        js = ('admin/js/banner_cta.js',)
 
 @admin.register(CarouselImage)
 class CarouselImageAdmin(admin.ModelAdmin):

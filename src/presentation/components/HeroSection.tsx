@@ -39,7 +39,7 @@ export default function HeroSection() {
                             id: b.id,
                             title: b.title,
                             image: getProductImageUrl(b.image),
-                            button_link: b.link,
+                            button_link: b.button_link || b.link,
                             // fallbacks for undefined values to use defaults
                             subtitle: b.subtitle,
                             mobile_image: b.mobile_image ? getProductImageUrl(b.mobile_image) : undefined,
