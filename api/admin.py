@@ -299,6 +299,25 @@ class BannerAdmin(admin.ModelAdmin):
         extra_context['cta_form'] = cta_form
         return super().changelist_view(request, extra_context=extra_context)
 
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        from .models import BannerCTA
+        extra_context = extra_context or {}
+        cta_obj, created = BannerCTA.objects.get_or_create(id=1)
+        
+        if request.method == "POST" and request.POST.get('save_cta') == '1':
+            cta_form = BannerCTAForm(request.POST, instance=cta_obj)
+            if cta_form.is_valid():
+                cta_form.save()
+                from django.contrib import messages
+                messages.success(request, "Banner Call to Action saved successfully.")
+                from django.shortcuts import redirect
+                return redirect(request.path)
+        else:
+            cta_form = BannerCTAForm(instance=cta_obj)
+            
+        extra_context['cta_form'] = cta_form
+        return super().changeform_view(request, object_id, form_url, extra_context)
+
     class Media:
         js = ('admin/js/banner_cta.js',)
 

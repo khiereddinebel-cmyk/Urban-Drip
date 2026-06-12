@@ -1,0 +1,46 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static %}
+
+{% block after_related_objects %}
+  {{ block.super }}
+  
+  {% if cta_form %}
+    <div id="content-main" style="float: none; margin-top: 30px;">
+      <div class="module" id="banner-cta-section" style="border: 1px solid #ccc; border-radius: 4px; overflow: hidden; margin-bottom: 20px;">
+        <h2 style="background: #417690; color: #fff; padding: 10px 15px; margin: 0; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Call to Action</h2>
+        <form method="post" style="padding: 20px; background: #fff;">
+          {% csrf_token %}
+          <input type="hidden" name="save_cta" value="1" />
+          
+          {% if cta_form.errors %}
+            <p class="errornote" style="color: red; font-weight: bold; margin-bottom: 15px;">Please correct the errors below.</p>
+            {{ cta_form.non_field_errors }}
+          {% endif %}
+          
+          <fieldset class="module aligned" style="border: none; margin: 0; padding: 0; box-shadow: none;">
+            {% for field in cta_form %}
+              <div class="form-row{% if field.errors %} errors{% endif %} {{ field.id_for_label }}" style="padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: flex-start;">
+                <div style="width: 160px; font-weight: bold; color: #666; font-size: 13px; padding-top: 4px;">
+                  {{ field.label_tag }}
+                </div>
+                <div style="flex: 1;">
+                  {{ field }}
+                  {% if field.help_text %}
+                    <div class="help" style="color: #999; font-size: 11px; margin-top: 5px; max-width: 800px; line-height: 1.4;">{{ field.help_text|safe }}</div>
+                  {% endif %}
+                  {% if field.errors %}
+                    <div style="color: red; font-size: 11px; margin-top: 5px;">{{ field.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </fieldset>
+          
+          <div class="submit-row" style="margin: 20px 0 0 0; padding: 15px 0 0 0; border-top: 1px solid #eee; text-align: right; background: none; border-bottom: none; display: flex; justify-content: flex-end;">
+            <input type="submit" value="Save" class="default" style="background: #417690; color: #fff; border: none; padding: 10px 24px; font-weight: bold; border-radius: 4px; cursor: pointer; height: auto; font-size: 13px;" />
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
