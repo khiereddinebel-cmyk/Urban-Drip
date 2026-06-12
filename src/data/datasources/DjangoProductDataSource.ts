@@ -64,6 +64,7 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
                 name: item.name,
                 description: item.description,
                 price: parseFloat(item.price),
+                discountPrice: item.discount_price ? parseFloat(item.discount_price) : undefined,
                 brand: item.brand_name || 'N/A',
                 category: item.category_name || 'N/A',
                 isExclusive: item.is_active, // mapping is_active to exclusive for now if needed, or just false
