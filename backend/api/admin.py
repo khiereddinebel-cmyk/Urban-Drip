@@ -209,6 +209,8 @@ class BannerCTAForm(forms.ModelForm):
         help_text="Select an internal URL from the list of available pages. The button will link to the selected URL. The 'Button Link' is independent of the button text. Only one selection can be active."
     )
 
+    field_order = ['button_text', 'internal_link_page', 'button_link']
+
     class Meta:
         model = BannerCTA
         fields = ('button_text', 'button_link')
@@ -237,6 +239,8 @@ class BannerCTAForm(forms.ModelForm):
 
         if self.instance and self.instance.pk and self.instance.button_link:
             val = self.instance.button_link
+            if val != '/' and val.endswith('/'):
+                val = val[:-1]
             choices_vals = [c[0] for c in choices]
             if val in choices_vals:
                 self.initial['internal_link_page'] = [val]
@@ -247,7 +251,14 @@ class BannerCTAForm(forms.ModelForm):
         if internal_link_pages:
             if len(internal_link_pages) > 1:
                 raise forms.ValidationError("Only one selection can be active.")
-            cleaned_data['button_link'] = internal_link_pages[0]
+            link = internal_link_pages[0]
+            if link != '/' and link.endswith('/'):
+                link = link[:-1]
+            cleaned_data['button_link'] = link
+        else:
+            button_link = cleaned_data.get('button_link')
+            if button_link and button_link != '/' and button_link.endswith('/'):
+                cleaned_data['button_link'] = button_link[:-1]
         return cleaned_data
 
 @admin.register(Banner)
@@ -276,6 +287,25 @@ class BannerAdmin(admin.ModelAdmin):
             
         extra_context['cta_form'] = cta_form
         return super().changelist_view(request, extra_context=extra_context)
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        from .models import BannerCTA
+        extra_context = extra_context or {}
+        cta_obj, created = BannerCTA.objects.get_or_create(id=1)
+        
+        if request.method == "POST" and request.POST.get('save_cta') == '1':
+            cta_form = BannerCTAForm(request.POST, instance=cta_obj)
+            if cta_form.is_valid():
+                cta_form.save()
+                from django.contrib import messages
+                messages.success(request, "Banner Call to Action saved successfully.")
+                from django.shortcuts import redirect
+                return redirect(request.path)
+        else:
+            cta_form = BannerCTAForm(instance=cta_obj)
+            
+        extra_context['cta_form'] = cta_form
+        return super().changeform_view(request, object_id, form_url, extra_context)
 
     class Media:
         js = ('admin/js/banner_cta.js',)

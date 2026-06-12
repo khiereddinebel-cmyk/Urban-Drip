@@ -124,7 +124,10 @@ class BannerSerializer(serializers.ModelSerializer):
     def get_button_link(self, obj):
         from .models import BannerCTA
         cta = BannerCTA.objects.first()
-        return cta.button_link if (cta and cta.button_link) else "/latest-drops"
+        link = cta.button_link if (cta and cta.button_link) else "/latest-drops"
+        if link and link != '/' and link.endswith('/'):
+            link = link[:-1]
+        return link
 
 class SiteSettingsSerializer(serializers.ModelSerializer):
     class Meta:
