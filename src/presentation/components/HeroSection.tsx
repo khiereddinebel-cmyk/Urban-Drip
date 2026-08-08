@@ -92,7 +92,7 @@ export default function HeroSection() {
     // Pre-mount rendering to avoid hydration mismatches
     if (!mounted) {
         return (
-            <section style={{ width: '100%', height: '100vh', minHeight: '500px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
+            <section style={{ width: '100%', height: '50vh', minHeight: '260px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
                 <div style={{ position: 'absolute', inset: 0, zIndex: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
                     <img
                         src="/images/home page hero banner.jpg"
@@ -177,7 +177,7 @@ export default function HeroSection() {
 
     if (loading) {
         return (
-            <div style={{ height: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg)' }}>
+            <div style={{ height: '50vh', minHeight: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg)' }}>
                 <span style={{ fontSize: '14px', letterSpacing: '2px', fontWeight: 'bold' }}>LOADING SNEAKER COLLECTION...</span>
             </div>
         );
@@ -186,7 +186,7 @@ export default function HeroSection() {
     // Fallback if no slides exist
     if (slides.length === 0) {
         return (
-            <section style={{ width: '100%', height: '100vh', minHeight: '500px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
+            <section style={{ width: '100%', height: '50vh', minHeight: '260px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
                 {/* Banner Image wrapper */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
                     <img
@@ -282,7 +282,7 @@ export default function HeroSection() {
     const currentSlide = slides[currentSlideIndex];
 
     return (
-        <section style={{ width: '100%', height: '100vh', minHeight: '500px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
+        <section style={{ width: '100%', height: '50vh', minHeight: '260px', position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
             {/* Banner Image wrapper */}
             <div style={{ position: 'absolute', inset: 0, zIndex: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
                 {slides.map((slide, index) => (
