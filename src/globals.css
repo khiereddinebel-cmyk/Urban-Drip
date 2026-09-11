@@ -154,7 +154,11 @@ ul {
   
   .product-grid > a > div:first-child {
     margin-bottom: 8px !important;
-    padding: 8px !important;
+    padding: 0 !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 16px !important;
   }
 
   /* Grid Page Container spacing on mobile */

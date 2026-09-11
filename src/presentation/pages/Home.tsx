@@ -111,7 +111,11 @@ export default function Home({ featured = [] }: HomeProps) {
                         <span>1 - {latestDrops.length} items</span>
                         <button onClick={() => scroll(latestRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
                     </div>
-                    <Link href="/latest-drops" className="inline-flex items-center justify-center border border-black bg-black px-10 md:px-16 py-3 md:py-4 text-[14px] font-bold text-white hover:bg-white hover:text-black transition-colors duration-300">
+                    <Link 
+                        href="/latest-drops" 
+                        className="inline-flex items-center justify-center text-[14px] font-medium text-black hover:opacity-75 transition-opacity duration-300"
+                        style={{ border: 'none', outline: 'none', boxShadow: 'none', background: 'transparent' }}
+                    >
                         View all
                     </Link>
                 </div>
@@ -146,7 +150,11 @@ export default function Home({ featured = [] }: HomeProps) {
                         <span>1 - {mostViewed.length} items</span>
                         <button onClick={() => scroll(viewedRef, 'right')} className="hover:text-gray-800 transition-colors px-2">&gt;</button>
                     </div>
-                    <Link href="/most-viewed" className="inline-flex items-center justify-center border border-black bg-black px-10 md:px-16 py-3 md:py-4 text-[14px] font-bold text-white hover:bg-white hover:text-black transition-colors duration-300">
+                    <Link 
+                        href="/most-viewed" 
+                        className="inline-flex items-center justify-center text-[14px] font-medium text-black hover:opacity-75 transition-opacity duration-300"
+                        style={{ border: 'none', outline: 'none', boxShadow: 'none', background: 'transparent' }}
+                    >
                         View all
                     </Link>
                 </div>
