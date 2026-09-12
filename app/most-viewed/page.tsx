@@ -2,8 +2,22 @@ import ProductGridPage from '../../src/presentation/pages/ProductGridPage';
 import { ProductRepositoryImpl } from '../../src/data/repositories/ProductRepositoryImpl';
 import { DjangoProductDataSource } from '../../src/data/datasources/DjangoProductDataSource';
 import { GetMostViewedProducts } from '../../src/domain/usecases/GetMostViewedProducts';
+import { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+    title: 'Most Viewed Sneakers & Streetwear | Urban Drip',
+    description: 'Browse the most viewed and trending sneakers and streetwear items at Urban Drip in Algeria.',
+    alternates: {
+        canonical: 'https://urbandrip.dz/most-viewed',
+    },
+    openGraph: {
+        title: 'Most Viewed Sneakers & Streetwear | Urban Drip',
+        description: 'Browse the most viewed and trending sneakers and streetwear items at Urban Drip in Algeria.',
+        url: 'https://urbandrip.dz/most-viewed',
+    },
+};
 
 export default async function MostViewedPage() {
   const dataSource = new DjangoProductDataSource();

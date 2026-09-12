@@ -1,13 +1,47 @@
 import ProductGridPage from '@/src/presentation/pages/ProductGridPage';
 import { ProductRepositoryImpl } from '@/src/data/repositories/ProductRepositoryImpl';
 import { DjangoProductDataSource } from '@/src/data/datasources/DjangoProductDataSource';
-
 import { Product } from '@/src/domain/entities/Product';
+import { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const paramsResolved = await params;
+    const slug = paramsResolved.slug;
+
+    try {
+        const dataSource = new DjangoProductDataSource();
+        const brandData = await dataSource.getBrandBySlug(slug);
+        const name = brandData?.name || slug.replace(/-/g, ' ');
+        const title = `${name} Sneakers & Apparel | Urban Drip`;
+        const description = `Shop authentic ${name} sneakers and streetwear at Urban Drip Algeria.`;
+
+        return {
+            title,
+            description,
+            alternates: {
+                canonical: `https://urbandrip.dz/brand/${slug}`,
+            },
+            openGraph: {
+                title,
+                description,
+                url: `https://urbandrip.dz/brand/${slug}`,
+            },
+        };
+    } catch (error) {
+        console.error(`Error generating metadata for brand ${slug}:`, error);
+    }
+
+    return {
+        title: 'Brand | Urban Drip',
+        alternates: {
+            canonical: `https://urbandrip.dz/brand/${slug}`,
+        },
+    };
+}
+
 export default async function BrandPage({ params }: { params: Promise<{ slug: string }> }) {
-    // Resolve params according to Next.js 15+ standard
     const paramsResolved = await params;
     const slug = paramsResolved.slug;
     
@@ -25,7 +59,6 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
         products = await repository.getProductsByBrand(slug);
     } catch (error) {
         console.error(`Error loading brand page for ${slug}:`, error);
-        // We will fall back to showing empty grid rather than crashing the whole page
     }
 
     const title = brandData ? brandData.name : slug.replace(/-/g, ' ');

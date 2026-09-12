@@ -169,17 +169,47 @@ export class DjangoProductDataSource implements ProductRemoteDataSource {
         }
     }
 
+    async getAllProducts(): Promise<{ id: string; data: ProductModel }[]> {
+        try {
+            const data = await this.fetchApi('/products/');
+            const products = data.results || data;
+            return products.map(this.mapDjangoToModel.bind(this));
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async getAllCategories(): Promise<{ id: string; data: any }[]> {
+        try {
+            const data = await this.fetchApi('/categories/');
+            const categories = data.results || data;
+            return categories.map((c: any) => ({
+                id: c.slug,
+                data: {
+                    name: c.name,
+                    image: this.mapImage(c.image || c.banner_image),
+                }
+            }));
+        } catch (error) {
+            return [];
+        }
+    }
+
     async getAllBrands(): Promise<{ id: string; data: any }[]> {
-        const data = await this.fetchApi('/brands/');
-        const brands = data.results || data;
-        return brands.map((b: any) => ({
-            id: b.slug,
-            data: {
-                name: b.name,
-                logo: this.mapImage(b.logo_image || b.logo),
-                cover: this.mapImage(b.cover_image),
-            }
-        }));
+        try {
+            const data = await this.fetchApi('/brands/');
+            const brands = data.results || data;
+            return brands.map((b: any) => ({
+                id: b.slug,
+                data: {
+                    name: b.name,
+                    logo: this.mapImage(b.logo_image || b.logo),
+                    cover: this.mapImage(b.cover_image),
+                }
+            }));
+        } catch (error) {
+            return [];
+        }
     }
 
     async getBanners(page: string): Promise<any[]> {
